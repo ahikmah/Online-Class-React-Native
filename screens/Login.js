@@ -36,7 +36,7 @@ function Login() {
   });
   return (
     <ScrollView>
-      <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={12}>
+      <KeyboardAvoidingView>
         <View style={styles.container}>
           <Text style={{...styles.title, marginVertical: titleMargin}}>
             Login
