@@ -25,19 +25,12 @@ function App() {
         }}>
         <Screen name="Login" component={Login} />
         <Screen name="Register" component={Register} />
+        <Screen name="ForgotPassword" component={ForgotPassword} />
+        <Screen name="CodeVerification" component={CodeVerification} />
+        <Screen name="CreateNewPassword" component={CreateNewPassword} />
       </Navigator>
     </NavigationContainer>
   );
 }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     color: 'black',
-//     fontSize: 12,
-//   },
-// });
 
 export default App;

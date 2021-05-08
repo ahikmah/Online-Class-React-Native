@@ -7,10 +7,11 @@ import {
   ScrollView,
   Dimensions,
   KeyboardAvoidingView,
+  StatusBar,
 } from 'react-native';
 import {Form, Item, Input, Label, Button, Icon} from 'native-base';
 
-function Login() {
+function Login({navigation}) {
   const [showPassword, setShowPassword] = useState(false);
   const [componentWidth, setComponentWidth] = useState(
     Dimensions.get('window').width - 64,
@@ -22,6 +23,10 @@ function Login() {
     Dimensions.get('window').height / 6,
     0,
   );
+
+  useEffect(() => {
+    // StatusBar.setHidden(true);
+  }, []);
   useEffect(() => {
     const updateLayout = () => {
       setComponentWidth(Dimensions.get('window').width - 64);
@@ -36,11 +41,16 @@ function Login() {
   });
   return (
     <ScrollView>
-      <KeyboardAvoidingView>
-        <View style={styles.container}>
-          <Text style={{...styles.title, marginVertical: titleMargin}}>
-            Login
-          </Text>
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="dark-content"
+      />
+      <View style={styles.container}>
+        <Text style={{...styles.title, marginVertical: titleMargin}}>
+          Login
+        </Text>
+        <KeyboardAvoidingView>
           <View style={{...styles.formContainer, width: componentWidth}}>
             <Form>
               <Item floatingLabel style={styles.formItem}>
@@ -60,7 +70,11 @@ function Login() {
                 />
               </Item>
             </Form>
-            <Text style={styles.txtForgot}>Forgot password?</Text>
+            <Text
+              style={styles.txtForgot}
+              onPress={() => navigation.navigate('ForgotPassword')}>
+              Forgot password?
+            </Text>
           </View>
           <View style={styles.btnGroup}>
             <Button style={{...styles.buttonLogin, width: componentWidth}}>
@@ -71,20 +85,25 @@ function Login() {
               <Text style={styles.buttonLabelGoogle}> Login with Google </Text>
             </Button>
           </View>
+        </KeyboardAvoidingView>
 
-          <View style={{...styles.txtFooter, top: footerPos}}>
-            <Text style={styles.txtNewUser}>New user?</Text>
-            <Text style={styles.txtRegister}>Register</Text>
-          </View>
+        <View style={{...styles.txtFooter, top: footerPos}}>
+          <Text style={styles.txtNewUser}>New user?</Text>
+          <Text
+            style={styles.txtRegister}
+            onPress={() => navigation.navigate('Register')}>
+            Register
+          </Text>
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    height: Dimensions.get('window').height,
+    paddingTop: StatusBar.currentHeight,
+    height: Dimensions.get('window').height + StatusBar.currentHeight,
     flex: 1,
     alignItems: 'center',
     textAlignVertical: 'center',
@@ -98,9 +117,6 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     marginBottom: 12,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    marginLeft: -16,
   },
   formInput: {
     fontSize: 16,
@@ -112,6 +128,7 @@ const styles = StyleSheet.create({
   },
   formItem: {
     borderBottomWidth: 0,
+    marginLeft: 0,
     height: 60,
   },
   formLabel: {

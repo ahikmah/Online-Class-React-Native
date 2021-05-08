@@ -7,9 +7,11 @@ import {
   ScrollView,
   Dimensions,
   KeyboardAvoidingView,
+  StatusBar,
 } from 'react-native';
 import {Form, Item, Input, Label, Button, Icon} from 'native-base';
-function Register() {
+
+function Register({navigation}) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [componentWidth, setComponentWidth] = useState(
@@ -89,7 +91,11 @@ function Register() {
 
           <View style={{...styles.txtFooter, top: footerPos}}>
             <Text style={styles.txtNewUser}>Already have account?</Text>
-            <Text style={styles.txtRegister}>Login</Text>
+            <Text
+              style={styles.txtRegister}
+              onPress={() => navigation.navigate('Login')}>
+              Login
+            </Text>
           </View>
         </View>
       </KeyboardAvoidingView>
@@ -99,7 +105,8 @@ function Register() {
 
 const styles = StyleSheet.create({
   container: {
-    height: Dimensions.get('window').height,
+    paddingTop: StatusBar.currentHeight,
+    height: Dimensions.get('window').height + StatusBar.currentHeight,
     flex: 1,
     alignItems: 'center',
     textAlignVertical: 'center',
@@ -115,7 +122,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     flexDirection: 'column',
     justifyContent: 'center',
-    marginLeft: -16,
   },
   formInput: {
     fontSize: 16,
@@ -128,6 +134,7 @@ const styles = StyleSheet.create({
   formItem: {
     borderBottomWidth: 0,
     height: 60,
+    marginLeft: 0,
   },
   formLabel: {
     marginLeft: 16,
