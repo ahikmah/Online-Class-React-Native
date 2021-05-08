@@ -25,9 +25,6 @@ function Login({navigation}) {
   );
 
   useEffect(() => {
-    // StatusBar.setHidden(true);
-  }, []);
-  useEffect(() => {
     const updateLayout = () => {
       setComponentWidth(Dimensions.get('window').width - 64);
       setTitleMargin(Dimensions.get('window').height / 10);

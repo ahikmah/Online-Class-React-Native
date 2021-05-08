@@ -99,10 +99,10 @@ const styles = StyleSheet.create({
     top: 0,
     width: '70%',
     height: 6.6,
-    borderBottomWidth: 6,
+    borderBottomWidth: 6.6,
     borderBottomColor: '#5784BA',
-    borderBottomStartRadius: 60,
-    borderBottomEndRadius: 60,
+    borderBottomStartRadius: 30,
+    borderBottomEndRadius: 30,
   },
 });
 export default App;
