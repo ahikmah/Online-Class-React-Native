@@ -77,7 +77,9 @@ function Login({navigation}) {
             </Text>
           </View>
           <View style={styles.btnGroup}>
-            <Button style={{...styles.buttonLogin, width: componentWidth}}>
+            <Button
+              style={{...styles.buttonLogin, width: componentWidth}}
+              onPress={() => navigation.navigate('Home')}>
               <Text style={styles.buttonLabel}> Login </Text>
             </Button>
             <Button style={{...styles.buttonGoogle, width: componentWidth}}>
