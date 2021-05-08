@@ -10,8 +10,12 @@ import {
   ScrollView,
 } from 'react-native';
 import {ListItem, Icon, Left, Body, Right} from 'native-base';
+import {DOMAIN_API, PORT_API} from '@env';
 
-function Profile() {
+import {logoutUser} from '../redux/Action/auth';
+import {connect} from 'react-redux';
+
+function Profile(props) {
   const [lastSectionPadding, setLastSectionPadding] = useState(
     Dimensions.get('window').height,
   );
@@ -30,9 +34,19 @@ function Profile() {
     };
   });
 
+  const logoutHandler = () => {
+    console.log(props.token);
+    const token = props.token;
+    // props.logoutUser();
+    props.logoutUser(`${DOMAIN_API}:${PORT_API}/data/auth/logout`, token);
+  };
   return (
     <>
-      <StatusBar barStyle="light-content" />
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="light-content"
+      />
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Profile</Text>
@@ -139,7 +153,7 @@ function Profile() {
                 <Icon name="chevron-forward" />
               </Right>
             </ListItem>
-            <ListItem icon style={styles.listItem}>
+            <ListItem icon style={styles.listItem} onPress={logoutHandler}>
               <Left>
                 <Image source={require('../assets/images/set-logout.png')} />
               </Left>
@@ -226,4 +240,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Kanit-Regular',
   },
 });
-export default Profile;
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+  token: state.auth.result.token,
+});
+const mapDispatchToProps = dispatch => ({
+  logoutUser: (url, token) => {
+    dispatch(logoutUser(url, token));
+  },
+});
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

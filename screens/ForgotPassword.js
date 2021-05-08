@@ -32,7 +32,7 @@ function ForgotPassword({navigation}) {
             <Form>
               <Item floatingLabel style={styles.formItem}>
                 <Label style={styles.formLabel}>Email</Label>
-                <Input style={styles.formInput} />
+                <Input style={styles.formInput} keyboardType="email-address" />
               </Item>
             </Form>
             <Button
@@ -50,7 +50,7 @@ function ForgotPassword({navigation}) {
 const styles = StyleSheet.create({
   container: {
     paddingTop: StatusBar.currentHeight,
-    height: Dimensions.get('window').height + StatusBar.currentHeight,
+    height: Dimensions.get('window').height,
     flex: 1,
     paddingHorizontal: 32,
     backgroundColor: '#F9F9F9',

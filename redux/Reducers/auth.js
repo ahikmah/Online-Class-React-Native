@@ -9,11 +9,25 @@ const initialState = {
 };
 const auth = (state = initialState, {type, payload}) => {
   switch (type) {
-    case 'LOGOUT_USER':
+    case 'LOGOUT_USER_PENDING':
+      return {
+        ...state,
+        isPending: true,
+        isFulfilled: false,
+        isRejected: false,
+      };
+    case 'LOGOUT_USER_FULFILLED':
       return {
         ...state,
         isLogin: false,
         result: {},
+      };
+    case 'LOGOUT_USER_REJECTED':
+      return {
+        ...state,
+        isRejected: true,
+        isPending: false,
+        error: payload,
       };
     case 'LOGIN_PENDING':
       return {

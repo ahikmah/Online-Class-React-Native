@@ -18,8 +18,6 @@ import Activity from './screens/Activity';
 import Chat from './screens/Chat';
 import Profile from './screens/Profile';
 
-// import PrivateScreen from './components/PrivateScreen';
-
 import {connect} from 'react-redux';
 
 const Tab = createBottomTabNavigator();
@@ -104,7 +102,6 @@ function App(props) {
         ) : (
           <Stack.Screen name="Home" component={HomeTabs} />
         )}
-        {/* <PrivateScreen name="Home" component={HomeTabs} /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );

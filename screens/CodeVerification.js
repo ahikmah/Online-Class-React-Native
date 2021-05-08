@@ -113,7 +113,7 @@ function CodeVerification({navigation}) {
 const styles = StyleSheet.create({
   container: {
     paddingTop: StatusBar.currentHeight,
-    height: Dimensions.get('window').height + StatusBar.currentHeight,
+    height: Dimensions.get('window').height,
     flex: 1,
     paddingHorizontal: 32,
     backgroundColor: '#F9F9F9',

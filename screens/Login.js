@@ -10,8 +10,13 @@ import {
   StatusBar,
 } from 'react-native';
 import {Form, Item, Input, Label, Button, Icon} from 'native-base';
+import {login} from '../redux/Action/auth';
+import {connect} from 'react-redux';
+import {DOMAIN_API, PORT_API} from '@env';
 
-function Login({navigation}) {
+function Login({...props}) {
+  const [dataLogin, setDataLogin] = useState({username: '', password: ''});
+
   const [showPassword, setShowPassword] = useState(false);
   const [componentWidth, setComponentWidth] = useState(
     Dimensions.get('window').width - 64,
@@ -19,16 +24,12 @@ function Login({navigation}) {
   const [titleMargin, setTitleMargin] = useState(
     Dimensions.get('window').height / 10,
   );
-  const [footerPos, setFooterPos] = useState(
-    Dimensions.get('window').height / 6,
-    0,
-  );
+  // console.log({...props});
 
   useEffect(() => {
     const updateLayout = () => {
       setComponentWidth(Dimensions.get('window').width - 64);
       setTitleMargin(Dimensions.get('window').height / 10);
-      setFooterPos(Dimensions.get('window').height / 6);
     };
     Dimensions.addEventListener('change', updateLayout);
 
@@ -36,6 +37,15 @@ function Login({navigation}) {
       Dimensions.removeEventListener('change', updateLayout);
     };
   });
+
+  const loginHandler = e => {
+    e.preventDefault();
+    // console.log(dataLogin, DOMAIN_API, PORT_API);
+    // const data = {username: dataLogin.username, password: dataLogin.password};
+    props.login(`${DOMAIN_API}:${PORT_API}/data/auth/login`, dataLogin);
+  };
+  // console.log(props.auth.error);
+
   return (
     <ScrollView>
       <StatusBar
@@ -52,13 +62,27 @@ function Login({navigation}) {
             <Form>
               <Item floatingLabel style={styles.formItem}>
                 <Label style={styles.formLabel}>Username or Email</Label>
-                <Input style={styles.formInput} />
+                <Input
+                  style={styles.formInput}
+                  value={dataLogin.username}
+                  onChangeText={text =>
+                    setDataLogin({...dataLogin, username: text})
+                  }
+                  disableFullscreenUI={false}
+                  keyboardType="email-address"
+                />
               </Item>
               <Item floatingLabel style={styles.formItem}>
                 <Label style={styles.formLabel}>Password</Label>
                 <Input
                   secureTextEntry={!showPassword ? true : false}
+                  keyboardType={showPassword ? 'visible-password' : null}
                   style={styles.formInput}
+                  value={dataLogin.password}
+                  onChangeText={text =>
+                    setDataLogin({...dataLogin, password: text})
+                  }
+                  disableFullscreenUI={false}
                 />
                 <Icon
                   name={!showPassword ? 'eye' : 'eye-off'}
@@ -69,14 +93,14 @@ function Login({navigation}) {
             </Form>
             <Text
               style={styles.txtForgot}
-              onPress={() => navigation.navigate('ForgotPassword')}>
+              onPress={() => props.navigation.navigate('ForgotPassword')}>
               Forgot password?
             </Text>
           </View>
           <View style={styles.btnGroup}>
             <Button
               style={{...styles.buttonLogin, width: componentWidth}}
-              onPress={() => navigation.navigate('Home')}>
+              onPress={loginHandler}>
               <Text style={styles.buttonLabel}> Login </Text>
             </Button>
             <Button style={{...styles.buttonGoogle, width: componentWidth}}>
@@ -86,11 +110,11 @@ function Login({navigation}) {
           </View>
         </KeyboardAvoidingView>
 
-        <View style={{...styles.txtFooter, top: footerPos}}>
+        <View style={styles.txtFooter}>
           <Text style={styles.txtNewUser}>New user?</Text>
           <Text
             style={styles.txtRegister}
-            onPress={() => navigation.navigate('Register')}>
+            onPress={() => props.navigation.navigate('Register')}>
             Register
           </Text>
         </View>
@@ -102,7 +126,7 @@ function Login({navigation}) {
 const styles = StyleSheet.create({
   container: {
     paddingTop: StatusBar.currentHeight,
-    height: Dimensions.get('window').height + StatusBar.currentHeight,
+    height: Dimensions.get('window').height,
     flex: 1,
     alignItems: 'center',
     textAlignVertical: 'center',
@@ -184,8 +208,8 @@ const styles = StyleSheet.create({
   },
   txtFooter: {
     flexDirection: 'row',
-    position: 'relative',
-    // bottom: Dimensions.get('window').height - 32,
+    position: 'absolute',
+    bottom: 36,
   },
   txtNewUser: {color: '#ADA9BB', fontFamily: 'Kanit-Medium', fontSize: 15},
   txtRegister: {
@@ -196,4 +220,12 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
+const mapDispatchToProps = dispatch => ({
+  login: (url, data) => {
+    dispatch(login(url, data));
+  },
+});
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

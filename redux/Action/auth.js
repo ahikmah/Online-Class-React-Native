@@ -1,8 +1,11 @@
 import axios from 'axios';
 
-export const logoutUser = data => {
+export const logoutUser = (url, token) => {
   return {
     type: 'LOGOUT_USER',
+    payload: axios.delete(url, {
+      headers: {'x-access-token': `Bearer ${token}`},
+    }),
   };
 };
 

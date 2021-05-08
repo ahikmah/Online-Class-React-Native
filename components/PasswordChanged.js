@@ -1,15 +1,12 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   Dimensions,
-  KeyboardAvoidingView,
   StatusBar,
   Image,
 } from 'react-native';
-import {Form, Item, Input, Label, Button, Icon} from 'native-base';
 
 function PasswordChanged(props, {navigation}) {
   return (
@@ -31,7 +28,7 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     paddingTop: StatusBar.currentHeight + 64,
-    height: Dimensions.get('window').height + StatusBar.currentHeight,
+    height: Dimensions.get('window').height,
     width: Dimensions.get('window').width,
     backgroundColor: '#F9F9F9',
     alignItems: 'center',

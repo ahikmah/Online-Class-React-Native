@@ -10,25 +10,29 @@ import {
   StatusBar,
 } from 'react-native';
 import {Form, Item, Input, Label, Button, Icon} from 'native-base';
-
-function Register({navigation}) {
+import {register} from '../redux/Action/auth';
+import {connect} from 'react-redux';
+import {DOMAIN_API, PORT_API} from '@env';
+function Register({...props}) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [dataRegister, setDataRegister] = useState({
+    username: '',
+    email: '',
+    password: '',
+    repassword: '',
+  });
   const [componentWidth, setComponentWidth] = useState(
     Dimensions.get('window').width - 64,
   );
   const [titleMargin, setTitleMargin] = useState(
     Dimensions.get('window').height / 20,
   );
-  const [footerPos, setFooterPos] = useState(
-    Dimensions.get('window').height / 10,
-    0,
-  );
+
   useEffect(() => {
     const updateLayout = () => {
       setComponentWidth(Dimensions.get('window').width - 64);
       setTitleMargin(Dimensions.get('window').height / 20);
-      setFooterPos(Dimensions.get('window').height / 10);
     };
     Dimensions.addEventListener('change', updateLayout);
 
@@ -36,6 +40,22 @@ function Register({navigation}) {
       Dimensions.removeEventListener('change', updateLayout);
     };
   });
+
+  const registerHandler = e => {
+    e.preventDefault();
+    const data = {
+      username: dataRegister.username,
+      email: dataRegister.email,
+      password: dataRegister.password,
+    };
+    console.log(data);
+    props.register(`${DOMAIN_API}:${PORT_API}/data/auth`, data);
+    if (props.auth.isPending) {
+      console.log('Loading...');
+    } else if (props.auth.isFulfilled) {
+      props.navigation.navigate('Login');
+    }
+  };
   return (
     <ScrollView>
       <KeyboardAvoidingView>
@@ -47,17 +67,38 @@ function Register({navigation}) {
             <Form>
               <Item floatingLabel style={styles.formItem}>
                 <Label style={styles.formLabel}>Username</Label>
-                <Input style={styles.formInput} />
+                <Input
+                  style={styles.formInput}
+                  value={dataRegister.username}
+                  onChangeText={text => {
+                    setDataRegister({...dataRegister, username: text});
+                  }}
+                  disableFullscreenUI={false}
+                />
               </Item>
               <Item floatingLabel style={styles.formItem}>
                 <Label style={styles.formLabel}>Email</Label>
-                <Input style={styles.formInput} />
+                <Input
+                  style={styles.formInput}
+                  keyboardType="email-address"
+                  value={dataRegister.email}
+                  onChangeText={text => {
+                    setDataRegister({...dataRegister, email: text});
+                  }}
+                  disableFullscreenUI={false}
+                />
               </Item>
               <Item floatingLabel style={styles.formItem}>
                 <Label style={styles.formLabel}>Password</Label>
                 <Input
                   secureTextEntry={!showPassword ? true : false}
                   style={styles.formInput}
+                  keyboardType={showPassword ? 'visible-password' : null}
+                  value={dataRegister.password}
+                  onChangeText={text => {
+                    setDataRegister({...dataRegister, password: text});
+                  }}
+                  disableFullscreenUI={false}
                 />
                 <Icon
                   name={!showPassword ? 'eye' : 'eye-off'}
@@ -70,6 +111,12 @@ function Register({navigation}) {
                 <Input
                   secureTextEntry={!showConfirmPassword ? true : false}
                   style={styles.formInput}
+                  keyboardType={showConfirmPassword ? 'visible-password' : null}
+                  value={dataRegister.repassword}
+                  onChangeText={text => {
+                    setDataRegister({...dataRegister, repassword: text});
+                  }}
+                  disableFullscreenUI={false}
                 />
                 <Icon
                   name={!showConfirmPassword ? 'eye' : 'eye-off'}
@@ -80,7 +127,9 @@ function Register({navigation}) {
             </Form>
           </View>
           <View style={styles.btnGroup}>
-            <Button style={{...styles.buttonLogin, width: componentWidth}}>
+            <Button
+              style={{...styles.buttonLogin, width: componentWidth}}
+              onPress={registerHandler}>
               <Text style={styles.buttonLabel}>Register</Text>
             </Button>
             <Button style={{...styles.buttonGoogle, width: componentWidth}}>
@@ -89,11 +138,11 @@ function Register({navigation}) {
             </Button>
           </View>
 
-          <View style={{...styles.txtFooter, top: footerPos}}>
+          <View style={styles.txtFooter}>
             <Text style={styles.txtNewUser}>Already have account?</Text>
             <Text
               style={styles.txtRegister}
-              onPress={() => navigation.navigate('Login')}>
+              onPress={() => props.navigation.navigate('Login')}>
               Login
             </Text>
           </View>
@@ -106,7 +155,7 @@ function Register({navigation}) {
 const styles = StyleSheet.create({
   container: {
     paddingTop: StatusBar.currentHeight,
-    height: Dimensions.get('window').height + StatusBar.currentHeight,
+    height: Dimensions.get('window').height,
     flex: 1,
     alignItems: 'center',
     textAlignVertical: 'center',
@@ -156,7 +205,7 @@ const styles = StyleSheet.create({
 
   buttonLogin: {
     justifyContent: 'center',
-    marginTop: 102,
+    marginTop: 60,
     alignItems: 'center',
     borderRadius: 10,
     backgroundColor: '#5784BA',
@@ -185,8 +234,8 @@ const styles = StyleSheet.create({
   },
   txtFooter: {
     flexDirection: 'row',
-    position: 'relative',
-    // bottom: Dimensions.get('window').height - 32,
+    position: 'absolute',
+    bottom: 36,
   },
   txtNewUser: {color: '#ADA9BB', fontFamily: 'Kanit-Medium', fontSize: 15},
   txtRegister: {
@@ -196,4 +245,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
 });
-export default Register;
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
+const mapDispatchToProps = dispatch => ({
+  register: (url, data) => {
+    dispatch(register(url, data));
+  },
+});
+export default connect(mapStateToProps, mapDispatchToProps)(Register);

@@ -31,6 +31,7 @@ function CreateNewPassword({navigation}) {
                 <Input
                   secureTextEntry={!showPassword ? true : false}
                   style={styles.formInput}
+                  keyboardType={showPassword ? 'visible-password' : null}
                 />
                 <Icon
                   name={!showPassword ? 'eye' : 'eye-off'}
@@ -43,6 +44,7 @@ function CreateNewPassword({navigation}) {
                 <Input
                   secureTextEntry={!showConfirmPassword ? true : false}
                   style={styles.formInput}
+                  keyboardType={showConfirmPassword ? 'visible-password' : null}
                 />
                 <Icon
                   name={!showConfirmPassword ? 'eye' : 'eye-off'}
@@ -69,7 +71,7 @@ function CreateNewPassword({navigation}) {
 const styles = StyleSheet.create({
   container: {
     paddingTop: StatusBar.currentHeight,
-    height: Dimensions.get('window').height + StatusBar.currentHeight,
+    height: Dimensions.get('window').height,
     flex: 1,
     paddingHorizontal: 32,
     backgroundColor: '#F9F9F9',
