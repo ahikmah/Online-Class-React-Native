@@ -18,6 +18,10 @@ import Activity from './screens/Activity';
 import Chat from './screens/Chat';
 import Profile from './screens/Profile';
 
+// import PrivateScreen from './components/PrivateScreen';
+
+import {connect} from 'react-redux';
+
 const Tab = createBottomTabNavigator();
 function HomeTabs() {
   return (
@@ -68,7 +72,8 @@ function HomeTabs() {
   );
 }
 
-function App() {
+function App(props) {
+  console.log(props.isLogin);
   useEffect(() => {
     SplashScreen.hide();
   }, []);
@@ -82,12 +87,24 @@ function App() {
         screenOptions={{
           headerShown: false,
         }}>
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
-        <Stack.Screen name="CodeVerification" component={CodeVerification} />
-        <Stack.Screen name="CreateNewPassword" component={CreateNewPassword} />
-        <Stack.Screen name="Home" component={HomeTabs} />
+        {!props.isLogin ? (
+          <>
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Register" component={Register} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+            <Stack.Screen
+              name="CodeVerification"
+              component={CodeVerification}
+            />
+            <Stack.Screen
+              name="CreateNewPassword"
+              component={CreateNewPassword}
+            />
+          </>
+        ) : (
+          <Stack.Screen name="Home" component={HomeTabs} />
+        )}
+        {/* <PrivateScreen name="Home" component={HomeTabs} /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -105,4 +122,7 @@ const styles = StyleSheet.create({
     borderBottomEndRadius: 30,
   },
 });
-export default App;
+const mapStateToProps = state => {
+  return {isLogin: state.auth.isLogin};
+};
+export default connect(mapStateToProps)(App);
