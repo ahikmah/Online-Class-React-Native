@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
 import {Icon, Input, Item} from 'native-base';
+import SelectPersonChat from '../components/SelectPersonChat';
 
 function ChatNew({...props}) {
   const isGroup = props.route.params.isGroup;
@@ -46,10 +47,7 @@ function ChatNew({...props}) {
             </Item>
           </View>
         </View>
-        <Text>
-          {' '}
-          tesParam: {props.route.params.isGroup ? 'Group' : 'Personal'}
-        </Text>
+        <SelectPersonChat />
       </View>
     </>
   );
@@ -58,6 +56,7 @@ function ChatNew({...props}) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#E6EDF6',
+    flex: 1,
   },
   header: {
     paddingTop: StatusBar.currentHeight + 12 + (40 - StatusBar.currentHeight),

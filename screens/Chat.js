@@ -1,7 +1,14 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  StatusBar,
+  Dimensions,
+  ScrollView,
+} from 'react-native';
 import {Icon, Input, Item} from 'native-base';
-
+import ChatItems from '../components/ChatItems';
 function Chat({...props}) {
   const [chatAction, setChatAction] = useState(false);
   return (
@@ -59,7 +66,7 @@ function Chat({...props}) {
           )}
         </View>
         {chatAction && <View style={styles.overlay} />}
-        <Text>halo chatttt</Text>
+        <ChatItems />
       </View>
     </>
   );
@@ -68,6 +75,7 @@ function Chat({...props}) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#E6EDF6',
+    flex: 1,
   },
   header: {
     paddingTop: StatusBar.currentHeight + 12 + (40 - StatusBar.currentHeight),
