@@ -26,13 +26,12 @@ function Home(props) {
       ref.current = true;
     } else {
       if (props.auth.isUserObtained) {
+        setDataUser(props.auth.currentUser);
         SplashScreen.hide();
         console.log(props.auth.currentUser);
-        setDataUser(props.auth.currentUser);
       }
     }
   }, [props]);
-  dataUser && console.log(dataUser.role);
 
   return (
     <>
@@ -52,7 +51,7 @@ function Home(props) {
             <View style={styles.notifFlag} />
           </View>
           <Text style={styles.name}>
-            {dataUser ? dataUser.full_name.split(' ')[0] : null}
+            {dataUser.full_name ? dataUser.full_name.split(' ')[0] : null}
           </Text>
           <View style={styles.searchSection}>
             <Item style={styles.searchInputContainer}>
