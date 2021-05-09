@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
 import {Icon, Input, Item} from 'native-base';
 
-function Chat() {
+function Chat({...props}) {
   const [chatAction, setChatAction] = useState(false);
   return (
     <>
@@ -36,10 +36,24 @@ function Chat() {
           ) : (
             <View style={styles.createSection}>
               <View style={styles.createChat}>
-                <Icon name="chatbox-ellipses" />
+                <Icon
+                  name="chatbox-ellipses"
+                  onPress={() =>
+                    props.navigation.navigate('CreateNewChat', {
+                      isGroup: false,
+                    })
+                  }
+                />
               </View>
               <View style={styles.createChat}>
-                <Icon name="people" />
+                <Icon
+                  name="people"
+                  onPress={() =>
+                    props.navigation.navigate('CreateNewChat', {
+                      isGroup: true,
+                    })
+                  }
+                />
               </View>
             </View>
           )}

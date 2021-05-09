@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
 import {Icon, Input, Item} from 'native-base';
 
-function ChatGroupDetail() {
+function ChatGroupDetail({...props}) {
   return (
     <>
       <StatusBar
@@ -17,8 +17,13 @@ function ChatGroupDetail() {
               <Icon
                 name="chevron-back"
                 style={{color: 'white', fontSize: 32}}
+                onPress={() => props.navigation.goBack()}
               />
-              <Text style={styles.title}>Group details</Text>
+              <Text
+                style={styles.title}
+                onPress={() => props.navigation.goBack()}>
+                Group details
+              </Text>
             </View>
             <Text style={styles.action}>Create</Text>
           </View>

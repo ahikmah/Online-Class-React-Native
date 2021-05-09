@@ -1,13 +1,9 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
 import {Icon, Input, Item} from 'native-base';
 
-function ChatNew(props) {
-  //   const [isGroup, setIsGroup] = useState(false);
-  //   dummy test
-
-  const isGroup = props.isGroup;
-
+function ChatNew({...props}) {
+  const isGroup = props.route.params.isGroup;
   return (
     <>
       <StatusBar
@@ -22,10 +18,23 @@ function ChatNew(props) {
               <Icon
                 name="chevron-back"
                 style={{color: 'white', fontSize: 32}}
+                onPress={() => props.navigation.navigate('Chat')}
               />
-              <Text style={styles.title}>Choose friends</Text>
+              <Text
+                style={styles.title}
+                onPress={() => props.navigation.navigate('Chat')}>
+                Choose friends
+              </Text>
             </View>
-            <Text style={styles.action}>{isGroup ? 'Next' : 'Create'}</Text>
+            <Text
+              style={styles.action}
+              onPress={
+                isGroup
+                  ? () => props.navigation.navigate('ChatGroupDetail')
+                  : null
+              }>
+              {isGroup ? 'Next' : 'Create'}
+            </Text>
           </View>
           <View style={styles.searchSection}>
             <Item style={styles.searchInputContainer}>
@@ -37,7 +46,10 @@ function ChatNew(props) {
             </Item>
           </View>
         </View>
-        <Text>halo chatttt</Text>
+        <Text>
+          {' '}
+          tesParam: {props.route.params.isGroup ? 'Group' : 'Personal'}
+        </Text>
       </View>
     </>
   );

@@ -28,7 +28,7 @@ function NewsItems() {
     <View style={styles.container}>
       <Carousel
         pagination={PaginationLight}
-        renderItem={renderItem}
+        renderItem={renderItem ? renderItem : () => {}}
         data={articles && articles.slice(0, size)}
         autoplay={true}
       />

@@ -16,11 +16,15 @@ import CreateNewPassword from './screens/CreateNewPassword';
 import Home from './screens/Home';
 import Activity from './screens/Activity';
 import Chat from './screens/Chat';
+import CreateNewChat from './screens/ChatNew';
+import ChatGroupDetail from './screens/ChatGroupDetail';
 import Profile from './screens/Profile';
 
 import {connect} from 'react-redux';
 
+const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
 function HomeTabs() {
   return (
     <Tab.Navigator
@@ -70,13 +74,23 @@ function HomeTabs() {
   );
 }
 
+// function ChatStack() {
+//   return (
+//     <Stack.Navigator
+//       screenOptions={{
+//         headerShown: false,
+//       }}>
+//       <Stack.Screen name="DashboardChat" component={Chat} />
+//       <Stack.Screen name="CreateNewChat" component={CreateNewChat} />
+//     </Stack.Navigator>
+//   );
+// }
+
 function App(props) {
   // console.log(props.isLogin);
   useEffect(() => {
     SplashScreen.hide();
   }, []);
-
-  const Stack = createStackNavigator();
 
   return (
     <NavigationContainer>
@@ -100,7 +114,11 @@ function App(props) {
             />
           </>
         ) : (
-          <Stack.Screen name="Home" component={HomeTabs} />
+          <>
+            <Stack.Screen name="Home" component={HomeTabs} />
+            <Stack.Screen name="CreateNewChat" component={CreateNewChat} />
+            <Stack.Screen name="ChatGroupDetail" component={ChatGroupDetail} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>
