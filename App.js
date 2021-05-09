@@ -71,7 +71,7 @@ function HomeTabs() {
 }
 
 function App(props) {
-  console.log(props.isLogin);
+  // console.log(props.isLogin);
   useEffect(() => {
     SplashScreen.hide();
   }, []);
@@ -85,7 +85,7 @@ function App(props) {
         screenOptions={{
           headerShown: false,
         }}>
-        {!props.isLogin ? (
+        {!props.token ? (
           <>
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Register" component={Register} />
@@ -120,6 +120,6 @@ const styles = StyleSheet.create({
   },
 });
 const mapStateToProps = state => {
-  return {isLogin: state.auth.isLogin};
+  return {isLogin: state.auth.isLogin, token: state.auth.result.token};
 };
 export default connect(mapStateToProps)(App);

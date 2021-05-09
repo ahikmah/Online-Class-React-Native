@@ -16,6 +16,9 @@ import {logoutUser} from '../redux/Action/auth';
 import {connect} from 'react-redux';
 
 function Profile(props) {
+  const [avatar, setAvatar] = useState(props.auth.currentUser.avatar);
+  const [name, setName] = useState(props.auth.currentUser.full_name);
+
   const [lastSectionPadding, setLastSectionPadding] = useState(
     Dimensions.get('window').height,
   );
@@ -52,11 +55,11 @@ function Profile(props) {
           <Text style={styles.title}>Profile</Text>
           <View style={styles.profileSummary}>
             <Image
-              source={require('../assets/images/avatar-sample.png')}
+              source={{uri: `${DOMAIN_API}:${PORT_API}${avatar}`}}
               style={styles.avatar}
             />
             <View style={styles.info}>
-              <Text style={styles.name}>Emir Kharisma</Text>
+              <Text style={styles.name}>{name}</Text>
               <Text style={styles.status}>online</Text>
             </View>
           </View>

@@ -10,6 +10,7 @@ import {
   StatusBar,
 } from 'react-native';
 import {Form, Item, Input, Label, Button, Icon} from 'native-base';
+import SplashScreen from 'react-native-splash-screen';
 import {login} from '../redux/Action/auth';
 import {connect} from 'react-redux';
 import {DOMAIN_API, PORT_API} from '@env';
@@ -43,8 +44,8 @@ function Login({...props}) {
     // console.log(dataLogin, DOMAIN_API, PORT_API);
     // const data = {username: dataLogin.username, password: dataLogin.password};
     props.login(`${DOMAIN_API}:${PORT_API}/data/auth/login`, dataLogin);
+    SplashScreen.show();
   };
-  // console.log(props.auth.error);
 
   return (
     <ScrollView>

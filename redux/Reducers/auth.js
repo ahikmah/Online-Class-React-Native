@@ -4,6 +4,7 @@ const initialState = {
   isFulfilled: false,
   isRejected: false,
   isLogin: false,
+  isUserObtained: false,
   error: {},
   currentUser: {},
 };
@@ -21,6 +22,7 @@ const auth = (state = initialState, {type, payload}) => {
         ...state,
         isLogin: false,
         result: {},
+        currentUser: {},
       };
     case 'LOGOUT_USER_REJECTED':
       return {
@@ -95,6 +97,7 @@ const auth = (state = initialState, {type, payload}) => {
         ...state,
         isFulfilled: true,
         isPending: false,
+        isUserObtained: true,
         currentUser: payload.data.result[0],
       };
     case 'GET_DATA_USER_REJECTED':
