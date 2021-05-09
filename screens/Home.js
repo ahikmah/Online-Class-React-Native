@@ -60,7 +60,7 @@ function Home(props) {
                 style={{color: 'rgba(1, 6, 32, 0.5)'}}
               />
               <Input
-                placeholder="Looking for something"
+                placeholder="Looking for something?"
                 style={styles.searchInput}
               />
             </Item>
@@ -75,10 +75,10 @@ function Home(props) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#E5E5E5',
+    backgroundColor: '#E6EDF6',
   },
   header: {
-    paddingTop: StatusBar.currentHeight + 12,
+    paddingTop: StatusBar.currentHeight + 12 + (40 - StatusBar.currentHeight),
     backgroundColor: '#5784BA',
     paddingHorizontal: 26,
     borderBottomStartRadius: 20,
@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E6EB',
     paddingHorizontal: 10,
     borderRadius: 15,
+    height: 45,
   },
   searchInput: {
     fontFamily: 'Roboto-Medium',

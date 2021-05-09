@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E5E5',
   },
   header: {
-    paddingTop: StatusBar.currentHeight + 12,
+    paddingTop: StatusBar.currentHeight + 12 + (40 - StatusBar.currentHeight),
     backgroundColor: '#5784BA',
     paddingHorizontal: 26,
     borderBottomStartRadius: 20,

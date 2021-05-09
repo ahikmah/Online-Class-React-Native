@@ -2,8 +2,12 @@ import React, {useState} from 'react';
 import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
 import {Icon, Input, Item} from 'native-base';
 
-function Chat() {
-  const [chatAction, setChatAction] = useState(false);
+function ChatNew(props) {
+  //   const [isGroup, setIsGroup] = useState(false);
+  //   dummy test
+
+  const isGroup = props.isGroup;
+
   return (
     <>
       <StatusBar
@@ -14,37 +18,25 @@ function Chat() {
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.topSection}>
-            <Text style={styles.title}>{chatAction ? 'Create' : 'Chat'}</Text>
-            <Icon
-              name={chatAction ? 'close-circle' : 'add-circle-sharp'}
-              style={{color: 'white', fontSize: 32}}
-              onPress={() => {
-                setChatAction(!chatAction);
-              }}
-            />
+            <View style={styles.leftSection}>
+              <Icon
+                name="chevron-back"
+                style={{color: 'white', fontSize: 32}}
+              />
+              <Text style={styles.title}>Choose friends</Text>
+            </View>
+            <Text style={styles.action}>{isGroup ? 'Next' : 'Create'}</Text>
           </View>
-          {!chatAction ? (
-            <View style={styles.searchSection}>
-              <Item style={styles.searchInputContainer}>
-                <Icon
-                  name="search-outline"
-                  style={{color: 'rgba(1, 6, 32, 0.5)'}}
-                />
-                <Input placeholder="Search" style={styles.searchInput} />
-              </Item>
-            </View>
-          ) : (
-            <View style={styles.createSection}>
-              <View style={styles.createChat}>
-                <Icon name="chatbox-ellipses" />
-              </View>
-              <View style={styles.createChat}>
-                <Icon name="people" />
-              </View>
-            </View>
-          )}
+          <View style={styles.searchSection}>
+            <Item style={styles.searchInputContainer}>
+              <Icon
+                name="search-outline"
+                style={{color: 'rgba(1, 6, 32, 0.5)'}}
+              />
+              <Input placeholder="Search by name" style={styles.searchInput} />
+            </Item>
+          </View>
         </View>
-        {chatAction && <View style={styles.overlay} />}
         <Text>halo chatttt</Text>
       </View>
     </>
@@ -69,9 +61,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  leftSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   title: {
     fontFamily: 'Kanit-Medium',
-    fontSize: 32,
+    fontSize: 20,
+    color: 'white',
+  },
+  action: {
+    fontFamily: 'Kanit-Medium',
+    fontSize: 16,
     color: 'white',
   },
   searchSection: {
@@ -111,5 +112,4 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
 });
-
-export default Chat;
+export default ChatNew;

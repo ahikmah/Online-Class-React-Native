@@ -1,9 +1,8 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
 import {Icon, Input, Item} from 'native-base';
 
-function Activity() {
-  const [subMenu, setSubMenu] = useState('');
+function ChatGroupDetail() {
   return (
     <>
       <StatusBar
@@ -14,20 +13,21 @@ function Activity() {
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.topSection}>
-            {subMenu ? (
+            <View style={styles.leftSection}>
               <Icon
                 name="chevron-back"
                 style={{color: 'white', fontSize: 32}}
               />
-            ) : null}
-            <Text style={styles.title}>{subMenu ? subMenu : 'Activity'}</Text>
+              <Text style={styles.title}>Group details</Text>
+            </View>
+            <Text style={styles.action}>Create</Text>
           </View>
         </View>
+        <Text>halo chatttt</Text>
       </View>
     </>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#E6EDF6',
@@ -39,17 +39,26 @@ const styles = StyleSheet.create({
     borderBottomStartRadius: 20,
     borderBottomEndRadius: 20,
     paddingBottom: 24,
+    zIndex: 2,
   },
   topSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  leftSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   title: {
     fontFamily: 'Kanit-Medium',
-    fontSize: 32,
+    fontSize: 20,
+    color: 'white',
+  },
+  action: {
+    fontFamily: 'Kanit-Medium',
+    fontSize: 16,
     color: 'white',
   },
 });
-
-export default Activity;
+export default ChatGroupDetail;
