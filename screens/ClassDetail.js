@@ -1,13 +1,9 @@
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
 import {Icon, Input, Item} from 'native-base';
-import StudentActivity from '../components/Activity/Student';
-import FacilitatorActivity from '../components/Activity/Facilitator';
 import {connect} from 'react-redux';
 import {DOMAIN_API, PORT_API} from '@env';
-
-function Activity({...props}) {
-  const role = props.role;
+function ClassDetail({...props}) {
   return (
     <>
       <StatusBar
@@ -18,15 +14,18 @@ function Activity({...props}) {
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.topSection}>
-            <Text style={styles.title}>Activity</Text>
+            <Icon
+              name="chevron-back"
+              style={{color: 'white', fontSize: 32}}
+              onPress={() => props.navigation.goBack()}
+            />
+            <Text
+              style={styles.title}
+              onPress={() => props.navigation.goBack()}>
+              Class Detail
+            </Text>
           </View>
         </View>
-
-        {role === 'student' ? (
-          <StudentActivity navigation={props.navigation} />
-        ) : (
-          <FacilitatorActivity navigation={props.navigation} />
-        )}
       </View>
     </>
   );
@@ -60,4 +59,4 @@ const mapStateToProps = state => ({
   token: state.auth.result.token,
   role: state.auth.currentUser.role,
 });
-export default connect(mapStateToProps)(Activity);
+export default ClassDetail;
