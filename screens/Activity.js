@@ -21,7 +21,6 @@ function Activity({...props}) {
             <Text style={styles.title}>Activity</Text>
           </View>
         </View>
-
         {role === 'student' ? (
           <StudentActivity navigation={props.navigation} />
         ) : (
