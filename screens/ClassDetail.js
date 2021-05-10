@@ -1,9 +1,20 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  StatusBar,
+  Dimensions,
+  ScrollView,
+} from 'react-native';
 import {Icon, Input, Item} from 'native-base';
 import {connect} from 'react-redux';
-import {DOMAIN_API, PORT_API} from '@env';
+import StudentClassDetail from '../components/ClassDetail/Student';
+import FacilitatorClassDetail from '../components/ClassDetail/Facilitator';
 function ClassDetail({...props}) {
+  const role = props.role;
+  const {...course} = props.route.params;
+  console.log(course);
   return (
     <>
       <StatusBar
@@ -22,10 +33,23 @@ function ClassDetail({...props}) {
             <Text
               style={styles.title}
               onPress={() => props.navigation.goBack()}>
-              Class Detail
+              {course.course_name || course.name}
             </Text>
           </View>
         </View>
+        <ScrollView>
+          {role === 'student' ? (
+            <StudentClassDetail
+              navigation={props.navigation}
+              data={props.route.params}
+            />
+          ) : (
+            <FacilitatorClassDetail
+              navigation={props.navigation}
+              data={props.route.params}
+            />
+          )}
+        </ScrollView>
       </View>
     </>
   );
@@ -34,7 +58,7 @@ function ClassDetail({...props}) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#E6EDF6',
-    flex: 1,
+    // flex: 1,
   },
   header: {
     paddingTop: StatusBar.currentHeight + 12 + (40 - StatusBar.currentHeight),
@@ -42,7 +66,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 26,
     borderBottomStartRadius: 20,
     borderBottomEndRadius: 20,
-    paddingBottom: 24,
+    paddingBottom: 25,
   },
   topSection: {
     flexDirection: 'row',
@@ -51,7 +75,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: 'Kanit-Medium',
-    fontSize: 32,
+    fontSize: 22,
     color: 'white',
   },
 });
@@ -59,4 +83,4 @@ const mapStateToProps = state => ({
   token: state.auth.result.token,
   role: state.auth.currentUser.role,
 });
-export default ClassDetail;
+export default connect(mapStateToProps)(ClassDetail);

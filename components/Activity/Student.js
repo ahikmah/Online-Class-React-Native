@@ -87,8 +87,8 @@ function Student({...props}) {
       }
     }
   };
-  console.log(currPage, 'nooew');
-  console.log(totalPage, 'total');
+  // console.log(currPage, 'nooew');
+  // console.log(totalPage, 'total');
 
   return (
     <ScrollView>
@@ -110,7 +110,15 @@ function Student({...props}) {
               renderItem={({item}) => {
                 return (
                   <View style={styles.myClassItem}>
-                    <Text style={styles.tbClassName}>{item.course_name}</Text>
+                    <Text
+                      style={styles.tbClassName}
+                      onPress={() =>
+                        props.navigation.navigate('ClassDetail', {
+                          ...item,
+                        })
+                      }>
+                      {item.course_name}
+                    </Text>
                     <View style={styles.tbProgress}>
                       <ProgressCircle
                         percent={item.progress_in_percent}
@@ -285,7 +293,13 @@ function Student({...props}) {
                 renderItem={({item}) => {
                   return (
                     <View style={styles.newClassItem}>
-                      <Text style={styles.tbClassName}>
+                      <Text
+                        style={styles.tbClassName}
+                        onPress={() =>
+                          props.navigation.navigate('ClassDetail', {
+                            ...item,
+                          })
+                        }>
                         {item.name && item.name.length > 18
                           ? item.name.slice(0, 18) + '...'
                           : item.name}
@@ -316,15 +330,6 @@ function Student({...props}) {
               />
             ) : null}
           </View>
-          {/* {currPage < totalPage ? (
-            <View style={styles.loadMore}>
-              <Button style={styles.btnLoadMore}>
-                <Text style={{color: 'white', fontFamily: 'Roboto-Medium'}}>
-                  Load More
-                </Text>
-              </Button>
-            </View>
-          ) : null} */}
         </View>
       </View>
     </ScrollView>

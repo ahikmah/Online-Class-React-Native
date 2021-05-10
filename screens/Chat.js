@@ -1,12 +1,5 @@
 import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  StatusBar,
-  Dimensions,
-  ScrollView,
-} from 'react-native';
+import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
 import {Icon, Input, Item} from 'native-base';
 import ChatItems from '../components/ChatItems';
 function Chat({...props}) {

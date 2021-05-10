@@ -1,9 +1,19 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  StatusBar,
+  Dimensions,
+  ScrollView,
+} from 'react-native';
 import {Icon, Input, Item} from 'native-base';
+import StudentMyClass from '../components/MyClass/Student';
+import FacilitatorMyClass from '../components/MyClass/Facilitator';
 import {connect} from 'react-redux';
-import {DOMAIN_API, PORT_API} from '@env';
+
 function MyClass({...props}) {
+  const role = props.role;
   return (
     <>
       <StatusBar
@@ -26,6 +36,13 @@ function MyClass({...props}) {
             </Text>
           </View>
         </View>
+        <ScrollView>
+          {role === 'student' ? (
+            <StudentMyClass navigation={props.navigation} />
+          ) : (
+            <FacilitatorMyClass navigation={props.navigation} />
+          )}
+        </ScrollView>
       </View>
     </>
   );
@@ -59,4 +76,4 @@ const mapStateToProps = state => ({
   token: state.auth.result.token,
   role: state.auth.currentUser.role,
 });
-export default MyClass;
+export default connect(mapStateToProps)(MyClass);
