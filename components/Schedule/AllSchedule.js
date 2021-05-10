@@ -147,7 +147,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   left: {
-    // height: '100%',
     width: Dimensions.get('window').width / 4,
     padding: 11,
     marginBottom: 5,

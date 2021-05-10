@@ -71,7 +71,7 @@ function ForYou(props) {
 
 const styles = StyleSheet.create({
   scheduleItem: {
-    marginLeft: 5,
+    // marginLeft: 5,
     width: '100%',
     paddingVertical: 11,
     paddingHorizontal: 23,

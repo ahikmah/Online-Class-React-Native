@@ -1,14 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState, useRef} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  StatusBar,
-  Dimensions,
-  Image,
-  ScrollView,
-} from 'react-native';
+import {View, Text, StyleSheet, StatusBar, ScrollView} from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import NewsItems from '../components/NewsItems';
 import {getDataUser} from '../redux/Action/auth';
@@ -17,11 +9,11 @@ import {DOMAIN_API, PORT_API} from '@env';
 import {Icon, Input, Item} from 'native-base';
 import StudentContainer from '../components/Schedule/Student';
 import FacilitatorContainer from '../components/Schedule/Facilitator';
-
 function Home(props) {
   // console.log(props.auth.isLogin);
   // fake role test
-  const role = 'student';
+  const role = props.role;
+  console.log(role);
   const [dataUser, setDataUser] = useState('');
   const ref = useRef();
 
@@ -72,7 +64,6 @@ function Home(props) {
             </Item>
           </View>
         </View>
-        {/* <Text>{dataUser ? dataUser.role : null}</Text> */}
         <ScrollView>
           <NewsItems />
 
@@ -160,6 +151,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => ({
   auth: state.auth,
   token: state.auth.result.token,
+  role: state.auth.currentUser.role,
 });
 const mapDispatchToProps = dispatch => ({
   getDataUser: (url, token) => {

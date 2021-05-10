@@ -1,6 +1,9 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {Icon} from 'native-base';
+import axios from 'axios';
+import {DOMAIN_API, PORT_API} from '@env';
+import {connect} from 'react-redux';
 const monthNames = [
   'January',
   'February',
@@ -28,7 +31,7 @@ const dayNames = [
 
 let curr = new Date();
 let dt = curr.getDate();
-
+const dayName = dayNames[curr.getDay()];
 let monthName = monthNames[curr.getMonth()];
 let y = curr.getFullYear();
 
@@ -43,12 +46,49 @@ for (let i = 0; i < 7; i++) {
   weekDate.push(day);
 }
 
-function Facilitator() {
-  let items = [];
+function Facilitator(props) {
+  const [schedules, setSchedules] = useState();
+  let scheduleItems;
+  useEffect(() => {
+    const token = props.token;
+    axios
+      .get(
+        `${DOMAIN_API}:${PORT_API}/data/instructor/my-schedule/?day=${dayName}`,
+        {
+          headers: {'x-access-token': `Bearer ${token}`},
+        },
+      )
+      .then(res => setSchedules(res.data.result))
+      .catch(err => console.log(err));
+  });
+
+  if (schedules) {
+    scheduleItems = schedules.map(cl => {
+      return (
+        <View style={styles.scheduleItem} key={cl.id}>
+          <Text style={styles.time}>{`${cl.start_time.slice(
+            0,
+            5,
+          )} - ${cl.end_time.slice(0, 5)}`}</Text>
+          <Text style={styles.scheduleName}>{cl.course_name}</Text>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text style={styles.memberCount}>{cl.num_of_member}</Text>
+            <Icon name="school-sharp" style={{fontSize: 20}} />
+          </View>
+        </View>
+      );
+    });
+  }
+  const noSchedule = (
+    <Text style={styles.noSchedule}>
+      You have no schedule today. Keep learning!
+    </Text>
+  );
+  let calendar = [];
   for (let i = 0; i < 7; i++) {
-    items.push(
+    calendar.push(
       <View
-        key={i}
+        key={weekDate[i]}
         style={dt === Number(weekDate[i]) ? styles.activeDay : styles.calGroup}>
         <Text
           style={dt === Number(weekDate[i]) ? styles.dayActive : styles.day}>
@@ -61,6 +101,7 @@ function Facilitator() {
       </View>,
     );
   }
+
   return (
     <>
       <View style={styles.container}>
@@ -71,7 +112,9 @@ function Facilitator() {
         <Text style={styles.today}>
           {monthName} {y}
         </Text>
-        <View style={styles.calendar}>{items}</View>
+        <View style={styles.calendar}>{calendar}</View>
+
+        {scheduleItems && scheduleItems.length > 0 ? scheduleItems : noSchedule}
       </View>
     </>
   );
@@ -111,6 +154,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 5,
+    marginBottom: 22,
   },
   activeDay: {
     backgroundColor: '#5784BA',
@@ -129,15 +173,68 @@ const styles = StyleSheet.create({
   },
   day: {
     fontFamily: 'Kanit-Regular',
-    // color: 'white',
     color: 'black',
     padding: 2,
   },
   date: {
     fontFamily: 'Kanit-Regular',
-    // padding: 3,
     padding: 2,
+  },
+
+  scheduleItem: {
+    // marginLeft: 5,
+    width: '100%',
+    height: 70,
+    paddingVertical: 15,
+    paddingHorizontal: 23,
+    marginBottom: 5,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 4,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  time: {
+    fontFamily: 'Roboto-Medium',
+    fontSize: 12,
+  },
+  scheduleName: {
+    fontFamily: 'Montserrat-Medium',
+    fontSize: 12,
+  },
+  memberCount: {
+    fontFamily: 'Montserrat-Medium',
+    fontSize: 12,
+  },
+  noSchedule: {
+    padding: 12,
+    marginLeft: 5,
+    width: '100%',
+    paddingVertical: 11,
+    paddingHorizontal: 23,
+    marginBottom: 5,
+    backgroundColor: '#FFFFFF',
+
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 12,
+    fontStyle: 'italic',
+    color: 'red',
+    textAlign: 'center',
   },
 });
 
-export default Facilitator;
+const mapStateToProps = state => ({
+  token: state.auth.result.token,
+});
+export default connect(mapStateToProps)(Facilitator);
