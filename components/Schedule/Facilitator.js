@@ -65,7 +65,8 @@ function Facilitator(props) {
   if (schedules) {
     scheduleItems = schedules.map(cl => {
       return (
-        <View style={styles.scheduleItem} key={cl.id}>
+        <View key={cl.id ?? Math.random()} style={styles.scheduleItem}>
+          {/* {console.log(cl.id)} */}
           <Text style={styles.time}>{`${cl.start_time.slice(
             0,
             5,
@@ -88,7 +89,7 @@ function Facilitator(props) {
   for (let i = 0; i < 7; i++) {
     calendar.push(
       <View
-        key={weekDate[i]}
+        key={i}
         style={dt === Number(weekDate[i]) ? styles.activeDay : styles.calGroup}>
         <Text
           style={dt === Number(weekDate[i]) ? styles.dayActive : styles.day}>
@@ -115,6 +116,14 @@ function Facilitator(props) {
         <View style={styles.calendar}>{calendar}</View>
 
         {scheduleItems && scheduleItems.length > 0 ? scheduleItems : noSchedule}
+        <View style={{alignItems: 'center'}}>
+          <View style={styles.newTask}>
+            <Icon name="add-circle-sharp" style={{color: 'white'}} />
+            <Text style={{color: 'white', fontFamily: 'Kanit-Medium'}}>
+              New Task
+            </Text>
+          </View>
+        </View>
       </View>
     </>
   );
@@ -231,6 +240,16 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     color: 'red',
     textAlign: 'center',
+  },
+  newTask: {
+    marginTop: 16,
+    backgroundColor: '#5784BA',
+    borderRadius: 20,
+    height: 40,
+    width: 120,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
   },
 });
 
