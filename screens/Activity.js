@@ -4,6 +4,7 @@ import {Icon, Input, Item} from 'native-base';
 
 function Activity() {
   const [subMenu, setSubMenu] = useState('');
+
   return (
     <>
       <StatusBar
@@ -31,6 +32,7 @@ function Activity() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#E6EDF6',
+    flex: 1,
   },
   header: {
     paddingTop: StatusBar.currentHeight + 12 + (40 - StatusBar.currentHeight),

@@ -7,6 +7,7 @@ import {
   StatusBar,
   Dimensions,
   Image,
+  ScrollView,
 } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import NewsItems from '../components/NewsItems';
@@ -14,8 +15,13 @@ import {getDataUser} from '../redux/Action/auth';
 import {connect} from 'react-redux';
 import {DOMAIN_API, PORT_API} from '@env';
 import {Icon, Input, Item} from 'native-base';
+import StudentContainer from '../components/Schedule/Student';
+import FacilitatorContainer from '../components/Schedule/Facilitator';
+
 function Home(props) {
-  console.log(props.auth.isLogin);
+  // console.log(props.auth.isLogin);
+  // fake role test
+  const role = 'facilitator';
   const [dataUser, setDataUser] = useState('');
   const ref = useRef();
 
@@ -67,7 +73,11 @@ function Home(props) {
           </View>
         </View>
         {/* <Text>{dataUser ? dataUser.role : null}</Text> */}
-        <NewsItems />
+        <ScrollView>
+          <NewsItems />
+
+          {role === 'student' ? <StudentContainer /> : <FacilitatorContainer />}
+        </ScrollView>
       </View>
     </>
   );
@@ -76,6 +86,7 @@ function Home(props) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#E6EDF6',
+    flex: 1,
   },
   header: {
     paddingTop: StatusBar.currentHeight + 12 + (40 - StatusBar.currentHeight),
