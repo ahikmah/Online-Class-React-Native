@@ -48,6 +48,7 @@ function Facilitator() {
   for (let i = 0; i < 7; i++) {
     items.push(
       <View
+        key={i}
         style={dt === Number(weekDate[i]) ? styles.activeDay : styles.calGroup}>
         <Text
           style={dt === Number(weekDate[i]) ? styles.dayActive : styles.day}>

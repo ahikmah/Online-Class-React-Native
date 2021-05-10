@@ -21,7 +21,7 @@ import FacilitatorContainer from '../components/Schedule/Facilitator';
 function Home(props) {
   // console.log(props.auth.isLogin);
   // fake role test
-  const role = 'facilitator';
+  const role = 'student';
   const [dataUser, setDataUser] = useState('');
   const ref = useRef();
 
