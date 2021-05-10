@@ -147,7 +147,7 @@ function Profile(props) {
             <Text style={styles.nameSection}>Help</Text>
             <ListItem icon style={styles.listItem}>
               <Left>
-                <Image source={require('../assets/images/set-chat.png')} />
+                <Image source={require('../assets/images/set-faq.png')} />
               </Left>
               <Body style={styles.noBorder}>
                 <Text style={styles.item}>F.A.Q</Text>
