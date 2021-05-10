@@ -14,10 +14,15 @@ import CreateNewPassword from './screens/CreateNewPassword';
 
 // PRIVATE SCREEN
 import Home from './screens/Home';
-import Activity from './screens/Activity';
+// Activity
+import ActivityDashboard from './screens/Activity';
+import MyClass from './screens/MyClass';
+import ClassDetail from './screens/ClassDetail';
+// Chat
 import Chat from './screens/Chat';
 import CreateNewChat from './screens/ChatNew';
 import ChatGroupDetail from './screens/ChatGroupDetail';
+// Profile
 import Profile from './screens/Profile';
 
 import {connect} from 'react-redux';
@@ -67,24 +72,25 @@ function HomeTabs() {
         showLabel: false,
       }}>
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Activity" component={Activity} />
+      <Tab.Screen name="Activity" component={ActivityStack} />
       <Tab.Screen name="Chat" component={Chat} />
       <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
   );
 }
 
-// function ChatStack() {
-//   return (
-//     <Stack.Navigator
-//       screenOptions={{
-//         headerShown: false,
-//       }}>
-//       <Stack.Screen name="DashboardChat" component={Chat} />
-//       <Stack.Screen name="CreateNewChat" component={CreateNewChat} />
-//     </Stack.Navigator>
-//   );
-// }
+function ActivityStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Stack.Screen name="ActivityDashboard" component={ActivityDashboard} />
+      <Stack.Screen name="MyClass" component={MyClass} />
+      <Stack.Screen name="ClassDetail" component={ClassDetail} />
+    </Stack.Navigator>
+  );
+}
 
 function App(props) {
   // console.log(props.isLogin);
