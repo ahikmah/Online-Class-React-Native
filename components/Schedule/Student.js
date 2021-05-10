@@ -1,7 +1,8 @@
+/* eslint-disable react-native/no-inline-styles */
 import {Icon} from 'native-base';
 import React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
-import {Tab, Tabs} from 'native-base';
+import {Tab, Tabs, DefaultTabBar} from 'native-base';
 import AllSchedule from './AllSchedule';
 import ForYou from './ForYou';
 const monthNames = [
@@ -25,6 +26,11 @@ let monthName = monthNames[curr.getMonth()];
 // let dayName = dayNames[curr.getDay()]
 let dt = curr.getDate();
 
+const renderTabBar = props => {
+  props.tabStyle = Object.create(props.tabStyle);
+  return <DefaultTabBar {...props} />;
+};
+
 function Student() {
   return (
     <View style={styles.container}>
@@ -38,7 +44,7 @@ function Student() {
         <Icon name="calendar-outline" />
       </View>
 
-      <Tabs tabContainerStyle={{elevation: 0}}>
+      <Tabs tabContainerStyle={{elevation: 0}} renderTabBar={renderTabBar}>
         <Tab
           heading="All Schedule"
           textStyle={{color: '#ADA9BB'}}
