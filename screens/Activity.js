@@ -1,10 +1,8 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
-import {Icon, Input, Item} from 'native-base';
+import React from 'react';
+import {View, Text, StyleSheet, StatusBar} from 'react-native';
 import StudentActivity from '../components/Activity/Student';
 import FacilitatorActivity from '../components/Activity/Facilitator';
 import {connect} from 'react-redux';
-import {DOMAIN_API, PORT_API} from '@env';
 
 function Activity({...props}) {
   const role = props.role;

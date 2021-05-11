@@ -18,6 +18,10 @@ target 'OnlineClass' do
 
   pod 'RNCCheckbox', :path => '../node_modules/@react-native-community/checkbox'
 
+  pod 'RNDateTimePicker', :path => '../node_modules/@react-native-community/datetimepicker'
+
+  pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
+
   target 'OnlineClassTests' do
     inherit! :complete
     # Pods for testing
