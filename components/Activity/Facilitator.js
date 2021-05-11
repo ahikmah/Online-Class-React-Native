@@ -27,10 +27,14 @@ function Facilitator({...props}) {
   const [categories, setCategories] = useState('');
   const [price, setPrice] = useState('');
   const [schedule, setSchedule] = useState('');
+  const [start, setStart] = useState('');
+  const [end, setEnd] = useState('');
   const [description, setDescription] = useState('');
   const [photo, setPhoto] = useState(null);
 
   const [showMode, setShowMode] = useState(false);
+  const [showMode2, setShowMode2] = useState(false);
+  const [showMode3, setShowMode3] = useState(false);
   useEffect(() => {
     LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
   }, []);
@@ -60,7 +64,56 @@ function Facilitator({...props}) {
       }
     });
   };
-  const uploadHandler = () => {};
+  const uploadHandler = e => {
+    console.log(
+      className,
+      categories,
+      description,
+      price,
+      schedule,
+      start,
+      end,
+      photo,
+    );
+    e.preventDefault();
+    const token = props.token;
+    console.log(token);
+    let formData = new FormData();
+    formData.append('name', className);
+    formData.append('category_id', categories);
+    formData.append('description', description);
+    formData.append('price', price);
+    formData.append('schedule', schedule);
+    formData.append('start_time', start);
+    formData.append('end_time', end);
+    formData.append('banner', {
+      name: photo.fileName,
+      type: photo.type,
+      uri: photo.uri,
+    });
+    axios
+      .post(`${DOMAIN_API}:${PORT_API}/data/courses/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'x-access-token': `Bearer ${token}`,
+        },
+      })
+      .then(res => {
+        console.log('Success');
+        setClassName('');
+        setCategories('');
+        setPrice('');
+        setSchedule('');
+        setStart('');
+        setEnd('');
+        setDescription('');
+        setPhoto(null);
+        props.navigation.navigate('ActivityDashboard');
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
   return (
     <>
       <ScrollView>
@@ -167,37 +220,37 @@ function Facilitator({...props}) {
                     />
                     <Picker.Item
                       label="Software"
-                      value="software"
+                      value="1"
                       style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
                     />
                     <Picker.Item
                       label="History"
-                      value="history"
+                      value="2"
                       style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
                     />
                     <Picker.Item
                       label="Psychology"
-                      value="psychology"
+                      value="3"
                       style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
                     />
                     <Picker.Item
                       label="Finance"
-                      value="finance"
+                      value="4"
                       style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
                     />
                     <Picker.Item
                       label="Math"
-                      value="math"
+                      value="5"
                       style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
                     />
                     <Picker.Item
                       label="Science"
-                      value="science"
+                      value="6"
                       style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
                     />
                     <Picker.Item
                       label="Office Productivity"
-                      value="office productivity"
+                      value="7"
                       style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
                     />
                   </Picker>
@@ -228,6 +281,56 @@ function Facilitator({...props}) {
                     onChange={(event, selectedDate) => {
                       setSchedule(selectedDate || schedule);
                       setShowMode(false);
+                    }}
+                  />
+                )}
+              </View>
+              <View style={styles.inputSection}>
+                <Text>Start : </Text>
+                <View
+                  style={{width: '100%'}}
+                  onPress={() => setShowMode2('time')}>
+                  <Text
+                    style={{width: '100%'}}
+                    onPress={() => setShowMode2('time')}>
+                    {start.toString().substr(15, 9)}
+                  </Text>
+                </View>
+                {showMode2 && (
+                  <DateTimePicker
+                    testID="dateTimePicker"
+                    mode={showMode2}
+                    value={new Date()}
+                    is24Hour={true}
+                    display="default"
+                    onChange={(event, selectedDate) => {
+                      setStart(selectedDate || start);
+                      setShowMode2(false);
+                    }}
+                  />
+                )}
+              </View>
+              <View style={styles.inputSection}>
+                <Text>End : </Text>
+                <View
+                  style={{width: '100%'}}
+                  onPress={() => setShowMode3('time')}>
+                  <Text
+                    style={{width: '100%'}}
+                    onPress={() => setShowMode3('time')}>
+                    {end.toString().substr(15, 9)}
+                  </Text>
+                </View>
+                {showMode3 && (
+                  <DateTimePicker
+                    testID="dateTimePicker"
+                    mode={showMode3}
+                    value={new Date()}
+                    is24Hour={true}
+                    display="default"
+                    onChange={(event, selectedDate) => {
+                      setEnd(selectedDate || end);
+                      setShowMode3(false);
                     }}
                   />
                 )}
