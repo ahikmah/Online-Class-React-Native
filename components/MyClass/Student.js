@@ -37,6 +37,10 @@ function Student({...props}) {
   useEffect(() => {
     getMyClass();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    getMyClass();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currPage]);
 
   const setColor = score => {

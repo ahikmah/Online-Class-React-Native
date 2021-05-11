@@ -65,16 +65,6 @@ function Facilitator({...props}) {
     });
   };
   const uploadHandler = e => {
-    // console.log(
-    //   className,
-    //   categories,
-    //   description,
-    //   price,
-    //   schedule,
-    //   start,
-    //   end,
-    //   photo,
-    // );
     e.preventDefault();
     const token = props.token;
     console.log(token);

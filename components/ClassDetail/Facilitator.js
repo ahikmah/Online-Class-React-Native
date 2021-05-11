@@ -4,13 +4,15 @@ import React, {useEffect, useState} from 'react';
 import {Image, Text, View, StyleSheet} from 'react-native';
 import axios from 'axios';
 import {Tab, Tabs, DefaultTabBar, Button, Icon} from 'native-base';
-import CheckBox from '@react-native-community/checkbox';
+import ProgressModal from '../ProgressModal';
 import {ProgressBar} from 'react-native-paper';
 import {DOMAIN_API, PORT_API} from '@env';
 import {connect} from 'react-redux';
 function Facilitator(props) {
   const [courseDetail, setCourseDetail] = useState();
   const [courseMember, setCourseMember] = useState();
+  const [showModal, setShowModal] = useState(false);
+
   let progressItems;
   const {...data} = props.data;
   console.log('fas', data);
@@ -91,6 +93,7 @@ function Facilitator(props) {
 
   return (
     <View style={styles.container}>
+      {showModal ? <ProgressModal /> : null}
       <View>
         <Image
           source={require('../../assets/images/banner-course.png')}

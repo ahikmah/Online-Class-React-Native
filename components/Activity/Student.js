@@ -27,16 +27,14 @@ function Student({...props}) {
   const [newClass, setNewClass] = useState([]);
   const [currPage, setCurrPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
+  const [isUpdated, setIsUpdated] = useState(false);
 
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [level, setLevel] = useState('');
   const [price, setPrice] = useState('');
   const [sort, setSort] = useState('');
-  // const [page, setPage] = useState('');
 
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedPrice, setSelectedPrice] = useState('');
   useEffect(() => {
     LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
   }, []);
@@ -51,7 +49,11 @@ function Student({...props}) {
         },
       )
       .then(res => {
-        setNewClass([...newClass, ...res.data.result]);
+        if (!search && !category && !price) {
+          setNewClass([...newClass, ...res.data.result]);
+        } else {
+          setNewClass([...res.data.result]);
+        }
         setCurrPage(res.data.info.page);
         setTotalPage(res.data.info.totalPage);
       })
@@ -66,12 +68,41 @@ function Student({...props}) {
       })
       .then(res => setMyClass(res.data.result))
       .catch(err => console.log(err));
+    // setIsUpdated(!isUpdated);
     return getNewClass();
   }, []);
   useEffect(() => {
     getNewClass();
-  }, [currPage]);
+    console.log(search);
+  }, [currPage, search, category, price]);
 
+  useEffect(() => {
+    const token = props.token;
+    axios
+      .get(`${DOMAIN_API}:${PORT_API}/data/student/my-class`, {
+        headers: {'x-access-token': `Bearer ${token}`},
+      })
+      .then(res => setMyClass(res.data.result))
+      .catch(err => console.log(err));
+    // setIsUpdated(!isUpdated);
+  }, [isUpdated]);
+
+  const registerHandler = id => {
+    const token = props.token;
+    axios
+      .post(
+        `${DOMAIN_API}:${PORT_API}/data/courses/register`,
+        {course_id: id},
+        {
+          headers: {'x-access-token': `Bearer ${token}`},
+        },
+      )
+      .then(res => {
+        props.navigation.navigate('MyClass');
+        setIsUpdated(true);
+      })
+      .catch(err => console.log(err));
+  };
   const setColor = score => {
     if (myClass) {
       if (Number(score) > 90) {
@@ -180,9 +211,10 @@ function Student({...props}) {
                   <Input
                     placeholder="Quick Search"
                     style={styles.searchInput}
+                    onChangeText={e => setSearch(e)}
                   />
                 </Item>
-                <Button style={styles.btnSearch}>
+                <Button style={styles.btnSearch} onPress={() => getNewClass()}>
                   <Text
                     style={{
                       color: 'white',
@@ -204,8 +236,8 @@ function Student({...props}) {
                 placeholder="Select your SIM"
                 placeholderStyle={{color: '#bfc6ea'}}
                 placeholderIconColor="#007aff"
-                selectedValue={selectedCategory}
-                onValueChange={e => setSelectedCategory(e)}>
+                selectedValue={category}
+                onValueChange={e => setCategory(e)}>
                 <Picker.Item
                   label="Category"
                   value=""
@@ -259,8 +291,8 @@ function Student({...props}) {
                 placeholder="Select your SIM"
                 placeholderStyle={{color: '#bfc6ea'}}
                 placeholderIconColor="#007aff"
-                selectedValue={selectedPrice}
-                onValueChange={e => setSelectedPrice(e)}>
+                selectedValue={price}
+                onValueChange={e => setPrice(e)}>
                 <Picker.Item
                   label="Pricing"
                   value=""
@@ -305,7 +337,9 @@ function Student({...props}) {
                           : item.name}
                       </Text>
                       <Text style={styles.tbClassName}>{item.price}</Text>
-                      <Button style={styles.btnRegister}>
+                      <Button
+                        style={styles.btnRegister}
+                        onPress={() => registerHandler(item.id)}>
                         <Text style={styles.txtRegister}>Register</Text>
                       </Button>
                     </View>
