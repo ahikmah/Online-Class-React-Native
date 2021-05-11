@@ -65,16 +65,16 @@ function Facilitator({...props}) {
     });
   };
   const uploadHandler = e => {
-    console.log(
-      className,
-      categories,
-      description,
-      price,
-      schedule,
-      start,
-      end,
-      photo,
-    );
+    // console.log(
+    //   className,
+    //   categories,
+    //   description,
+    //   price,
+    //   schedule,
+    //   start,
+    //   end,
+    //   photo,
+    // );
     e.preventDefault();
     const token = props.token;
     console.log(token);
@@ -99,7 +99,7 @@ function Facilitator({...props}) {
         },
       })
       .then(res => {
-        console.log('Success');
+        console.log(res, 'Success');
         setClassName('');
         setCategories('');
         setPrice('');
@@ -111,6 +111,7 @@ function Facilitator({...props}) {
         props.navigation.navigate('ActivityDashboard');
       })
       .catch(err => {
+        props.navigation.navigate('ActivityDashboard');
         console.log(err);
       });
   };
