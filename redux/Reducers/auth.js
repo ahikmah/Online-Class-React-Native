@@ -72,17 +72,7 @@ const auth = (state = initialState, {type, payload}) => {
         ...state,
         isRejected: true,
         isPending: false,
-        result: payload,
-      };
-    case 'LOGIN_USER':
-      return {
-        ...state,
-        currentUser: payload,
-      };
-    case 'LOGOUT_USER':
-      return {
-        ...state,
-        currentUser: {},
+        error: payload,
       };
 
     case 'GET_DATA_USER_PENDING':

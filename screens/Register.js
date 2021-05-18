@@ -1,4 +1,6 @@
-import React, {useState, useEffect} from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-native/no-inline-styles */
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -13,6 +15,8 @@ import {Form, Item, Input, Label, Button, Icon} from 'native-base';
 import {register} from '../redux/Action/auth';
 import {connect} from 'react-redux';
 import {DOMAIN_API, PORT_API} from '@env';
+import {color} from 'react-native-reanimated';
+
 function Register({...props}) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -22,17 +26,38 @@ function Register({...props}) {
     password: '',
     repassword: '',
   });
+
+  const [errorStyle, setErrorStyle] = useState({
+    borderColor: '#EB4335',
+    color: '#EB4335',
+  });
+  const [errorMessage, setErrorMessage] = useState({
+    username: '',
+    email: '',
+    password: '',
+    repassword: '',
+  });
+  const [inputValidation, setInputValidation] = useState({
+    username: undefined,
+    email: undefined,
+    password: undefined,
+    repassword: undefined,
+  });
+
+  const [zIndexInput, setZIndexInput] = useState({
+    username: 1,
+    email: 1,
+    password: 1,
+    repassword: 1,
+  });
+
   const [componentWidth, setComponentWidth] = useState(
     Dimensions.get('window').width - 64,
-  );
-  const [titleMargin, setTitleMargin] = useState(
-    Dimensions.get('window').height / 20,
   );
 
   useEffect(() => {
     const updateLayout = () => {
       setComponentWidth(Dimensions.get('window').width - 64);
-      setTitleMargin(Dimensions.get('window').height / 20);
     };
     Dimensions.addEventListener('change', updateLayout);
 
@@ -41,6 +66,84 @@ function Register({...props}) {
     };
   });
 
+  // =============================VALIDATION SECTION============================= //
+  // username : min. length = 5
+  const usernameValidation = () => {
+    if (dataRegister.username === '') {
+      setInputValidation({...inputValidation, username: false});
+      setErrorMessage({...errorMessage, username: "This field can't be empty"});
+    } else if (dataRegister.username.length < 5) {
+      setInputValidation({...inputValidation, username: false});
+      setErrorMessage({
+        ...errorMessage,
+        username: 'Username must be at least 5 characters',
+      });
+    } else {
+      setInputValidation({...inputValidation, username: true});
+    }
+  };
+
+  // e-mails must be in the format x@x.x
+  const isValidEmailAddress = address => {
+    return !!address.match(/^[^\s@]+@[^\s@.]+\.[^\s@]+$/);
+  };
+  const emailValidation = () => {
+    if (dataRegister.email === '') {
+      setInputValidation({...inputValidation, email: false});
+      setErrorMessage({...errorMessage, email: "This field can't be empty"});
+    } else if (!isValidEmailAddress(dataRegister.email)) {
+      setInputValidation({...inputValidation, email: false});
+      setErrorMessage({...errorMessage, email: 'Please enter a valid email'});
+    } else {
+      setInputValidation({...inputValidation, email: true});
+    }
+  };
+
+  // password : min. length = 8
+  const passwordValidation = () => {
+    if (dataRegister.password === '') {
+      setInputValidation({...inputValidation, password: false});
+      setErrorMessage({...errorMessage, password: "This field can't be empty"});
+    } else if (dataRegister.password.length < 8) {
+      setInputValidation({...inputValidation, password: false});
+      setErrorMessage({
+        ...errorMessage,
+        password: 'Password must be at least 8 characters',
+      });
+    } else {
+      setInputValidation({...inputValidation, password: true});
+    }
+  };
+  //re-password: must be the same as the previous one
+  const rePasswordValidation = () => {
+    if (dataRegister.repassword === '') {
+      setInputValidation({...inputValidation, repassword: false});
+      setErrorMessage({
+        ...errorMessage,
+        repassword: "This field can't be empty",
+      });
+    } else if (dataRegister.repassword.length < 8) {
+      setInputValidation({...inputValidation, repassword: false});
+      setErrorMessage({
+        ...errorMessage,
+        repassword: 'Password must be at least 8 characters',
+      });
+    } else if (dataRegister.repassword !== dataRegister.password) {
+      setInputValidation({...inputValidation, repassword: false});
+      setErrorMessage({
+        ...errorMessage,
+        repassword: "Password don't match",
+      });
+    } else {
+      setInputValidation({...inputValidation, repassword: true});
+      setErrorMessage({
+        ...errorMessage,
+        repassword: 'Password  match',
+      });
+    }
+  };
+  // =============================END VALIDATION SECTION============================= //
+
   const registerHandler = e => {
     e.preventDefault();
     const data = {
@@ -48,57 +151,186 @@ function Register({...props}) {
       email: dataRegister.email,
       password: dataRegister.password,
     };
-    console.log(data);
     props.register(`${DOMAIN_API}:${PORT_API}/data/auth`, data);
-    if (props.auth.isPending) {
-      console.log('Loading...');
-    } else if (props.auth.isFulfilled) {
-      props.navigation.navigate('Login');
-    }
   };
+
+  const ref = useRef();
+  useEffect(() => {
+    if (!ref.current) {
+      ref.current = true;
+    } else {
+      if (props.auth.isPending) {
+        console.log('Loading...');
+      } else if (props.auth.isFulfilled) {
+        console.log('sukses');
+      } else if (props.auth.isRejected) {
+        console.log(props.auth.isRejected);
+
+        if (
+          props.auth.error.response &&
+          props.auth.error.response.data.error.conflict === 'username'
+        ) {
+          console.log('username is already taken');
+        } else {
+          console.log('something wrong...');
+        }
+      }
+    }
+  }, [props.auth.isPending, props.auth.isFulfilled, props.auth.isRejected]);
   return (
     <ScrollView>
       <KeyboardAvoidingView>
         <View style={styles.container}>
-          <Text style={{...styles.title, marginVertical: titleMargin}}>
-            Register
-          </Text>
+          <Text style={{...styles.title}}>Register</Text>
           <View style={{...styles.formContainer, width: componentWidth}}>
             <Form>
               <Item floatingLabel style={styles.formItem}>
-                <Label style={styles.formLabel}>Username</Label>
+                <Label
+                  style={{
+                    ...styles.formLabel,
+                    color:
+                      inputValidation.username === false
+                        ? errorStyle.color
+                        : '#ADA9BB',
+                  }}>
+                  Username
+                </Label>
                 <Input
-                  style={styles.formInput}
+                  style={{
+                    ...styles.formInput,
+                    zIndex: zIndexInput.username,
+                    borderColor:
+                      inputValidation.username === false
+                        ? errorStyle.borderColor
+                        : '#ADA9BB',
+                  }}
                   value={dataRegister.username}
                   onChangeText={text => {
                     setDataRegister({...dataRegister, username: text});
                   }}
-                  disableFullscreenUI={false}
+                  onPressIn={() => {
+                    setZIndexInput({...zIndexInput, username: -1});
+                    setInputValidation({
+                      ...inputValidation,
+                      username: undefined,
+                    });
+                    setErrorMessage({...errorMessage, username: ''});
+                  }}
+                  onBlur={() => {
+                    setZIndexInput({
+                      ...zIndexInput,
+                      username: dataRegister.username ? -1 : 1,
+                    });
+                    usernameValidation();
+                  }}
+                  disableFullscreenUI={true}
                 />
               </Item>
+              <Text
+                style={{
+                  ...styles.errorMessage,
+                  marginBottom: errorMessage.username ? 5 : -5,
+                }}>
+                {errorMessage.username}
+              </Text>
+
               <Item floatingLabel style={styles.formItem}>
-                <Label style={styles.formLabel}>Email</Label>
+                <Label
+                  style={{
+                    ...styles.formLabel,
+                    color:
+                      inputValidation.email === false
+                        ? errorStyle.color
+                        : '#ADA9BB',
+                  }}>
+                  Email
+                </Label>
                 <Input
-                  style={styles.formInput}
+                  style={{
+                    ...styles.formInput,
+                    zIndex: zIndexInput.email,
+                    borderColor:
+                      inputValidation.email === false
+                        ? errorStyle.borderColor
+                        : '#ADA9BB',
+                  }}
                   keyboardType="email-address"
                   value={dataRegister.email}
                   onChangeText={text => {
                     setDataRegister({...dataRegister, email: text});
                   }}
-                  disableFullscreenUI={false}
+                  onPressIn={() => {
+                    setZIndexInput({...zIndexInput, email: -1});
+
+                    setInputValidation({
+                      ...inputValidation,
+                      email: undefined,
+                    });
+                    setErrorMessage({...errorMessage, email: ''});
+                  }}
+                  onBlur={() => {
+                    setZIndexInput({
+                      ...zIndexInput,
+                      email: dataRegister.email ? -1 : 1,
+                    });
+                    emailValidation();
+                  }}
+                  disableFullscreenUI={true}
                 />
               </Item>
+              <Text
+                style={{
+                  ...styles.errorMessage,
+                  marginBottom: errorMessage.email ? 5 : -5,
+                }}>
+                {errorMessage.email}
+              </Text>
+
               <Item floatingLabel style={styles.formItem}>
-                <Label style={styles.formLabel}>Password</Label>
+                <Label
+                  style={{
+                    ...styles.formLabel,
+                    color:
+                      inputValidation.password === false
+                        ? errorStyle.color
+                        : '#ADA9BB',
+                  }}>
+                  Password
+                </Label>
                 <Input
                   secureTextEntry={!showPassword ? true : false}
-                  style={styles.formInput}
+                  style={{
+                    ...styles.formInput,
+                    paddingRight: 45,
+                    zIndex: zIndexInput.password,
+                    borderColor:
+                      inputValidation.password === false
+                        ? errorStyle.borderColor
+                        : '#ADA9BB',
+                  }}
                   keyboardType={showPassword ? 'visible-password' : null}
                   value={dataRegister.password}
                   onChangeText={text => {
                     setDataRegister({...dataRegister, password: text});
                   }}
-                  disableFullscreenUI={false}
+                  onPressIn={() => {
+                    setZIndexInput({...zIndexInput, password: -1});
+
+                    setInputValidation({
+                      ...inputValidation,
+                      password: undefined,
+                    });
+                    setErrorMessage({...errorMessage, password: ''});
+                  }}
+                  onBlur={() => {
+                    setZIndexInput({
+                      ...zIndexInput,
+                      password: dataRegister.password ? -1 : 1,
+                    });
+
+                    passwordValidation();
+                  }}
+                  disableFullscreenUI={true}
                 />
                 <Icon
                   name={!showPassword ? 'eye' : 'eye-off'}
@@ -106,17 +338,57 @@ function Register({...props}) {
                   onPress={() => setShowPassword(!showPassword)}
                 />
               </Item>
+              <Text
+                style={{
+                  ...styles.errorMessage,
+                  marginBottom: errorMessage.password ? 5 : -5,
+                }}>
+                {errorMessage.password}
+              </Text>
+
               <Item floatingLabel style={styles.formItem}>
-                <Label style={styles.formLabel}>Confirm Password</Label>
+                <Label
+                  style={{
+                    ...styles.formLabel,
+                    color:
+                      inputValidation.repassword === false
+                        ? errorStyle.color
+                        : '#ADA9BB',
+                  }}>
+                  Confirm Password
+                </Label>
                 <Input
                   secureTextEntry={!showConfirmPassword ? true : false}
-                  style={styles.formInput}
+                  style={{
+                    ...styles.formInput,
+                    paddingRight: 45,
+                    zIndex: zIndexInput.repassword,
+                    borderColor:
+                      inputValidation.repassword === false
+                        ? errorStyle.borderColor
+                        : '#ADA9BB',
+                  }}
                   keyboardType={showConfirmPassword ? 'visible-password' : null}
                   value={dataRegister.repassword}
                   onChangeText={text => {
                     setDataRegister({...dataRegister, repassword: text});
                   }}
-                  disableFullscreenUI={false}
+                  onPressIn={() => {
+                    setZIndexInput({...zIndexInput, repassword: -1});
+                    setInputValidation({
+                      ...inputValidation,
+                      repassword: undefined,
+                    });
+                    setErrorMessage({...errorMessage, repassword: ''});
+                  }}
+                  onBlur={() => {
+                    setZIndexInput({
+                      ...zIndexInput,
+                      repassword: dataRegister.repassword ? -1 : 1,
+                    });
+                    rePasswordValidation();
+                  }}
+                  disableFullscreenUI={true}
                 />
                 <Icon
                   name={!showConfirmPassword ? 'eye' : 'eye-off'}
@@ -124,6 +396,23 @@ function Register({...props}) {
                   onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                 />
               </Item>
+              <Text
+                style={{
+                  ...styles.errorMessage,
+                  color:
+                    inputValidation.repassword === true
+                      ? '#0EAA00'
+                      : errorStyle.color,
+                  marginBottom: errorMessage.password ? 5 : -5,
+                }}>
+                {errorMessage.repassword}
+                {inputValidation.repassword === true ? (
+                  <Icon
+                    name="checkmark-circle"
+                    style={{fontSize: 14, color: '#0EAA00'}}
+                  />
+                ) : null}
+              </Text>
             </Form>
           </View>
           <View style={styles.btnGroup}>
@@ -155,8 +444,12 @@ function Register({...props}) {
 const styles = StyleSheet.create({
   container: {
     paddingTop: StatusBar.currentHeight,
-    height: Dimensions.get('window').height,
+    height:
+      Dimensions.get('window').height < 700
+        ? StatusBar.currentHeight + 700
+        : StatusBar.currentHeight + Dimensions.get('window').height,
     flex: 1,
+    justifyContent: 'space-around',
     alignItems: 'center',
     textAlignVertical: 'center',
     textAlign: 'center',
@@ -168,33 +461,37 @@ const styles = StyleSheet.create({
     fontFamily: 'Kanit-Medium',
   },
   formContainer: {
-    marginBottom: 12,
-    flexDirection: 'column',
     justifyContent: 'center',
   },
   formInput: {
-    fontSize: 16,
+    fontSize: 17,
     borderWidth: 1,
-    borderRadius: 10,
     borderColor: '#ADA9BB',
+    borderRadius: 10,
     paddingLeft: 16,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto-Regular',
+    color: '#010620',
+    height: 55,
+    paddingRight: 16,
   },
   formItem: {
+    marginTop: 0,
     borderBottomWidth: 0,
-    height: 60,
     marginLeft: 0,
   },
   formLabel: {
+    backgroundColor: '#F9F9F9',
     marginLeft: 16,
     fontFamily: 'Kanit-Regular',
-    color: '#ADA9BB',
+    // color: '#ADA9BB',
     fontSize: 16,
+    position: 'absolute',
   },
   eyeToggler: {
     position: 'absolute',
-    right: 0,
-    top: 20,
+    right: 10,
+    top: 17,
+    marginLeft: 12,
   },
 
   btnGroup: {
@@ -227,22 +524,25 @@ const styles = StyleSheet.create({
   },
 
   buttonLabelGoogle: {
-    color: 'black',
+    color: '#010620',
     fontSize: 16,
     fontFamily: 'Kanit-Medium',
     marginLeft: 12,
   },
   txtFooter: {
     flexDirection: 'row',
-    position: 'absolute',
-    bottom: 36,
   },
-  txtNewUser: {color: '#ADA9BB', fontFamily: 'Kanit-Medium', fontSize: 15},
+  txtNewUser: {color: '#ADA9BB', fontFamily: 'Kanit-Medium', fontSize: 16},
   txtRegister: {
     fontFamily: 'Kanit-Medium',
     marginLeft: 5,
     color: '#5784BA',
-    fontSize: 15,
+    fontSize: 16,
+  },
+  errorMessage: {
+    paddingLeft: 5,
+    marginTop: 10,
+    color: '#EB4335',
   },
 });
 
