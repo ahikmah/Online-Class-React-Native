@@ -470,7 +470,8 @@ function Register({...props}) {
             </Text>
           </View>
         </View>
-
+      </KeyboardAvoidingView>
+      {modalVisible ? (
         <CustomModal
           iconStyle="success"
           modalVisible={modalVisible}
@@ -479,7 +480,7 @@ function Register({...props}) {
           btnLabel="Login Now"
           onAction={() => props.navigation.navigate('Login')}
         />
-      </KeyboardAvoidingView>
+      ) : null}
     </ScrollView>
   );
 }
@@ -491,7 +492,7 @@ const styles = StyleSheet.create({
       Dimensions.get('window').height < 700
         ? StatusBar.currentHeight + 700
         : StatusBar.currentHeight + Dimensions.get('window').height,
-    flex: 1,
+    // flex: 1,
     justifyContent: 'space-around',
     alignItems: 'center',
     textAlignVertical: 'center',
