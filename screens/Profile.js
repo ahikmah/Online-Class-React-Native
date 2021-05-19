@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  token: state.auth.result.token,
+  token: state.auth.resultLogin.token,
 });
 const mapDispatchToProps = dispatch => ({
   logoutUser: (url, token) => {

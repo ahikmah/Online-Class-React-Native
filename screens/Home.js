@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
 });
 const mapStateToProps = state => ({
   auth: state.auth,
-  token: state.auth.result.token,
+  token: state.auth.resultLogin.token,
   role: state.auth.currentUser.role,
 });
 const mapDispatchToProps = dispatch => ({

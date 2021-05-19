@@ -144,6 +144,6 @@ const styles = StyleSheet.create({
   },
 });
 const mapStateToProps = state => {
-  return {isLogin: state.auth.isLogin, token: state.auth.result.token};
+  return {isLogin: state.auth.isLogin, token: state.auth.resultLogin.token};
 };
 export default connect(mapStateToProps)(App);

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
 import {Icon, Input, Item} from 'native-base';
-import ChatItems from '../components/ChatItems';
+import ChatItems from '../components/Chat/ChatItems';
 function Chat({...props}) {
   const [chatAction, setChatAction] = useState(false);
   return (

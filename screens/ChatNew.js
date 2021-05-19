@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
 import {Icon, Input, Item} from 'native-base';
-import SelectPersonChat from '../components/SelectPersonChat';
+import SelectPersonChat from '../components/Chat/SelectPersonChat';
 
 function ChatNew({...props}) {
   const isGroup = props.route.params.isGroup;

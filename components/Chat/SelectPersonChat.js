@@ -1,9 +1,13 @@
 import React from 'react';
 import {List, ListItem, Left, Body, Right, Thumbnail, Text} from 'native-base';
-import chatList from '../assets/dummy/chatList';
+import chatList from '../../assets/dummy/chatList';
 import {ScrollView, StyleSheet} from 'react-native';
-function ChatItems() {
+import CheckBox from '@react-native-community/checkbox';
+
+function SelectPersonChat() {
   const chatItem = chatList.map(item => {
+    let tes = true;
+    let sel = item.select;
     return (
       <List key={item.id} style={{backgroundColor: '#F9F9F9'}}>
         <ListItem avatar>
@@ -12,20 +16,23 @@ function ChatItems() {
           </Left>
           <Body style={{borderBottomWidth: 0}}>
             <Text style={styles.name}>{item.name.slice(0, 25)}</Text>
-            <Text note style={styles.message}>
-              {item.note.slice(0, 35)}
-            </Text>
           </Body>
           <Right style={{borderBottomWidth: 0}}>
-            <Text note style={styles.message}>
-              {item.time}
-            </Text>
+            <CheckBox
+              value={sel === tes ? true : false}
+              onValueChange={e => (sel = e)}
+            />
           </Right>
         </ListItem>
       </List>
     );
   });
-  return <ScrollView>{chatItem}</ScrollView>;
+  return (
+    <ScrollView>
+      {chatItem}
+      {chatItem}
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -39,4 +46,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChatItems;
+export default SelectPersonChat;

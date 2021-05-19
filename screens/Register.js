@@ -28,10 +28,10 @@ function Register({...props}) {
     repassword: '',
   });
 
-  const [errorStyle, setErrorStyle] = useState({
+  const errorStyle = {
     borderColor: '#EB4335',
     color: '#EB4335',
-  });
+  };
   const [errorMessage, setErrorMessage] = useState({
     username: '',
     email: '',
@@ -174,15 +174,15 @@ function Register({...props}) {
     if (!ref.current) {
       ref.current = true;
     } else {
-      if (props.auth.isPending) {
+      if (props.auth.isRegisterPending) {
         console.log('Loading...');
-      } else if (props.auth.isFulfilled) {
+      } else if (props.auth.isRegisterFulfilled) {
         console.log('sukses');
         setModalVisible(true);
-      } else if (props.auth.isRejected) {
+      } else if (props.auth.isRegisterRejected) {
         if (
-          props.auth.error.response &&
-          props.auth.error.response.data.error.conflict === 'username'
+          props.auth.errorRegister.response &&
+          props.auth.errorRegister.response.data.error.conflict === 'username'
         ) {
           console.log('username is already taken');
           setInputValidation({...inputValidation, username: false});
@@ -191,8 +191,8 @@ function Register({...props}) {
             username: 'This username is already taken',
           });
         } else if (
-          props.auth.error.response &&
-          props.auth.error.response.data.error.conflict === 'email'
+          props.auth.errorRegister.response &&
+          props.auth.errorRegister.response.data.error.conflict === 'email'
         ) {
           console.log('email is already taken');
           setInputValidation({...inputValidation, email: false});
@@ -205,7 +205,11 @@ function Register({...props}) {
         }
       }
     }
-  }, [props.auth.isPending, props.auth.isFulfilled, props.auth.isRejected]);
+  }, [
+    props.auth.isRegisterPending,
+    props.auth.isRegisterFulfilled,
+    props.auth.isRegisterRejected,
+  ]);
   return (
     <ScrollView>
       <KeyboardAvoidingView>

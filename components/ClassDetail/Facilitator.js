@@ -4,7 +4,7 @@ import React, {useEffect, useState} from 'react';
 import {Image, Text, View, StyleSheet} from 'react-native';
 import axios from 'axios';
 import {Tab, Tabs, DefaultTabBar, Button, Icon} from 'native-base';
-import ProgressModal from '../ProgressModal';
+import ProgressModal from '../ClassDetail/ProgressModal';
 import {ProgressBar} from 'react-native-paper';
 import {DOMAIN_API, PORT_API} from '@env';
 import {connect} from 'react-redux';

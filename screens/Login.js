@@ -1,4 +1,5 @@
-import React, {useState, useEffect} from 'react';
+/* eslint-disable react-native/no-inline-styles */
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -8,29 +9,42 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import {Form, Item, Input, Label, Button, Icon} from 'native-base';
-import SplashScreen from 'react-native-splash-screen';
+import {SimpleAnimation} from 'react-native-simple-animations';
 import {login} from '../redux/Action/auth';
 import {connect} from 'react-redux';
 import {DOMAIN_API, PORT_API} from '@env';
 
 function Login({...props}) {
   const [dataLogin, setDataLogin] = useState({username: '', password: ''});
-
   const [showPassword, setShowPassword] = useState(false);
+  const [indicatorVisible, setIndicatorVisible] = useState(false);
+
+  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessageVisible, setErrorMessageVisible] = useState(false);
+
+  const [zIndexInput, setZIndexInput] = useState({
+    username: 1,
+    password: 1,
+  });
+  const [inputValidation, setInputValidation] = useState({
+    username: undefined,
+    password: undefined,
+  });
+
+  const [isDisabled, setIsDisabled] = useState(true);
+
   const [componentWidth, setComponentWidth] = useState(
     Dimensions.get('window').width - 64,
   );
-  const [titleMargin, setTitleMargin] = useState(
-    Dimensions.get('window').height / 10,
-  );
+
   // console.log({...props});
 
   useEffect(() => {
     const updateLayout = () => {
       setComponentWidth(Dimensions.get('window').width - 64);
-      setTitleMargin(Dimensions.get('window').height / 10);
     };
     Dimensions.addEventListener('change', updateLayout);
 
@@ -39,13 +53,85 @@ function Login({...props}) {
     };
   });
 
+  // =============================VALIDATION SECTION============================= //
+  // e-mails must be in the format x@x.x
+  const isValidEmailAddress = address => {
+    return !!address.match(/^[^\s@]+@[^\s@.]+\.[^\s@]+$/);
+  };
+  // username : min. length = 5
+  const usernameValidation = () => {
+    if (dataLogin.username === '') {
+      setInputValidation({...inputValidation, username: false});
+    } else if (dataLogin.username.length < 5) {
+      setInputValidation({...inputValidation, username: false});
+    } else if (dataLogin.username.includes('@')) {
+      if (!isValidEmailAddress(dataLogin.username)) {
+        setInputValidation({...inputValidation, username: false});
+      } else {
+        setInputValidation({...inputValidation, username: true});
+      }
+    } else {
+      setInputValidation({...inputValidation, username: true});
+    }
+  };
+
+  // password : min. length = 8
+  const passwordValidation = () => {
+    if (dataLogin.password === '') {
+      setInputValidation({...inputValidation, password: false});
+    } else if (dataLogin.password.length < 5) {
+      setInputValidation({...inputValidation, password: false});
+    } else {
+      setInputValidation({...inputValidation, password: true});
+    }
+  };
+
+  // =============================END VALIDATION SECTION============================= //
+
+  useEffect(() => {
+    if (inputValidation.username && inputValidation.password) {
+      setIsDisabled(false);
+    } else {
+      setIsDisabled(true);
+    }
+  }, [inputValidation]);
+
   const loginHandler = e => {
     e.preventDefault();
-    // console.log(dataLogin, DOMAIN_API, PORT_API);
-    // const data = {username: dataLogin.username, password: dataLogin.password};
     props.login(`${DOMAIN_API}:${PORT_API}/data/auth/login`, dataLogin);
-    SplashScreen.show();
   };
+
+  const ref = useRef();
+  useEffect(() => {
+    if (!ref.current) {
+      ref.current = true;
+    } else {
+      if (props.auth.isLoginPending) {
+        console.log('Loading...');
+        setIndicatorVisible(true);
+      } else if (props.auth.isLoginFulfilled) {
+        console.log('sukses');
+        setIndicatorVisible(false);
+      } else if (props.auth.isLoginRejected) {
+        setIndicatorVisible(false);
+        console.log({...props.auth.errorLogin});
+        if (
+          props.auth.errorLogin.response &&
+          props.auth.errorLogin.response.status === 401
+        ) {
+          setErrorMessage(
+            'The username and password you entered did not match our records. Please double-check and try again.',
+          );
+          setErrorMessageVisible(true);
+        } else {
+          setErrorMessage(
+            'Opps.. Sorry, our server seems to be having trouble',
+          );
+          setErrorMessageVisible(true);
+        }
+      }
+    }
+  }, [props.auth]);
 
   return (
     <ScrollView>
@@ -54,23 +140,66 @@ function Login({...props}) {
         backgroundColor="transparent"
         barStyle="dark-content"
       />
+
       <View style={styles.container}>
-        <Text style={{...styles.title, marginVertical: titleMargin}}>
-          Login
-        </Text>
+        {indicatorVisible ? (
+          <View
+            style={{
+              justifyContent: 'center',
+              flex: 1,
+              position: 'absolute',
+              // top: '50%',
+              backgroundColor: 'white',
+              opacity: 0.6,
+              zIndex: 10,
+              width: '100%',
+              height: '100%',
+            }}>
+            <ActivityIndicator size={64} color="#5784BA" />
+          </View>
+        ) : null}
+        <Text style={styles.title}>Login</Text>
         <KeyboardAvoidingView>
           <View style={{...styles.formContainer, width: componentWidth}}>
+            {errorMessageVisible ? (
+              <SimpleAnimation delay={500} duration={1000} staticType="bounce">
+                <View style={styles.errorMessage}>
+                  <Icon
+                    name="close"
+                    style={{color: 'white'}}
+                    onPress={() => setErrorMessageVisible(false)}
+                  />
+                  <Text style={styles.errorText}>{errorMessage}</Text>
+                </View>
+              </SimpleAnimation>
+            ) : null}
             <Form>
               <Item floatingLabel style={styles.formItem}>
                 <Label style={styles.formLabel}>Username or Email</Label>
                 <Input
-                  style={styles.formInput}
+                  style={{...styles.formInput, zIndex: zIndexInput.username}}
                   value={dataLogin.username}
                   onChangeText={text =>
                     setDataLogin({...dataLogin, username: text})
                   }
-                  disableFullscreenUI={false}
-                  keyboardType="email-address"
+                  onPressIn={() => {
+                    setZIndexInput({...zIndexInput, username: -1});
+                    setInputValidation({
+                      ...inputValidation,
+                      username: undefined,
+                    });
+                    setErrorMessageVisible(false);
+                  }}
+                  onBlur={() => {
+                    setZIndexInput({
+                      ...zIndexInput,
+                      username: dataLogin.username ? -1 : 1,
+                    });
+
+                    usernameValidation();
+                  }}
+                  disableFullscreenUI={true}
+                  // keyboardType="email-address"
                 />
               </Item>
               <Item floatingLabel style={styles.formItem}>
@@ -78,12 +207,28 @@ function Login({...props}) {
                 <Input
                   secureTextEntry={!showPassword ? true : false}
                   keyboardType={showPassword ? 'visible-password' : null}
-                  style={styles.formInput}
+                  style={{...styles.formInput, zIndex: zIndexInput.password}}
                   value={dataLogin.password}
                   onChangeText={text =>
                     setDataLogin({...dataLogin, password: text})
                   }
-                  disableFullscreenUI={false}
+                  onPressIn={() => {
+                    setZIndexInput({...zIndexInput, password: -1});
+                    setInputValidation({
+                      ...inputValidation,
+                      password: undefined,
+                    });
+                    setErrorMessageVisible(false);
+                  }}
+                  onBlur={() => {
+                    setZIndexInput({
+                      ...zIndexInput,
+                      password: dataLogin.password ? -1 : 1,
+                    });
+
+                    passwordValidation();
+                  }}
+                  disableFullscreenUI={true}
                 />
                 <Icon
                   name={!showPassword ? 'eye' : 'eye-off'}
@@ -92,6 +237,7 @@ function Login({...props}) {
                 />
               </Item>
             </Form>
+
             <Text
               style={styles.txtForgot}
               onPress={() => props.navigation.navigate('ForgotPassword')}>
@@ -100,8 +246,13 @@ function Login({...props}) {
           </View>
           <View style={styles.btnGroup}>
             <Button
-              style={{...styles.buttonLogin, width: componentWidth}}
-              onPress={loginHandler}>
+              style={{
+                ...styles.buttonLogin,
+                width: componentWidth,
+                opacity: isDisabled ? 0.7 : 1,
+              }}
+              onPress={loginHandler}
+              disabled={isDisabled}>
               <Text style={styles.buttonLabel}> Login </Text>
             </Button>
             <Button style={{...styles.buttonGoogle, width: componentWidth}}>
@@ -127,8 +278,11 @@ function Login({...props}) {
 const styles = StyleSheet.create({
   container: {
     paddingTop: StatusBar.currentHeight,
-    height: Dimensions.get('window').height,
-    flex: 1,
+    height:
+      Dimensions.get('window').height < 700
+        ? StatusBar.currentHeight + 700
+        : StatusBar.currentHeight + Dimensions.get('window').height,
+    justifyContent: 'space-around',
     alignItems: 'center',
     textAlignVertical: 'center',
     textAlign: 'center',
@@ -140,31 +294,38 @@ const styles = StyleSheet.create({
     fontFamily: 'Kanit-Medium',
   },
   formContainer: {
-    marginBottom: 12,
+    justifyContent: 'center',
   },
   formInput: {
-    fontSize: 16,
+    fontSize: 17,
     borderWidth: 1,
-    borderRadius: 10,
     borderColor: '#ADA9BB',
+    borderRadius: 10,
     paddingLeft: 16,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto-Regular',
+    color: '#010620',
+    height: 55,
+    paddingRight: 16,
+    marginBottom: 20,
   },
   formItem: {
+    marginTop: 0,
     borderBottomWidth: 0,
     marginLeft: 0,
-    height: 60,
   },
   formLabel: {
+    backgroundColor: '#F9F9F9',
     marginLeft: 16,
     fontFamily: 'Kanit-Regular',
-    color: '#ADA9BB',
+    // color: '#ADA9BB',
     fontSize: 16,
+    position: 'absolute',
   },
   eyeToggler: {
     position: 'absolute',
-    right: 0,
-    top: 20,
+    right: 10,
+    top: 17,
+    marginLeft: 12,
   },
   txtForgot: {
     marginTop: 12,
@@ -180,7 +341,7 @@ const styles = StyleSheet.create({
 
   buttonLogin: {
     justifyContent: 'center',
-    marginTop: 102,
+    marginTop: 60,
     alignItems: 'center',
     borderRadius: 10,
     backgroundColor: '#5784BA',
@@ -209,15 +370,30 @@ const styles = StyleSheet.create({
   },
   txtFooter: {
     flexDirection: 'row',
-    position: 'absolute',
-    bottom: 36,
   },
   txtNewUser: {color: '#ADA9BB', fontFamily: 'Kanit-Medium', fontSize: 15},
   txtRegister: {
     fontFamily: 'Kanit-Medium',
     marginLeft: 5,
     color: '#5784BA',
-    fontSize: 15,
+    fontSize: 16,
+  },
+
+  errorMessage: {
+    backgroundColor: '#EB4335',
+    borderRadius: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    marginBottom: 10,
+  },
+  errorText: {
+    color: '#F9F9F9',
+    padding: 10,
+    paddingLeft: 15,
+    // paddingHorizontal: 15,
+    // textAlign: 'center',
+    width: '90%',
   },
 });
 
