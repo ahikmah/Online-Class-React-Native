@@ -12,14 +12,15 @@ import {
   StatusBar,
 } from 'react-native';
 import {Form, Item, Input, Label, Button, Icon} from 'native-base';
+import CustomModal from '../components/CustomModal';
 import {register} from '../redux/Action/auth';
 import {connect} from 'react-redux';
 import {DOMAIN_API, PORT_API} from '@env';
-import {color} from 'react-native-reanimated';
 
 function Register({...props}) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const [dataRegister, setDataRegister] = useState({
     username: '',
     email: '',
@@ -50,6 +51,8 @@ function Register({...props}) {
     password: 1,
     repassword: 1,
   });
+
+  const [isDisabled, setIsDisabled] = useState(true);
 
   const [componentWidth, setComponentWidth] = useState(
     Dimensions.get('window').width - 64,
@@ -153,6 +156,18 @@ function Register({...props}) {
     };
     props.register(`${DOMAIN_API}:${PORT_API}/data/auth`, data);
   };
+  useEffect(() => {
+    if (
+      inputValidation.username &&
+      inputValidation.email &&
+      inputValidation.password &&
+      inputValidation.repassword
+    ) {
+      setIsDisabled(false);
+    } else {
+      setIsDisabled(true);
+    }
+  }, [inputValidation]);
 
   const ref = useRef();
   useEffect(() => {
@@ -163,16 +178,30 @@ function Register({...props}) {
         console.log('Loading...');
       } else if (props.auth.isFulfilled) {
         console.log('sukses');
+        setModalVisible(true);
       } else if (props.auth.isRejected) {
-        console.log(props.auth.isRejected);
-
         if (
           props.auth.error.response &&
           props.auth.error.response.data.error.conflict === 'username'
         ) {
           console.log('username is already taken');
+          setInputValidation({...inputValidation, username: false});
+          setErrorMessage({
+            ...errorMessage,
+            username: 'This username is already taken',
+          });
+        } else if (
+          props.auth.error.response &&
+          props.auth.error.response.data.error.conflict === 'email'
+        ) {
+          console.log('email is already taken');
+          setInputValidation({...inputValidation, email: false});
+          setErrorMessage({
+            ...errorMessage,
+            email: 'This email is already taken',
+          });
         } else {
-          console.log('something wrong...');
+          console.log('something wrong..');
         }
       }
     }
@@ -417,7 +446,12 @@ function Register({...props}) {
           </View>
           <View style={styles.btnGroup}>
             <Button
-              style={{...styles.buttonLogin, width: componentWidth}}
+              disabled={isDisabled}
+              style={{
+                ...styles.buttonLogin,
+                width: componentWidth,
+                opacity: isDisabled ? 0.7 : 1,
+              }}
               onPress={registerHandler}>
               <Text style={styles.buttonLabel}>Register</Text>
             </Button>
@@ -436,6 +470,15 @@ function Register({...props}) {
             </Text>
           </View>
         </View>
+
+        <CustomModal
+          iconStyle="success"
+          modalVisible={modalVisible}
+          title="Yeay"
+          msg="Your account has been successfully registered. Login now and start learning!"
+          btnLabel="Login Now"
+          onAction={() => props.navigation.navigate('Login')}
+        />
       </KeyboardAvoidingView>
     </ScrollView>
   );
