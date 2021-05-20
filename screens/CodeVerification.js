@@ -12,7 +12,11 @@ import {
 } from 'react-native';
 import {Button} from 'native-base';
 
-function CodeVerification({navigation}) {
+import axios from 'axios';
+import {connect} from 'react-redux';
+import {DOMAIN_API, PORT_API} from '@env';
+
+function CodeVerification({...props}) {
   const [numOne, setNumOne] = useState('');
   const [numTwo, setNumTwo] = useState('');
   const [numThree, setNumThree] = useState('');
@@ -21,6 +25,23 @@ function CodeVerification({navigation}) {
   const ref2 = useRef();
   const ref3 = useRef();
   const ref4 = useRef();
+
+  // console.log(props.idUser, [numOne, numTwo, numThree, numFour].join(''));
+
+  const verificationHandler = e => {
+    e.preventDefault();
+    axios
+      .post(`${DOMAIN_API}:${PORT_API}/data/auth/verify-otp`, {
+        id: props.idUser,
+        otp: [numOne, numTwo, numThree, numFour].join(''),
+      })
+      .then(res => {
+        console.log('sukses');
+        props.navigation.navigate('CreateNewPassword');
+      })
+      .catch(err => console.log('failed', err));
+  };
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -98,9 +119,7 @@ function CodeVerification({navigation}) {
               <Text style={styles.txtConfirm}>Didn't receive a code?</Text>
               <Text style={styles.txtResend}>Resend</Text>
             </View>
-            <Button
-              style={styles.buttonLogin}
-              onPress={() => navigation.navigate('CreateNewPassword')}>
+            <Button style={styles.buttonLogin} onPress={verificationHandler}>
               <Text style={styles.buttonLabel}>Verify</Text>
             </Button>
           </KeyboardAvoidingView>
@@ -183,4 +202,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Kanit-Medium',
   },
 });
-export default CodeVerification;
+const mapStateToProps = state => ({
+  idUser: state.auth.resultOtp.id,
+});
+
+export default connect(mapStateToProps)(CodeVerification);

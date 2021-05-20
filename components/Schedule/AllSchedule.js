@@ -223,6 +223,6 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = state => ({
-  token: state.auth.result.token,
+  token: state.auth.resultLogin.token,
 });
 export default connect(mapStateToProps)(AllSchedule);

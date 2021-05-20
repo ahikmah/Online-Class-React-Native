@@ -23,11 +23,13 @@ const initialState = {
   isUserDataFulfilled: false,
   isUserDataRejected: false,
 
-  // isPending: false,
-  // isFulfilled: false,
-  // isRejected: false,
+  errorOtp: {},
+  resultOtp: {},
+  isOtpPending: false,
+  isOtpFulfilled: false,
+  isOtpRejected: false,
+
   isLogin: false,
-  // isUserObtained: false,
 };
 const auth = (state = initialState, {type, payload}) => {
   switch (type) {
@@ -43,11 +45,7 @@ const auth = (state = initialState, {type, payload}) => {
         ...state,
         isLogoutFulfilled: true,
         isLogoutPending: false,
-        isLogin: false,
-        resultLogin: {},
-        resultRegister: {},
-        resultUserData: {},
-        // currentUser: {},
+        ...initialState,
       };
     case 'LOGOUT_USER_REJECTED':
       return {
@@ -122,6 +120,27 @@ const auth = (state = initialState, {type, payload}) => {
         isUserDataRejected: true,
         isUserDataPending: false,
         errorUserData: payload,
+      };
+    case 'SEND_OTP_PENDING':
+      return {
+        ...state,
+        isOtpPending: true,
+        isOtpFulfilled: false,
+        isOtpRejected: false,
+      };
+    case 'SEND_OTP_FULFILLED':
+      return {
+        ...state,
+        isOtpFulfilled: true,
+        isOtpPending: false,
+        resultOtp: payload.data.result,
+      };
+    case 'SEND_OTP_REJECTED':
+      return {
+        ...state,
+        isOtpRejected: true,
+        isOtpPending: false,
+        errorOtp: payload,
       };
     default:
       return state;

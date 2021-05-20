@@ -10,10 +10,33 @@ import {
 } from 'react-native';
 import {Form, Item, Input, Label, Button, Icon} from 'native-base';
 import PasswordChanged from '../components/PasswordChanged';
-function CreateNewPassword({navigation}) {
+
+import axios from 'axios';
+import {connect} from 'react-redux';
+import {DOMAIN_API, PORT_API} from '@env';
+
+function CreateNewPassword({...props}) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [modalShow, setModalShow] = useState(false);
+  const [dataReset, setDataReset] = useState({
+    password: '',
+    repassword: '',
+  });
+
+  const resetHandler = e => {
+    e.preventDefault();
+    axios
+      .patch(`${DOMAIN_API}:${PORT_API}/data/auth/reset-password`, {
+        id: props.idUser,
+        password: dataReset.password,
+      })
+      .then(res => {
+        console.log('sukses');
+        setModalShow(true);
+      })
+      .catch(err => console.log('failed', err));
+  };
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -31,6 +54,10 @@ function CreateNewPassword({navigation}) {
                 <Input
                   secureTextEntry={!showPassword ? true : false}
                   style={styles.formInput}
+                  value={dataReset.password}
+                  onChangeText={text => {
+                    setDataReset({...dataReset, password: text});
+                  }}
                   keyboardType={showPassword ? 'visible-password' : null}
                 />
                 <Icon
@@ -44,6 +71,10 @@ function CreateNewPassword({navigation}) {
                 <Input
                   secureTextEntry={!showConfirmPassword ? true : false}
                   style={styles.formInput}
+                  value={dataReset.repassword}
+                  onChangeText={text => {
+                    setDataReset({...dataReset, repassword: text});
+                  }}
                   keyboardType={showConfirmPassword ? 'visible-password' : null}
                 />
                 <Icon
@@ -53,16 +84,14 @@ function CreateNewPassword({navigation}) {
                 />
               </Item>
             </Form>
-            <Button
-              style={styles.buttonLogin}
-              onPress={() => setModalShow(true)}>
+            <Button style={styles.buttonLogin} onPress={resetHandler}>
               <Text style={styles.buttonLabel}>Create</Text>
             </Button>
           </KeyboardAvoidingView>
         </View>
       </View>
       {modalShow && (
-        <PasswordChanged onNext={() => navigation.navigate('Login')} />
+        <PasswordChanged onNext={() => props.navigation.navigate('Login')} />
       )}
     </ScrollView>
   );
@@ -139,5 +168,8 @@ const styles = StyleSheet.create({
     top: 20,
   },
 });
+const mapStateToProps = state => ({
+  idUser: state.auth.resultOtp.id,
+});
 
-export default CreateNewPassword;
+export default connect(mapStateToProps)(CreateNewPassword);

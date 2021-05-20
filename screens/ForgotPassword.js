@@ -1,4 +1,5 @@
-import React, {useState, useEffect} from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -10,13 +11,44 @@ import {
   StatusBar,
 } from 'react-native';
 import {Form, Item, Input, Label, Button, Icon} from 'native-base';
+import {sendOTP} from '../redux/Action/auth';
+import {connect} from 'react-redux';
+import {DOMAIN_API, PORT_API} from '@env';
 
-function ForgotPassword({navigation}) {
+function ForgotPassword({...props}) {
+  const [email, setEmail] = useState('');
+
+  const sendOTPHandler = e => {
+    e.preventDefault();
+    props.sendOTP(`${DOMAIN_API}:${PORT_API}/data/auth/send-otp`, {
+      email: email,
+    });
+  };
+  // console.log(email);
+  const ref = useRef();
+  useEffect(() => {
+    if (!ref.current) {
+      ref.current = true;
+    } else {
+      if (props.auth.isOtpPending) {
+        console.log('Loading...');
+      } else if (props.auth.isOtpFulfilled) {
+        console.log('sukses');
+        props.navigation.navigate('CodeVerification');
+      } else if (props.auth.isOtpRejected) {
+        console.log('failed', {...props.auth.errorOtp});
+      }
+    }
+  }, [
+    props.auth.isOtpPending,
+    props.auth.isOtpFulfilled,
+    props.auth.isOtpRejected,
+  ]);
   return (
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Icon name="chevron-back" onPress={() => navigation.goBack()} />
+          <Icon name="chevron-back" onPress={() => props.navigation.goBack()} />
         </View>
         <View style={styles.main}>
           <Text style={styles.title}>Reset Password</Text>
@@ -32,12 +64,15 @@ function ForgotPassword({navigation}) {
             <Form>
               <Item floatingLabel style={styles.formItem}>
                 <Label style={styles.formLabel}>Email</Label>
-                <Input style={styles.formInput} keyboardType="email-address" />
+                <Input
+                  style={styles.formInput}
+                  value={email}
+                  onChangeText={text => setEmail(text)}
+                  keyboardType="email-address"
+                />
               </Item>
             </Form>
-            <Button
-              style={styles.buttonLogin}
-              onPress={() => navigation.navigate('CodeVerification')}>
+            <Button style={styles.btnSend} onPress={sendOTPHandler}>
               <Text style={styles.buttonLabel}> Send </Text>
             </Button>
           </KeyboardAvoidingView>
@@ -99,7 +134,7 @@ const styles = StyleSheet.create({
     color: '#ADA9BB',
     fontSize: 16,
   },
-  buttonLogin: {
+  btnSend: {
     width: Dimensions.get('window').width - 64,
     justifyContent: 'center',
     marginTop: 24,
@@ -117,4 +152,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ForgotPassword;
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
+const mapDispatchToProps = dispatch => ({
+  sendOTP: (url, data) => {
+    console.log('hae', data);
+    dispatch(sendOTP(url, data));
+  },
+});
+export default connect(mapStateToProps, mapDispatchToProps)(ForgotPassword);

@@ -23,6 +23,13 @@ export const register = (url, data) => {
   };
 };
 
+export const sendOTP = (url, data) => {
+  return {
+    type: 'SEND_OTP',
+    payload: axios.post(url, data),
+  };
+};
+
 export const getDataUser = (url, token) => {
   return {
     type: 'GET_DATA_USER',

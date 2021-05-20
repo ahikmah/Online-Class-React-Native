@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect, useRef} from 'react';
 import {
@@ -34,6 +35,7 @@ function Login({...props}) {
     password: undefined,
   });
 
+  console.log(props.auth);
   const [isDisabled, setIsDisabled] = useState(true);
 
   const [componentWidth, setComponentWidth] = useState(
@@ -131,7 +133,11 @@ function Login({...props}) {
         }
       }
     }
-  }, [props.auth]);
+  }, [
+    props.auth.isLoginPending,
+    props.auth.isLoginFulfilled,
+    props.auth.isLoginRejected,
+  ]);
 
   return (
     <ScrollView>

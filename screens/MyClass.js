@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
 });
 const mapStateToProps = state => ({
-  token: state.auth.result.token,
+  token: state.auth.resultLogin.token,
   role: state.auth.currentUser.role,
 });
 export default connect(mapStateToProps)(MyClass);
