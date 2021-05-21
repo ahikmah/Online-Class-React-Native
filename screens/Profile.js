@@ -189,7 +189,10 @@ function Profile({...props}) {
                 <Text style={styles.item}>Change Password</Text>
               </Body>
               <Right style={styles.noBorder}>
-                <Icon name="chevron-forward" />
+                <Icon
+                  name="chevron-forward"
+                  onPress={() => props.navigation.navigate('ChangePassword')}
+                />
               </Right>
             </ListItem>
           </View>

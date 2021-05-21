@@ -29,6 +29,8 @@ const initialState = {
   isOtpFulfilled: false,
   isOtpRejected: false,
 
+  codeOTP: {},
+
   isLogin: false,
 };
 const auth = (state = initialState, {type, payload}) => {
@@ -141,6 +143,11 @@ const auth = (state = initialState, {type, payload}) => {
         isOtpRejected: true,
         isOtpPending: false,
         errorOtp: payload,
+      };
+    case 'CODE_OTP':
+      return {
+        ...state,
+        codeOTP: payload,
       };
     default:
       return state;

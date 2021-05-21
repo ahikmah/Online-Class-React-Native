@@ -13,6 +13,8 @@ import {
 import {Button} from 'native-base';
 
 import axios from 'axios';
+import {codeOTP} from '../redux/Action/auth';
+
 import {connect} from 'react-redux';
 import {DOMAIN_API, PORT_API} from '@env';
 
@@ -26,8 +28,6 @@ function CodeVerification({...props}) {
   const ref3 = useRef();
   const ref4 = useRef();
 
-  // console.log(props.idUser, [numOne, numTwo, numThree, numFour].join(''));
-
   const verificationHandler = e => {
     e.preventDefault();
     axios
@@ -37,6 +37,7 @@ function CodeVerification({...props}) {
       })
       .then(res => {
         console.log('sukses');
+        props.codeOTP([numOne, numTwo, numThree, numFour].join(''));
         props.navigation.navigate('CreateNewPassword');
       })
       .catch(err => console.log('failed', err));
@@ -203,7 +204,11 @@ const styles = StyleSheet.create({
   },
 });
 const mapStateToProps = state => ({
-  idUser: state.auth.resultOtp.id,
+  idUser: state.auth.resultOtp.idUser,
 });
-
-export default connect(mapStateToProps)(CodeVerification);
+const mapDispatchToProps = dispatch => ({
+  codeOTP: code => {
+    dispatch(codeOTP(code));
+  },
+});
+export default connect(mapStateToProps, mapDispatchToProps)(CodeVerification);

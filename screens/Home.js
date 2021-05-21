@@ -1,7 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState, useRef} from 'react';
 import {View, Text, StyleSheet, StatusBar, ScrollView} from 'react-native';
-import SplashScreen from 'react-native-splash-screen';
 import NewsItems from '../components/NewsItems';
 import {getDataUser} from '../redux/Action/auth';
 import {connect} from 'react-redux';
@@ -25,7 +24,6 @@ function Home(props) {
     } else {
       if (props.auth.isUserObtained) {
         setDataUser(props.auth.currentUser);
-        SplashScreen.hide();
         console.log(props.auth.currentUser);
       }
     }

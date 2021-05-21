@@ -157,7 +157,6 @@ const mapStateToProps = state => ({
 });
 const mapDispatchToProps = dispatch => ({
   sendOTP: (url, data) => {
-    console.log('hae', data);
     dispatch(sendOTP(url, data));
   },
 });

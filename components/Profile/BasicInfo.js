@@ -210,7 +210,7 @@ function BasicInfo({...props}) {
               <Text
                 style={styles.title}
                 onPress={() => props.navigation.goBack()}>
-                Profile
+                Update Profile
               </Text>
             </View>
             <Text
@@ -228,7 +228,18 @@ function BasicInfo({...props}) {
                     ? 'white'
                     : '#ADA9BB',
               }}
-              onPress={() => setModalVisible(true)}>
+              onPress={
+                inputValidation.fullName !== false &&
+                inputValidation.username !== false &&
+                inputValidation.email !== false &&
+                inputValidation.phone !== false &&
+                (inputValidation.fullName !== undefined ||
+                  inputValidation.username !== undefined ||
+                  inputValidation.email !== undefined ||
+                  inputValidation.phone !== undefined)
+                  ? () => setModalVisible(true)
+                  : () => setModalVisible(false)
+              }>
               Save
             </Text>
           </View>

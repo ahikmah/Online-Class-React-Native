@@ -25,6 +25,7 @@ import ChatGroupDetail from './screens/ChatGroupDetail';
 // Profile
 import Profile from './screens/Profile';
 import BasicInfo from './components/Profile/BasicInfo';
+import ChangePassword from './components/Profile/ChangePassword';
 
 import {connect} from 'react-redux';
 
@@ -101,6 +102,7 @@ function ProfileStack() {
       }}>
       <Stack.Screen name="ProfileDashboard" component={Profile} />
       <Stack.Screen name="BasicInfo" component={BasicInfo} />
+      <Stack.Screen name="ChangePassword" component={ChangePassword} />
       {/* <Stack.Screen name="MyClass" component={MyClass} />
       <Stack.Screen name="ClassDetail" component={ClassDetail} /> */}
     </Stack.Navigator>

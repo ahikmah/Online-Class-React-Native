@@ -29,7 +29,12 @@ export const sendOTP = (url, data) => {
     payload: axios.post(url, data),
   };
 };
-
+export const codeOTP = code => {
+  return {
+    type: 'CODE_OTP',
+    payload: code,
+  };
+};
 export const getDataUser = (url, token) => {
   return {
     type: 'GET_DATA_USER',

@@ -23,12 +23,11 @@ function CreateNewPassword({...props}) {
     password: '',
     repassword: '',
   });
-
   const resetHandler = e => {
     e.preventDefault();
     axios
       .patch(`${DOMAIN_API}:${PORT_API}/data/auth/reset-password`, {
-        id: props.idUser,
+        otp: props.otp,
         password: dataReset.password,
       })
       .then(res => {
@@ -37,6 +36,7 @@ function CreateNewPassword({...props}) {
       })
       .catch(err => console.log('failed', err));
   };
+  // console.log('heio', props.auth);
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   },
 });
 const mapStateToProps = state => ({
-  idUser: state.auth.resultOtp.id,
+  otp: state.auth.codeOTP,
 });
 
 export default connect(mapStateToProps)(CreateNewPassword);
