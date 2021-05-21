@@ -64,7 +64,7 @@ function Login({...props}) {
   const usernameValidation = () => {
     if (dataLogin.username === '') {
       setInputValidation({...inputValidation, username: false});
-    } else if (dataLogin.username.length < 5) {
+    } else if (dataLogin.username.length < 4) {
       setInputValidation({...inputValidation, username: false});
     } else if (dataLogin.username.includes('@')) {
       if (!isValidEmailAddress(dataLogin.username)) {

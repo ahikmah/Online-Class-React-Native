@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
 import {
@@ -10,14 +11,24 @@ import {
   ScrollView,
 } from 'react-native';
 import {ListItem, Icon, Left, Body, Right} from 'native-base';
+import CustomModal from '../components/CustomModal';
+import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
+import axios from 'axios';
 import {DOMAIN_API, PORT_API} from '@env';
 
 import {logoutUser} from '../redux/Action/auth';
 import {connect} from 'react-redux';
 
-function Profile(props) {
+function Profile({...props}) {
   const [avatar, setAvatar] = useState(props.auth.currentUser.avatar);
-  const [name, setName] = useState(props.auth.currentUser.full_name);
+  const [newAvatar, setNewAvatar] = useState();
+  const [name, setName] = useState(
+    props.auth.currentUser.full_name ?? props.auth.currentUser.username,
+  );
+  const [isAvatarUpdate, setIsAvatarUpdate] = useState(false);
+  const [isAvatarChanged, setIsAvatarChanged] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
 
   const [lastSectionPadding, setLastSectionPadding] = useState(
     Dimensions.get('window').height,
@@ -36,12 +47,68 @@ function Profile(props) {
       Dimensions.removeEventListener('change', updateLayout);
     };
   });
+  useEffect(() => {
+    setName(
+      props.auth.currentUser.full_name ?? props.auth.currentUser.username,
+    );
+  }, [props.auth.currentUser.full_name]);
 
+  const choosePhotoHandler = () => {
+    launchImageLibrary({noData: true}, response => {
+      // console.log(response);
+      if (response) {
+        setNewAvatar(response);
+        setIsAvatarUpdate(true);
+      } else {
+        setNewAvatar(avatar);
+      }
+    });
+  };
+  const launchCameraHandler = () => {
+    launchCamera({noData: true}, response => {
+      // console.log(response);
+      if (response) {
+        setNewAvatar(response);
+        setIsAvatarUpdate(true);
+      } else {
+        setNewAvatar(avatar);
+      }
+    });
+  };
+
+  const uploadHandler = e => {
+    e.preventDefault();
+    const token = props.token;
+    console.log(token);
+    let formData = new FormData();
+    formData.append('avatar', {
+      name: newAvatar.fileName,
+      type: newAvatar.type,
+      uri: newAvatar.uri,
+    });
+    axios
+      .patch(`${DOMAIN_API}:${PORT_API}/data/users/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'x-access-token': `Bearer ${token}`,
+        },
+      })
+      .then(res => {
+        console.log(res, 'Success');
+        setIsAvatarChanged(true);
+        setAvatar(newAvatar);
+        setModalVisible(false);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
   const logoutHandler = () => {
     console.log(props.token);
     const token = props.token;
     // props.logoutUser();
     props.logoutUser(`${DOMAIN_API}:${PORT_API}/data/auth/logout`, token);
+    setLogoutModalVisible(false);
   };
   return (
     <>
@@ -54,9 +121,30 @@ function Profile(props) {
         <View style={styles.header}>
           <Text style={styles.title}>Profile</Text>
           <View style={styles.profileSummary}>
-            <Image
-              source={{uri: `${DOMAIN_API}:${PORT_API}${avatar}`}}
-              style={styles.avatar}
+            {avatar ? (
+              <Image
+                source={{
+                  uri: isAvatarChanged
+                    ? newAvatar.uri
+                    : `${DOMAIN_API}:${PORT_API}${avatar}`,
+                }}
+                style={styles.avatar}
+              />
+            ) : (
+              <Image
+                source={
+                  isAvatarChanged
+                    ? {uri: newAvatar.uri}
+                    : require('../assets/images/graduate.png')
+                }
+                style={styles.avatar}
+              />
+            )}
+
+            <Icon
+              name="camera"
+              style={{color: 'white', top: 19, left: -12}}
+              onPress={() => setModalVisible(true)}
             />
             <View style={styles.info}>
               <Text style={styles.name}>{name}</Text>
@@ -70,6 +158,20 @@ function Profile(props) {
             <Text style={styles.nameSection}>Account</Text>
             <ListItem icon style={styles.listItem}>
               <Left>
+                <Icon name="person-circle" style={{color: '#3F4356'}} />
+              </Left>
+              <Body style={styles.noBorder}>
+                <Text style={styles.item}>Account Setting</Text>
+              </Body>
+              <Right style={styles.noBorder}>
+                <Icon
+                  name="chevron-forward"
+                  onPress={() => props.navigation.navigate('BasicInfo')}
+                />
+              </Right>
+            </ListItem>
+            {/* <ListItem icon style={styles.listItem}>
+              <Left>
                 <Image source={require('../assets/images/set-phone.png')} />
               </Left>
               <Body style={styles.noBorder}>
@@ -78,7 +180,7 @@ function Profile(props) {
               <Right style={styles.noBorder}>
                 <Icon name="chevron-forward" />
               </Right>
-            </ListItem>
+            </ListItem> */}
             <ListItem icon style={styles.listItem}>
               <Left>
                 <Image source={require('../assets/images/set-password.png')} />
@@ -156,7 +258,12 @@ function Profile(props) {
                 <Icon name="chevron-forward" />
               </Right>
             </ListItem>
-            <ListItem icon style={styles.listItem} onPress={logoutHandler}>
+            <ListItem
+              icon
+              style={styles.listItem}
+              onPress={() => {
+                setLogoutModalVisible(true);
+              }}>
               <Left>
                 <Image source={require('../assets/images/set-logout.png')} />
               </Left>
@@ -165,6 +272,48 @@ function Profile(props) {
               </Body>
             </ListItem>
           </View>
+          {modalVisible ? (
+            <CustomModal
+              // iconStyle="success"
+              modalVisible={modalVisible}
+              title="Choose Photo"
+              // msg="Your account has been successfully registered. Login now and start learning!"
+              content={
+                isAvatarUpdate
+                  ? {uri: newAvatar.uri}
+                  : avatar
+                  ? {uri: `${DOMAIN_API}:${PORT_API}${avatar}`}
+                  : require('../assets/images/graduate.png')
+              }
+              btnLabel="Open Gallery"
+              onAction={choosePhotoHandler}
+              btnLabel2="Launch Camera"
+              onAction2={launchCameraHandler}
+              btnLabel3="Discard Change"
+              onAction3={() => {
+                setModalVisible(false);
+                setIsAvatarUpdate(false);
+                setNewAvatar(avatar);
+              }}
+              btnLabel4="Save Change"
+              onAction4={uploadHandler}
+            />
+          ) : null}
+
+          {logoutModalVisible ? (
+            <CustomModal
+              iconStyle="confirm-danger"
+              modalVisible={logoutModalVisible}
+              title="Confirmation"
+              msg="Are you sure want to logout?"
+              btnLabel3="Cancel"
+              onAction3={() => {
+                setLogoutModalVisible(false);
+              }}
+              btnLabel4="Yes I'm sure"
+              onAction4={logoutHandler}
+            />
+          ) : null}
         </ScrollView>
       </View>
     </>

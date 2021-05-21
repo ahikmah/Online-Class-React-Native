@@ -13,7 +13,7 @@ import {
 const CustomModal = props => {
   const [iconModal, setIconModal] = useState({
     height: Dimensions.get('window').height > 700 ? 250 : 100,
-    width: Dimensions.get('window').height > 700 ? 170 : 70,
+    width: Dimensions.get('window').height > 700 ? 180 : 80,
   });
   const [modalSize, setModalSize] = useState(
     Dimensions.get('window').height > 700 ? 0.7 : 1,
@@ -23,7 +23,7 @@ const CustomModal = props => {
     const updateLayout = () => {
       setIconModal({
         height: Dimensions.get('window').height > 700 ? 250 : 100,
-        width: Dimensions.get('window').height > 700 ? 170 : 70,
+        width: Dimensions.get('window').height > 700 ? 180 : 80,
       });
       setModalSize(Dimensions.get('window').height > 700 ? 0.7 : 1);
     };
@@ -47,18 +47,66 @@ const CustomModal = props => {
           }}>
           <View style={{...styles.modalView, flex: modalSize}}>
             <Text style={styles.title}>{props.title}</Text>
-            {props.iconStyle === 'success' ? (
-              <Image
-                source={require('../assets/images/success-modal.png')}
-                style={{height: iconModal.height, width: iconModal.width}}
-              />
-            ) : null}
-            <Text style={styles.modalText}>{props.msg}</Text>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={props.onAction}>
-              <Text style={styles.textStyle}>{props.btnLabel}</Text>
-            </Pressable>
+            <View style={{alignItems: 'center'}}>
+              {props.iconStyle === 'success' ? (
+                <Image
+                  source={require('../assets/images/success-modal.png')}
+                  style={{height: iconModal.height, width: iconModal.width}}
+                />
+              ) : props.iconStyle === 'confirm' ? (
+                <Image
+                  source={require('../assets/images/confirm-modal.png')}
+                  style={{height: iconModal.height, width: iconModal.width}}
+                />
+              ) : props.iconStyle === 'confirm-danger' ? (
+                <Image
+                  source={require('../assets/images/fail-modal.png')}
+                  style={{height: iconModal.height, width: iconModal.width}}
+                />
+              ) : null}
+              <View style={{alignItems: 'center'}}>
+                {props.msg ? (
+                  <Text style={styles.modalText}>{props.msg}</Text>
+                ) : props.content ? (
+                  <Image style={styles.avatar} source={props.content} />
+                ) : null}
+              </View>
+            </View>
+
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+              {props.btnLabel ? (
+                <Pressable
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={props.onAction}>
+                  <Text style={styles.textStyle}>{props.btnLabel}</Text>
+                </Pressable>
+              ) : null}
+              {props.btnLabel2 ? (
+                <Pressable
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={props.onAction2}>
+                  <Text style={styles.textStyle}>{props.btnLabel2}</Text>
+                </Pressable>
+              ) : null}
+            </View>
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+              {props.btnLabel3 ? (
+                <Pressable
+                  style={[styles.button, styles.buttonCancel]}
+                  onPress={props.onAction3}>
+                  <Text style={styles.textStyle}>{props.btnLabel3}</Text>
+                </Pressable>
+              ) : null}
+              {props.btnLabel4 ? (
+                <Pressable
+                  style={[styles.button, styles.buttonSave]}
+                  onPress={props.onAction4}>
+                  <Text style={styles.textStyle}>{props.btnLabel4}</Text>
+                </Pressable>
+              ) : null}
+            </View>
           </View>
         </View>
       </Modal>
@@ -75,13 +123,16 @@ const styles = StyleSheet.create({
   },
   modalView: {
     justifyContent: 'space-around',
+    // alignItems: 'stretch',
     // flex: Dimensions.get('window').height > 700 ? 0.7 : 1,
+    width: '90%',
+    height: 'auto',
     marginVertical: 20,
     marginHorizontal: 10,
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
-    alignItems: 'center',
+    // alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -99,11 +150,21 @@ const styles = StyleSheet.create({
   buttonClose: {
     backgroundColor: '#5784BA',
   },
+  buttonSave: {
+    backgroundColor: '#57BA61',
+  },
+  buttonCancel: {
+    backgroundColor: '#EB4335',
+  },
   textStyle: {
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
     fontSize: 16,
+  },
+  avatar: {
+    width: 200,
+    height: 200,
   },
   modalText: {
     marginBottom: 15,
@@ -116,7 +177,8 @@ const styles = StyleSheet.create({
   //   },
   title: {
     fontFamily: 'Montserrat-Bold',
-    fontSize: 50,
+    fontSize: 32,
+    textAlign: 'center',
     color: '#5784BA',
   },
 });

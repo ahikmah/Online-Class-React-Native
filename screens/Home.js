@@ -41,7 +41,9 @@ function Home(props) {
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.topSection}>
-            <Text style={styles.txtGreeting}>Welcome back,</Text>
+            <Text style={styles.txtGreeting}>
+              {dataUser.full_name ? 'Welcome back,' : 'Hay! Welcome,'}
+            </Text>
             <Icon
               name="notifications-sharp"
               style={{color: 'white', fontSize: 24}}
@@ -49,7 +51,9 @@ function Home(props) {
             <View style={styles.notifFlag} />
           </View>
           <Text style={styles.name}>
-            {dataUser.full_name ? dataUser.full_name.split(' ')[0] : null}
+            {dataUser.full_name
+              ? dataUser.full_name.split(' ')[0]
+              : dataUser.username}
           </Text>
           <View style={styles.searchSection}>
             <Item style={styles.searchInputContainer}>

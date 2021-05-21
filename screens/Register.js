@@ -217,7 +217,7 @@ function Register({...props}) {
           <Text style={{...styles.title}}>Register</Text>
           <View style={{...styles.formContainer, width: componentWidth}}>
             <Form>
-              <Item floatingLabel style={styles.formItem}>
+              <Item floatingLabel style={[styles.formItem]}>
                 <Label
                   style={{
                     ...styles.formLabel,

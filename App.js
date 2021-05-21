@@ -24,6 +24,7 @@ import CreateNewChat from './screens/ChatNew';
 import ChatGroupDetail from './screens/ChatGroupDetail';
 // Profile
 import Profile from './screens/Profile';
+import BasicInfo from './components/Profile/BasicInfo';
 
 import {connect} from 'react-redux';
 
@@ -74,7 +75,7 @@ function HomeTabs() {
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Activity" component={ActivityStack} />
       <Tab.Screen name="Chat" component={Chat} />
-      <Tab.Screen name="Profile" component={Profile} />
+      <Tab.Screen name="Profile" component={ProfileStack} />
     </Tab.Navigator>
   );
 }
@@ -88,6 +89,20 @@ function ActivityStack() {
       <Stack.Screen name="ActivityDashboard" component={ActivityDashboard} />
       <Stack.Screen name="MyClass" component={MyClass} />
       <Stack.Screen name="ClassDetail" component={ClassDetail} />
+    </Stack.Navigator>
+  );
+}
+
+function ProfileStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Stack.Screen name="ProfileDashboard" component={Profile} />
+      <Stack.Screen name="BasicInfo" component={BasicInfo} />
+      {/* <Stack.Screen name="MyClass" component={MyClass} />
+      <Stack.Screen name="ClassDetail" component={ClassDetail} /> */}
     </Stack.Navigator>
   );
 }

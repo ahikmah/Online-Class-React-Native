@@ -231,7 +231,7 @@ function Student({...props}) {
           <View style={styles.filterSection}>
             <Item picker style={{width: 100, overflow: 'hidden'}}>
               <Picker
-                mode="dropdown"
+                mode="dialog"
                 style={{width: 145}}
                 placeholder="Select your SIM"
                 placeholderStyle={{color: '#bfc6ea'}}
@@ -286,7 +286,7 @@ function Student({...props}) {
             </Item>
             <Item picker style={{width: 90, overflow: 'hidden'}}>
               <Picker
-                mode="dropdown"
+                mode="dialog"
                 style={{width: 145}}
                 placeholder="Select your SIM"
                 placeholderStyle={{color: '#bfc6ea'}}
