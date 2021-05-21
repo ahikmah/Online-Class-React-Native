@@ -117,16 +117,17 @@ function BasicInfo({...props}) {
     }
   };
   // =============================END VALIDATION SECTION============================= //
-
   const updateHandler = e => {
     e.preventDefault();
     if (
       inputValidation.fullName !== false &&
       inputValidation.username !== false &&
       inputValidation.email !== false &&
+      inputValidation.phone !== false &&
       (inputValidation.fullName !== undefined ||
         inputValidation.username !== undefined ||
-        inputValidation.email !== undefined)
+        inputValidation.email !== undefined ||
+        inputValidation.phone !== undefined)
     ) {
       const token = props.token;
       let formData = new FormData();
@@ -176,6 +177,13 @@ function BasicInfo({...props}) {
             setErrorMessage({
               ...errorMessage,
               email: 'This email is already taken',
+            });
+            setModalVisible(false);
+          } else if (err.response.data.error.conflict === 'phone') {
+            setInputValidation({...inputValidation, phone: false});
+            setErrorMessage({
+              ...errorMessage,
+              phone: 'This number is already used by another account',
             });
             setModalVisible(false);
           }
