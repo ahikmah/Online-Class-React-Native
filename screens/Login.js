@@ -35,11 +35,19 @@ function Login({...props}) {
     password: undefined,
   });
 
-  console.log(props.auth);
+  // console.log(props.auth);
   const [isDisabled, setIsDisabled] = useState(true);
 
   const [componentWidth, setComponentWidth] = useState(
     Dimensions.get('window').width - 64,
+  );
+  const [marginTop, setMarginTop] = useState(
+    Dimensions.get('window').height > 700
+      ? StatusBar.currentHeight + 64
+      : StatusBar.currentHeight + 16,
+  );
+  const [marginBottom, setMarginBottom] = useState(
+    Dimensions.get('window').height > 700 ? StatusBar.currentHeight + 64 : null,
   );
 
   // console.log({...props});
@@ -47,6 +55,16 @@ function Login({...props}) {
   useEffect(() => {
     const updateLayout = () => {
       setComponentWidth(Dimensions.get('window').width - 64);
+      setMarginTop(
+        Dimensions.get('window').height > 700
+          ? StatusBar.currentHeight + 64
+          : StatusBar.currentHeight + 16,
+      );
+      setMarginBottom(
+        Dimensions.get('window').height > 700
+          ? StatusBar.currentHeight + 64
+          : null,
+      );
     };
     Dimensions.addEventListener('change', updateLayout);
 
@@ -140,33 +158,42 @@ function Login({...props}) {
   ]);
 
   return (
-    <ScrollView>
+    <>
       <StatusBar
         translucent
-        backgroundColor="transparent"
+        backgroundColor="#F9F9F9"
         barStyle="dark-content"
       />
+      <ScrollView>
+        <View style={styles.container}>
+          {indicatorVisible ? (
+            <View
+              style={{
+                justifyContent: 'center',
+                flex: 1,
+                position: 'absolute',
+                // top: '50%',
+                backgroundColor: 'white',
+                opacity: 0.6,
+                zIndex: 10,
+                width: '100%',
+                height: '100%',
+              }}>
+              <ActivityIndicator size={64} color="#5784BA" />
+            </View>
+          ) : null}
 
-      <View style={styles.container}>
-        {indicatorVisible ? (
-          <View
-            style={{
-              justifyContent: 'center',
-              flex: 1,
-              position: 'absolute',
-              // top: '50%',
-              backgroundColor: 'white',
-              opacity: 0.6,
-              zIndex: 10,
-              width: '100%',
-              height: '100%',
-            }}>
-            <ActivityIndicator size={64} color="#5784BA" />
-          </View>
-        ) : null}
-        <Text style={styles.title}>Login</Text>
-        <KeyboardAvoidingView>
-          <View style={{...styles.formContainer, width: componentWidth}}>
+          <KeyboardAvoidingView
+            // behavior="padding"
+            style={{width: componentWidth}}>
+            <Text
+              style={{
+                ...styles.title,
+                marginTop: marginTop,
+                marginBottom: marginBottom,
+              }}>
+              Login
+            </Text>
             {errorMessageVisible ? (
               <SimpleAnimation delay={500} duration={1000} staticType="bounce">
                 <View style={styles.errorMessage}>
@@ -179,6 +206,7 @@ function Login({...props}) {
                 </View>
               </SimpleAnimation>
             ) : null}
+
             <Form>
               <Item floatingLabel style={styles.formItem}>
                 <Label style={styles.formLabel}>Username or Email</Label>
@@ -249,58 +277,59 @@ function Login({...props}) {
               onPress={() => props.navigation.navigate('ForgotPassword')}>
               Forgot password?
             </Text>
-          </View>
-          <View style={styles.btnGroup}>
-            <Button
-              style={{
-                ...styles.buttonLogin,
-                width: componentWidth,
-                opacity: isDisabled ? 0.7 : 1,
-              }}
-              onPress={loginHandler}
-              disabled={isDisabled}>
-              <Text style={styles.buttonLabel}> Login </Text>
-            </Button>
-            <Button style={{...styles.buttonGoogle, width: componentWidth}}>
-              <Image source={require('../assets/images/google-icon.png')} />
-              <Text style={styles.buttonLabelGoogle}> Login with Google </Text>
-            </Button>
-          </View>
-        </KeyboardAvoidingView>
+            <KeyboardAvoidingView style={styles.btnGroup}>
+              <Button
+                style={{
+                  ...styles.buttonLogin,
+                  width: componentWidth,
+                  opacity: isDisabled ? 0.7 : 1,
+                }}
+                onPress={loginHandler}
+                disabled={isDisabled}>
+                <Text style={styles.buttonLabel}> Login </Text>
+              </Button>
+              <Button style={{...styles.buttonGoogle, width: componentWidth}}>
+                <Image source={require('../assets/images/google-icon.png')} />
+                <Text style={styles.buttonLabelGoogle}>
+                  {' '}
+                  Login with Google{' '}
+                </Text>
+              </Button>
+            </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
 
-        <View style={styles.txtFooter}>
-          <Text style={styles.txtNewUser}>New user?</Text>
-          <Text
-            style={styles.txtRegister}
-            onPress={() => props.navigation.navigate('Register')}>
-            Register
-          </Text>
+          <View style={styles.txtFooter}>
+            <Text style={styles.txtNewUser}>New user?</Text>
+            <Text
+              style={styles.txtRegister}
+              onPress={() => props.navigation.navigate('Register')}>
+              Register
+            </Text>
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: StatusBar.currentHeight,
+    paddingBottom: 32,
+    // paddingTop: ,
     height:
       Dimensions.get('window').height < 700
         ? StatusBar.currentHeight + 700
         : StatusBar.currentHeight + Dimensions.get('window').height,
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    textAlignVertical: 'center',
-    textAlign: 'center',
     alignContent: 'center',
     backgroundColor: '#F9F9F9',
+    // flex: 1,
   },
   title: {
     fontSize: 40,
     fontFamily: 'Kanit-Medium',
-  },
-  formContainer: {
-    justifyContent: 'center',
+    textAlign: 'center',
   },
   formInput: {
     fontSize: 17,

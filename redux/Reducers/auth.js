@@ -122,6 +122,9 @@ const auth = (state = initialState, {type, payload}) => {
         isUserDataRejected: true,
         isUserDataPending: false,
         errorUserData: payload,
+        currentUser: {},
+        isLogin: false,
+        resultLogin: {},
       };
     case 'SEND_OTP_PENDING':
       return {
