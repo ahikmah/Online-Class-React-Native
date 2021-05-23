@@ -131,7 +131,8 @@ function BasicInfo({...props}) {
     ) {
       const token = props.token;
       let formData = new FormData();
-      fullName !== props.auth.currentUser.full_name
+      fullName !== props.auth.currentUser.full_name &&
+      fullName !== 'Not set up yet'
         ? formData.append('full_name', fullName)
         : null;
       username !== props.auth.currentUser.username
@@ -140,7 +141,7 @@ function BasicInfo({...props}) {
       email !== props.auth.currentUser.email
         ? formData.append('email', email)
         : null;
-      phone !== props.auth.currentUser.phone
+      phone !== props.auth.currentUser.phone && phone !== 'Not set up yet'
         ? formData.append('phone', phone)
         : null;
 
