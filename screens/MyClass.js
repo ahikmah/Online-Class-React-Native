@@ -36,12 +36,13 @@ function MyClass({...props}) {
             </Text>
           </View>
         </View>
-
-        {role === 'student' ? (
-          <StudentMyClass navigation={props.navigation} />
-        ) : (
-          <FacilitatorMyClass navigation={props.navigation} />
-        )}
+        <View>
+          {role === 'student' ? (
+            <StudentMyClass navigation={props.navigation} />
+          ) : (
+            <FacilitatorMyClass navigation={props.navigation} />
+          )}
+        </View>
       </View>
     </>
   );
@@ -51,6 +52,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#E6EDF6',
     flex: 1,
+    paddingBottom: 100,
   },
   header: {
     paddingTop: StatusBar.currentHeight + 12 + (40 - StatusBar.currentHeight),

@@ -1,13 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useState} from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  Dimensions,
-  FlatList,
-  SafeAreaView,
-} from 'react-native';
+import React, {useEffect, useState, useRef} from 'react';
+import {Text, View, StyleSheet, Dimensions, FlatList} from 'react-native';
 import {Button, Icon} from 'native-base';
 import ProgressCircle from 'react-native-progress-circle';
 
@@ -20,12 +13,17 @@ function Student({...props}) {
   const [currPage, setCurrPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
 
+  const scrollRef = useRef();
+
   const getMyClass = () => {
     const token = props.token;
     axios
-      .get(`${DOMAIN_API}:${PORT_API}/data/student/my-class`, {
-        headers: {'x-access-token': `Bearer ${token}`},
-      })
+      .get(
+        `${DOMAIN_API}:${PORT_API}/data/student/my-class?pages=${currPage}`,
+        {
+          headers: {'x-access-token': `Bearer ${token}`},
+        },
+      )
       .then(res => {
         setMyClass([...myClass, ...res.data.result]);
         setCurrPage(res.data.info.page);
@@ -33,9 +31,21 @@ function Student({...props}) {
       })
       .catch(err => console.log(err));
   };
-
   useEffect(() => {
-    getMyClass();
+    const token = props.token;
+    axios
+      .get(
+        `${DOMAIN_API}:${PORT_API}/data/student/my-class?pages=${currPage}`,
+        {
+          headers: {'x-access-token': `Bearer ${token}`},
+        },
+      )
+      .then(res => {
+        setMyClass([...myClass, ...res.data.result]);
+        setCurrPage(res.data.info.page);
+        setTotalPage(res.data.info.totalPage);
+      })
+      .catch(err => console.log(err));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
@@ -69,66 +79,85 @@ function Student({...props}) {
         </View>
 
         {myClass ? (
-          <SafeAreaView style={{flex: 1}}>
-            <FlatList
-              data={myClass}
-              keyExtractor={(item, index) => {
-                return index.toString();
-              }}
-              renderItem={({item}) => {
-                return (
-                  <View style={styles.myClassItem}>
-                    <Text style={styles.tbClassName}>{item.course_name}</Text>
-                    <View style={styles.tbProgress}>
-                      <ProgressCircle
-                        percent={item.progress_in_percent}
-                        radius={20}
-                        borderWidth={2.8}
-                        color="#5784BA"
-                        shadowColor="#fff"
-                        bgColor="#fff">
-                        <Text style={styles.txtProgress}>
-                          {item.progress_in_percent + '%'}
-                        </Text>
-                      </ProgressCircle>
-                    </View>
-                    <Text
-                      style={{
-                        ...styles.tbScore,
-                        color: setColor(item.score),
-                      }}>
-                      {item.score || 'N/A'}
-                    </Text>
-                    <Icon
-                      name="ellipsis-vertical"
-                      style={{
-                        position: 'absolute',
-                        right: 1,
-                        color: '#D2DEED',
-                        fontSize: 24,
-                      }}
-                    />
-                  </View>
-                );
-              }}
-              ListFooterComponent={
-                currPage < totalPage ? (
-                  <View style={styles.loadMore}>
-                    <Button
-                      style={styles.btnLoadMore}
-                      onPress={() => {
-                        setCurrPage(currPage + 1);
-                      }}>
-                      <Text
-                        style={{color: 'white', fontFamily: 'Roboto-Medium'}}>
-                        Load More
+          <FlatList
+            ref={scrollRef}
+            data={myClass}
+            keyExtractor={(item, index) => {
+              return index.toString();
+            }}
+            renderItem={({item}) => {
+              return (
+                <View style={styles.myClassItem}>
+                  <Text
+                    style={styles.tbClassName}
+                    onPress={() =>
+                      props.navigation.navigate('ClassDetail', {
+                        ...item,
+                      })
+                    }>
+                    {item.course_name}
+                  </Text>
+                  <View style={styles.tbProgress}>
+                    <ProgressCircle
+                      percent={item.progress_in_percent}
+                      radius={20}
+                      borderWidth={2.8}
+                      color="#5784BA"
+                      shadowColor="#fff"
+                      bgColor="#fff">
+                      <Text style={styles.txtProgress}>
+                        {item.progress_in_percent + '%'}
                       </Text>
-                    </Button>
+                    </ProgressCircle>
                   </View>
-                ) : null
-              }
-            />
-          </SafeAreaView>
+                  <Text
+                    style={{
+                      ...styles.tbScore,
+                      color: setColor(item.score),
+                    }}>
+                    {item.score || 'N/A'}
+                  </Text>
+                  <Icon
+                    name="ellipsis-vertical"
+                    style={{
+                      position: 'absolute',
+                      right: 1,
+                      color: '#D2DEED',
+                      fontSize: 24,
+                    }}
+                  />
+                </View>
+              );
+            }}
+            ListFooterComponent={
+              currPage < totalPage ? (
+                <View style={styles.loadMore}>
+                  <Button
+                    style={styles.btnLoadMore}
+                    onPress={() => setCurrPage(currPage + 1)}>
+                    <Text style={{color: 'white', fontFamily: 'Roboto-Medium'}}>
+                      Load More
+                    </Text>
+                  </Button>
+                </View>
+              ) : null
+            }
+          />
+        ) : null}
+
+        {currPage > 2 ? (
+          <View>
+            <Button
+              style={styles.btnBackToTop}
+              onPress={() =>
+                scrollRef.current.scrollToOffset({
+                  animated: true,
+                  offset: 0,
+                })
+              }>
+              <Icon name="arrow-up" style={{textAlign: 'center'}} />
+            </Button>
+          </View>
         ) : null}
       </View>
     </>
@@ -139,6 +168,9 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 24,
     paddingVertical: 16,
+    // marginBottom: 150,
+    height: Dimensions.get('window').height,
+    paddingBottom: 150,
   },
   section: {
     fontFamily: 'Montserrat-Bold',
@@ -224,6 +256,16 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     backgroundColor: '#5784BA',
+  },
+  btnBackToTop: {
+    height: 50,
+    width: 50,
+    borderRadius: 25,
+    backgroundColor: '#5784BA',
+    zIndex: 100,
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
   },
 });
 

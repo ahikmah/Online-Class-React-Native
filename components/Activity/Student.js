@@ -263,8 +263,6 @@ function Student({...props}) {
   }, [isRegistered]);
 
   const registerHandler = (id, classDetail) => {
-    console.log(id);
-    console.log(classDetail);
     setShowModalRegister(false);
     const token = props.token;
     axios
@@ -287,211 +285,214 @@ function Student({...props}) {
   };
 
   return (
-    <ScrollView nestedScrollEnabled={true} ref={scrollRef}>
-      <View style={styles.container}>
-        <Text style={styles.section}>My class</Text>
-        <View style={styles.heading}>
-          <Text style={{...styles.headtext, ...styles.name}}>Class Name</Text>
-          <Text style={{...styles.headtext, ...styles.progress}}>Progress</Text>
-          <Text style={{...styles.headtext, ...styles.score}}>Score</Text>
-        </View>
-
-        {myClass ? (
-          myClassList
-        ) : (
-          <Text style={styles.notFound}>
-            You have not enrolled in any class
-          </Text>
-        )}
-
-        {myClass ? (
-          <View style={styles.moreClass}>
-            <Text
-              style={{fontFamily: 'Montserrat-Medium'}}
-              onPress={() => props.navigation.navigate('MyClass')}>
-              view all
+    <>
+      <ScrollView nestedScrollEnabled={true} ref={scrollRef}>
+        <View style={styles.container}>
+          <Text style={styles.section}>My class</Text>
+          <View style={styles.heading}>
+            <Text style={{...styles.headtext, ...styles.name}}>Class Name</Text>
+            <Text style={{...styles.headtext, ...styles.progress}}>
+              Progress
             </Text>
-            <Icon
-              name="chevron-forward"
-              style={{fontSize: 14}}
-              onPress={() => props.navigation.navigate('MyClass')}
-            />
+            <Text style={{...styles.headtext, ...styles.score}}>Score</Text>
           </View>
-        ) : null}
-        <View style={styles.newClassSection}>
-          <Text style={{...styles.section, paddingLeft: 10}}>New class</Text>
-          <KeyboardAvoidingView behavior="padding" style={{flex: 1}}>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-              <View style={styles.searchSection}>
-                <Item style={styles.searchInputContainer}>
-                  <Icon
-                    name="search-outline"
-                    style={{color: 'rgba(1, 6, 32, 0.5)'}}
-                  />
-                  <Input
-                    placeholder="Quick Search"
-                    style={styles.searchInput}
-                    onChangeText={e => setSearch(e)}
-                  />
-                </Item>
-                <Button style={styles.btnSearch} onPress={searchHandler}>
-                  <Text
-                    style={{
-                      color: 'white',
-                      fontFamily: 'Montserrat-SemiBold',
-                      fontSize: 13,
-                      textAlign: 'center',
-                    }}>
-                    Search
-                  </Text>
-                </Button>
-              </View>
-            </TouchableWithoutFeedback>
-          </KeyboardAvoidingView>
-          <View style={styles.filterSection}>
-            <Item picker style={{width: 100, overflow: 'hidden'}}>
-              <Picker
-                mode="dialog"
-                style={{width: 145}}
-                selectedValue={category}
-                onValueChange={e => setCategory(e)}>
-                <Picker.Item
-                  label="Category"
-                  value=""
-                  style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                />
-                <Picker.Item
-                  label="Software"
-                  value="software"
-                  style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                />
-                <Picker.Item
-                  label="History"
-                  value="history"
-                  style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                />
-                <Picker.Item
-                  label="Psychology"
-                  value="psychology"
-                  style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                />
-                <Picker.Item
-                  label="Finance"
-                  value="finance"
-                  style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                />
-                <Picker.Item
-                  label="Math"
-                  value="math"
-                  style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                />
-                <Picker.Item
-                  label="Science"
-                  value="science"
-                  style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                />
-                <Picker.Item
-                  label="Office Productivity"
-                  value="office productivity"
-                  style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                />
-              </Picker>
-              <Icon
-                name="chevron-down-outline"
-                style={{position: 'absolute', right: -6, fontSize: 18}}
-              />
-            </Item>
-            <Item picker style={{width: 90, overflow: 'hidden'}}>
-              <Picker
-                mode="dialog"
-                style={{width: 145}}
-                placeholder="Select your SIM"
-                placeholderStyle={{color: '#bfc6ea'}}
-                placeholderIconColor="#007aff"
-                selectedValue={price}
-                onValueChange={e => setPrice(e)}>
-                <Picker.Item
-                  label="Pricing"
-                  value=""
-                  style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                />
-                <Picker.Item
-                  label="Paid"
-                  value="paid"
-                  style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                />
-                <Picker.Item
-                  label="Free"
-                  value="free"
-                  style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                />
-              </Picker>
-              <Icon
-                name="chevron-down-outline"
-                style={{position: 'absolute', right: 0, fontSize: 18}}
-              />
-            </Item>
-          </View>
-          <View style={styles.newClassItems}>
-            {newClass && finishNewClass ? newClassList : null}
-            {isNotFound ? (
-              <Text style={styles.notFound}>
-                The search was weird and we didn't really get it
+
+          {myClass ? (
+            myClassList
+          ) : (
+            <Text style={styles.notFound}>
+              You have not enrolled in any class
+            </Text>
+          )}
+
+          {myClass ? (
+            <View style={styles.moreClass}>
+              <Text
+                style={{fontFamily: 'Montserrat-Medium'}}
+                onPress={() => props.navigation.navigate('MyClass')}>
+                view all
               </Text>
-            ) : null}
-            {currPage < totalPage && !isNotFound ? (
-              <View style={styles.loadMore}>
-                <Button style={styles.btnLoadMore} onPress={loadMoreHandler}>
-                  <Text
-                    style={{
-                      color: 'white',
-                      fontFamily: 'Roboto-Medium',
-                    }}>
-                    Load More
-                  </Text>
-                </Button>
-              </View>
-            ) : null}
-            {currPage > 1 ? (
-              <View style={styles.loadMore}>
-                <Button
-                  style={styles.btnBackToTop}
-                  onPress={() => {
-                    scrollRef.current?.scrollTo({
-                      y: 0,
-                      animated: true,
-                    });
-                  }}>
-                  <Icon name="arrow-up" style={{textAlign: 'center'}} />
-                </Button>
-              </View>
-            ) : null}
+              <Icon
+                name="chevron-forward"
+                style={{fontSize: 14}}
+                onPress={() => props.navigation.navigate('MyClass')}
+              />
+            </View>
+          ) : null}
+          <View style={styles.newClassSection}>
+            <Text style={{...styles.section, paddingLeft: 10}}>New class</Text>
+            <KeyboardAvoidingView behavior="padding" style={{flex: 1}}>
+              <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={styles.searchSection}>
+                  <Item style={styles.searchInputContainer}>
+                    <Icon
+                      name="search-outline"
+                      style={{color: 'rgba(1, 6, 32, 0.5)'}}
+                    />
+                    <Input
+                      placeholder="Quick Search"
+                      style={styles.searchInput}
+                      onChangeText={e => setSearch(e)}
+                    />
+                  </Item>
+                  <Button style={styles.btnSearch} onPress={searchHandler}>
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontFamily: 'Montserrat-SemiBold',
+                        fontSize: 13,
+                        textAlign: 'center',
+                      }}>
+                      Search
+                    </Text>
+                  </Button>
+                </View>
+              </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
+            <View style={styles.filterSection}>
+              <Item picker style={{width: 100, overflow: 'hidden'}}>
+                <Picker
+                  mode="dialog"
+                  style={{width: 145}}
+                  selectedValue={category}
+                  onValueChange={e => setCategory(e)}>
+                  <Picker.Item
+                    label="Category"
+                    value=""
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                  <Picker.Item
+                    label="Software"
+                    value="software"
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                  <Picker.Item
+                    label="History"
+                    value="history"
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                  <Picker.Item
+                    label="Psychology"
+                    value="psychology"
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                  <Picker.Item
+                    label="Finance"
+                    value="finance"
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                  <Picker.Item
+                    label="Math"
+                    value="math"
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                  <Picker.Item
+                    label="Science"
+                    value="science"
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                  <Picker.Item
+                    label="Office Productivity"
+                    value="office productivity"
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                </Picker>
+                <Icon
+                  name="chevron-down-outline"
+                  style={{position: 'absolute', right: -6, fontSize: 18}}
+                />
+              </Item>
+              <Item picker style={{width: 90, overflow: 'hidden'}}>
+                <Picker
+                  mode="dialog"
+                  style={{width: 145}}
+                  placeholder="Select your SIM"
+                  placeholderStyle={{color: '#bfc6ea'}}
+                  placeholderIconColor="#007aff"
+                  selectedValue={price}
+                  onValueChange={e => setPrice(e)}>
+                  <Picker.Item
+                    label="Pricing"
+                    value=""
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                  <Picker.Item
+                    label="Paid"
+                    value="paid"
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                  <Picker.Item
+                    label="Free"
+                    value="free"
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                </Picker>
+                <Icon
+                  name="chevron-down-outline"
+                  style={{position: 'absolute', right: 0, fontSize: 18}}
+                />
+              </Item>
+            </View>
+            <View style={styles.newClassItems}>
+              {newClass && finishNewClass ? newClassList : null}
+              {isNotFound ? (
+                <Text style={styles.notFound}>
+                  The search was weird and we didn't really get it
+                </Text>
+              ) : null}
+              {currPage < totalPage && !isNotFound ? (
+                <View style={styles.loadMore}>
+                  <Button style={styles.btnLoadMore} onPress={loadMoreHandler}>
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontFamily: 'Roboto-Medium',
+                      }}>
+                      Load More
+                    </Text>
+                  </Button>
+                </View>
+              ) : null}
+            </View>
           </View>
         </View>
-      </View>
-      {showModalRegister ? (
-        <CustomModal
-          iconStyle="confirm"
-          modalVisible={showModalRegister}
-          title="Confirmation"
-          msg="Are you sure want to enroll in this class?"
-          btnLabel3="Not Now"
-          onAction3={() => {
-            setShowModalRegister(false);
-          }}
-          btnLabel4="Yes, I'm Sure"
-          onAction4={() => registerHandler(idRegister, classDetailItem)}
-        />
+        {showModalRegister ? (
+          <CustomModal
+            iconStyle="confirm"
+            modalVisible={showModalRegister}
+            title="Confirmation"
+            msg="Are you sure want to enroll in this class?"
+            btnLabel3="Not Now"
+            onAction3={() => {
+              setShowModalRegister(false);
+            }}
+            btnLabel4="Yes, I'm Sure"
+            onAction4={() => registerHandler(idRegister, classDetailItem)}
+          />
+        ) : null}
+      </ScrollView>
+      {currPage > 1 ? (
+        <View>
+          <Button
+            style={styles.btnBackToTop}
+            onPress={() => {
+              scrollRef.current?.scrollTo({
+                y: 0,
+                animated: true,
+              });
+            }}>
+            <Icon name="arrow-up" style={{textAlign: 'center'}} />
+          </Button>
+        </View>
       ) : null}
-    </ScrollView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 24,
-    paddingVertical: 16,
-    flex: 1,
+    paddingTop: 16,
   },
   section: {
     fontFamily: 'Montserrat-Bold',
@@ -642,10 +643,10 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     borderRadius: 25,
-    position: 'absolute',
     backgroundColor: '#5784BA',
-    right: 0,
-    // bottom: 5,
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
     zIndex: 100,
   },
   notFound: {
