@@ -104,28 +104,29 @@ function Student(props) {
     return <DefaultTabBar {...props} />;
   };
 
-  const register = data.status ? (
-    <Text
-      style={{
-        fontFamily: 'Montserrat-Bold',
-        fontSize: 40,
-        color: setColor(data.score),
-      }}>
-      {data.score}
-    </Text>
-  ) : (
-    <Button
-      style={{backgroundColor: '#57BA61', borderRadius: 12, height: 'auto'}}>
+  const register =
+    data.status || data.isRegistered ? (
       <Text
         style={{
-          color: 'white',
-          paddingHorizontal: 9,
-          fontFamily: 'Roboto-Medium',
+          fontFamily: 'Montserrat-Bold',
+          fontSize: 40,
+          color: setColor(data.score),
         }}>
-        Register
+        {data.score}
       </Text>
-    </Button>
-  );
+    ) : (
+      <Button
+        style={{backgroundColor: '#57BA61', borderRadius: 12, height: 'auto'}}>
+        <Text
+          style={{
+            color: 'white',
+            paddingHorizontal: 9,
+            fontFamily: 'Roboto-Medium',
+          }}>
+          Register
+        </Text>
+      </Button>
+    );
 
   return (
     <View style={styles.container}>
@@ -238,6 +239,8 @@ function Student(props) {
           <View style={{paddingHorizontal: 30}}>
             {data.status ? (
               progressItems
+            ) : !data.status && data.isRegistered ? (
+              <Text style={styles.notFound}>This class hasn't started yet</Text>
             ) : (
               <Text style={styles.notFound}>
                 You're not member of this class

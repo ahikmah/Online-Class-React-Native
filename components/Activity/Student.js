@@ -20,6 +20,7 @@ import ProgressCircle from 'react-native-progress-circle';
 import axios from 'axios';
 import {DOMAIN_API, PORT_API} from '@env';
 import {connect} from 'react-redux';
+import CustomModal from '../CustomModal';
 // import MyClass from '../../screens/MyClass';
 
 function Student({...props}) {
@@ -30,16 +31,36 @@ function Student({...props}) {
   const [isNotFound, setIsNotFound] = useState(false);
   const [isSearchPressed, setIsSearchPressed] = useState(false);
   const [isLoadMorePressed, setIsLoadMorePressed] = useState(false);
+
+  const [showModalRegister, setShowModalRegister] = useState(false);
+  const [idRegister, setIdRegister] = useState('');
+  const [classDetailItem, setClassDetailItem] = useState();
+
   const [isRegistered, setIsRegistered] = useState(false);
   const [currPage, setCurrPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
-  const [isUpdated, setIsUpdated] = useState(false);
 
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [level, setLevel] = useState('');
   const [price, setPrice] = useState('');
   const [sort, setSort] = useState('');
+
+  const setColor = score => {
+    if (myClass) {
+      if (Number(score) > 90) {
+        return '#2BE6AE';
+      } else if (Number(score) > 70) {
+        return '#51E72B';
+      } else if (Number(score) > 50) {
+        return '#CCE72B';
+      } else if (Number(score) > 30) {
+        return '#E7852B';
+      } else {
+        return '#E6422B';
+      }
+    }
+  };
 
   const getNewClass = () => {
     const token = props.token;
@@ -78,6 +99,20 @@ function Student({...props}) {
       });
   };
 
+  const getMyClass = () => {
+    const token = props.token;
+    axios
+      .get(`${DOMAIN_API}:${PORT_API}/data/student/my-class`, {
+        headers: {'x-access-token': `Bearer ${token}`},
+      })
+      .then(res => setMyClass(res.data.result))
+      .catch(err => console.log(err))
+      .finally(() => {
+        setFinishMyClass(true);
+        setIsRegistered(false);
+      });
+  };
+
   useEffect(() => {
     const token = props.token;
     axios
@@ -104,12 +139,14 @@ function Student({...props}) {
   }, []);
 
   let myClassList;
-  useEffect(() => {
-    if (myClass && finishMyClass) {
-      setFinishMyClass(false);
-      myClassList = myClass.slice(0, 3).map(item => {
+
+  if (myClass && finishMyClass) {
+    // setFinishMyClass(false);
+    myClassList =
+      myClass &&
+      myClass.slice(0, 3).map(item => {
         return (
-          <View key={item.id} style={styles.myClassItem}>
+          <View key={item.id * Math.random()} style={styles.myClassItem}>
             <Text
               style={styles.tbClassName}
               onPress={() =>
@@ -151,16 +188,15 @@ function Student({...props}) {
           </View>
         );
       });
-    }
-  }, [finishMyClass]);
+  }
 
   let newClassList;
 
-  if (finishNewClass) {
+  if (newClass && finishNewClass) {
     // setFinishNewClass(false);
     newClassList = newClass.map(item => {
       return (
-        <View key={item.id} style={styles.newClassItem}>
+        <View key={item.id * Math.random()} style={styles.newClassItem}>
           <Text
             style={styles.tbClassName}
             onPress={() =>
@@ -175,7 +211,11 @@ function Student({...props}) {
           <Text style={styles.tbClassName}>{item.price}</Text>
           <Button
             style={styles.btnRegister}
-            onPress={() => registerHandler(item.id)}>
+            onPress={() => {
+              setShowModalRegister(true);
+              setIdRegister(item.id);
+              setClassDetailItem(item);
+            }}>
             <Text style={styles.txtRegister}>Register</Text>
           </Button>
         </View>
@@ -215,8 +255,17 @@ function Student({...props}) {
     }
     getNewClass();
   }, [isSearchPressed]);
+  useEffect(() => {
+    if (!isRegistered) {
+      return;
+    }
+    getMyClass();
+  }, [isRegistered]);
 
-  const registerHandler = id => {
+  const registerHandler = (id, classDetail) => {
+    console.log(id);
+    console.log(classDetail);
+    setShowModalRegister(false);
     const token = props.token;
     axios
       .post(
@@ -227,27 +276,14 @@ function Student({...props}) {
         },
       )
       .then(res => {
-        props.navigation.navigate('MyClass');
-        setMyClass([...myClass, res.data.result]);
-        setIsUpdated(true);
+        props.navigation.navigate('ClassDetail', {
+          ...classDetail,
+          isRegistered: true,
+        });
+        // setMyClass(res.data.result);
         setIsRegistered(true);
       })
       .catch(err => console.log(err));
-  };
-  const setColor = score => {
-    if (myClass) {
-      if (Number(score) > 90) {
-        return '#2BE6AE';
-      } else if (Number(score) > 70) {
-        return '#51E72B';
-      } else if (Number(score) > 50) {
-        return '#CCE72B';
-      } else if (Number(score) > 30) {
-        return '#E7852B';
-      } else {
-        return '#E6422B';
-      }
-    }
   };
 
   return (
@@ -433,6 +469,20 @@ function Student({...props}) {
           </View>
         </View>
       </View>
+      {showModalRegister ? (
+        <CustomModal
+          iconStyle="confirm"
+          modalVisible={showModalRegister}
+          title="Confirmation"
+          msg="Are you sure want to enroll in this class?"
+          btnLabel3="Not Now"
+          onAction3={() => {
+            setShowModalRegister(false);
+          }}
+          btnLabel4="Yes, I'm Sure"
+          onAction4={() => registerHandler(idRegister, classDetailItem)}
+        />
+      ) : null}
     </ScrollView>
   );
 }
