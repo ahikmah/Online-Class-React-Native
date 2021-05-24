@@ -14,14 +14,18 @@ import CreateNewPassword from './screens/CreateNewPassword';
 
 // PRIVATE SCREEN
 import Home from './screens/Home';
+
 // Activity
 import ActivityDashboard from './screens/Activity';
 import MyClass from './screens/MyClass';
 import ClassDetail from './screens/ClassDetail';
+import EditMyClass from './components/MyClass/EditMyClass';
+
 // Chat
 import Chat from './screens/Chat';
 import CreateNewChat from './screens/ChatNew';
 import ChatGroupDetail from './screens/ChatGroupDetail';
+
 // Profile
 import Profile from './screens/Profile';
 import BasicInfo from './components/Profile/BasicInfo';
@@ -90,6 +94,7 @@ function ActivityStack() {
       <Stack.Screen name="ActivityDashboard" component={ActivityDashboard} />
       <Stack.Screen name="MyClass" component={MyClass} />
       <Stack.Screen name="ClassDetail" component={ClassDetail} />
+      <Stack.Screen name="EditMyClass" component={EditMyClass} />
     </Stack.Navigator>
   );
 }
@@ -103,8 +108,6 @@ function ProfileStack() {
       <Stack.Screen name="ProfileDashboard" component={Profile} />
       <Stack.Screen name="BasicInfo" component={BasicInfo} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
-      {/* <Stack.Screen name="MyClass" component={MyClass} />
-      <Stack.Screen name="ClassDetail" component={ClassDetail} /> */}
     </Stack.Navigator>
   );
 }
