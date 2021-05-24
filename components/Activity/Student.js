@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   Text,
   View,
@@ -40,6 +40,7 @@ function Student({...props}) {
   const [level, setLevel] = useState('');
   const [price, setPrice] = useState('');
   const [sort, setSort] = useState('');
+
   const getNewClass = () => {
     const token = props.token;
     let pages, totalPages;
@@ -194,6 +195,8 @@ function Student({...props}) {
     setIsLoadMorePressed(true);
   };
 
+  const scrollRef = useRef();
+
   useEffect(() => {
     if (!isLoadMorePressed) {
       return;
@@ -201,9 +204,11 @@ function Student({...props}) {
 
     getNewClass();
   }, [isLoadMorePressed]);
+
   useEffect(() => {
     getNewClass();
   }, [category, price]);
+
   useEffect(() => {
     if (!isSearchPressed) {
       return;
@@ -246,7 +251,7 @@ function Student({...props}) {
   };
 
   return (
-    <ScrollView nestedScrollEnabled={true}>
+    <ScrollView nestedScrollEnabled={true} ref={scrollRef}>
       <View style={styles.container}>
         <Text style={styles.section}>My class</Text>
         <View style={styles.heading}>
@@ -411,6 +416,20 @@ function Student({...props}) {
                 </Button>
               </View>
             ) : null}
+            {currPage > 1 ? (
+              <View style={styles.loadMore}>
+                <Button
+                  style={styles.btnBackToTop}
+                  onPress={() => {
+                    scrollRef.current?.scrollTo({
+                      y: 0,
+                      animated: true,
+                    });
+                  }}>
+                  <Icon name="arrow-up" style={{textAlign: 'center'}} />
+                </Button>
+              </View>
+            ) : null}
           </View>
         </View>
       </View>
@@ -568,6 +587,16 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     backgroundColor: '#5784BA',
+  },
+  btnBackToTop: {
+    height: 50,
+    width: 50,
+    borderRadius: 25,
+    position: 'absolute',
+    backgroundColor: '#5784BA',
+    right: 0,
+    // bottom: 5,
+    zIndex: 100,
   },
   notFound: {
     textAlign: 'center',
