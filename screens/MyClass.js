@@ -36,13 +36,12 @@ function MyClass({...props}) {
             </Text>
           </View>
         </View>
-        <ScrollView>
-          {role === 'student' ? (
-            <StudentMyClass navigation={props.navigation} />
-          ) : (
-            <FacilitatorMyClass navigation={props.navigation} />
-          )}
-        </ScrollView>
+
+        {role === 'student' ? (
+          <StudentMyClass navigation={props.navigation} />
+        ) : (
+          <FacilitatorMyClass navigation={props.navigation} />
+        )}
       </View>
     </>
   );

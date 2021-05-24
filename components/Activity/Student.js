@@ -6,25 +6,31 @@ import {
   View,
   StyleSheet,
   Dimensions,
-  FlatList,
+  // FlatList,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
   ScrollView,
-  SafeAreaView,
-  LogBox,
+  // SafeAreaView,
+  // LogBox,
 } from 'react-native';
-// import {Picker} from '@react-native-picker/picker';
 import {Button, Icon, Input, Item, Picker} from 'native-base';
 import ProgressCircle from 'react-native-progress-circle';
 
 import axios from 'axios';
 import {DOMAIN_API, PORT_API} from '@env';
 import {connect} from 'react-redux';
+// import MyClass from '../../screens/MyClass';
 
 function Student({...props}) {
   const [myClass, setMyClass] = useState();
+  const [finishMyClass, setFinishMyClass] = useState(false);
   const [newClass, setNewClass] = useState([]);
+  const [finishNewClass, setFinishNewClass] = useState(false);
+  const [isNotFound, setIsNotFound] = useState(false);
+  const [isSearchPressed, setIsSearchPressed] = useState(false);
+  const [isLoadMorePressed, setIsLoadMorePressed] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
   const [currPage, setCurrPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [isUpdated, setIsUpdated] = useState(false);
@@ -34,13 +40,9 @@ function Student({...props}) {
   const [level, setLevel] = useState('');
   const [price, setPrice] = useState('');
   const [sort, setSort] = useState('');
-
-  useEffect(() => {
-    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
-  }, []);
-
   const getNewClass = () => {
     const token = props.token;
+    let pages, totalPages;
     axios
       .get(
         `${DOMAIN_API}:${PORT_API}/data/courses/?q=${search}&category=${category}&level=${level}&price=${price}&sort=${sort}&pages=${currPage}`,
@@ -49,15 +51,30 @@ function Student({...props}) {
         },
       )
       .then(res => {
-        if (!search && !category && !price) {
+        setIsNotFound(false);
+
+        if (!search && !price && !category && currPage < 2) {
+          setNewClass([...res.data.result]);
+        } else if (currPage > 1) {
           setNewClass([...newClass, ...res.data.result]);
         } else {
           setNewClass([...res.data.result]);
         }
-        setCurrPage(res.data.info.page);
-        setTotalPage(res.data.info.totalPage);
+        pages = res.data.info.page;
+        setCurrPage(pages);
+        totalPages = res.data.info.totalPage;
+        setTotalPage(totalPages);
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err);
+        setIsNotFound(true);
+        setNewClass([]);
+      })
+      .finally(() => {
+        setFinishNewClass(true);
+        setIsSearchPressed(false);
+        setIsLoadMorePressed(false);
+      });
   };
 
   useEffect(() => {
@@ -67,25 +84,132 @@ function Student({...props}) {
         headers: {'x-access-token': `Bearer ${token}`},
       })
       .then(res => setMyClass(res.data.result))
-      .catch(err => console.log(err));
-    // setIsUpdated(!isUpdated);
-    return getNewClass();
+      .catch(err => console.log(err))
+      .finally(() => setFinishMyClass(true));
+    axios
+      .get(
+        `${DOMAIN_API}:${PORT_API}/data/courses/?q=${search}&category=${category}&level=${level}&price=${price}&sort=${sort}&pages=${currPage}`,
+        {
+          headers: {'x-access-token': `Bearer ${token}`},
+        },
+      )
+      .then(res => {
+        setNewClass([...res.data.result]);
+        setCurrPage(res.data.info.page);
+        setTotalPage(res.data.info.totalPage);
+      })
+      .catch(err => console.log(err))
+      .finally(() => setFinishNewClass(true));
   }, []);
+
+  let myClassList;
   useEffect(() => {
+    if (myClass && finishMyClass) {
+      setFinishMyClass(false);
+      myClassList = myClass.slice(0, 3).map(item => {
+        return (
+          <View key={item.id} style={styles.myClassItem}>
+            <Text
+              style={styles.tbClassName}
+              onPress={() =>
+                props.navigation.navigate('ClassDetail', {
+                  ...item,
+                })
+              }>
+              {item.course_name}
+            </Text>
+            <View style={styles.tbProgress}>
+              <ProgressCircle
+                percent={item.progress_in_percent}
+                radius={20}
+                borderWidth={2.8}
+                color="#5784BA"
+                shadowColor="#fff"
+                bgColor="#fff">
+                <Text style={styles.txtProgress}>
+                  {item.progress_in_percent + '%'}
+                </Text>
+              </ProgressCircle>
+            </View>
+            <Text
+              style={{
+                ...styles.tbScore,
+                color: setColor(item.score),
+              }}>
+              {item.score || 'N/A'}
+            </Text>
+            <Icon
+              name="ellipsis-vertical"
+              style={{
+                position: 'absolute',
+                right: 1,
+                color: '#D2DEED',
+                fontSize: 24,
+              }}
+            />
+          </View>
+        );
+      });
+    }
+  }, [finishMyClass]);
+
+  let newClassList;
+
+  if (finishNewClass) {
+    // setFinishNewClass(false);
+    newClassList = newClass.map(item => {
+      return (
+        <View key={item.id} style={styles.newClassItem}>
+          <Text
+            style={styles.tbClassName}
+            onPress={() =>
+              props.navigation.navigate('ClassDetail', {
+                ...item,
+              })
+            }>
+            {item.name && item.name.length > 18
+              ? item.name.slice(0, 18) + '...'
+              : item.name}
+          </Text>
+          <Text style={styles.tbClassName}>{item.price}</Text>
+          <Button
+            style={styles.btnRegister}
+            onPress={() => registerHandler(item.id)}>
+            <Text style={styles.txtRegister}>Register</Text>
+          </Button>
+        </View>
+      );
+    });
+  }
+
+  const searchHandler = () => {
+    setIsSearchPressed(true);
+    setCurrPage(1);
+    setTotalPage(1);
     getNewClass();
-    console.log(search);
-  }, [currPage, search, category, price]);
+  };
+
+  const loadMoreHandler = () => {
+    setCurrPage(currPage + 1);
+    setIsLoadMorePressed(true);
+  };
 
   useEffect(() => {
-    const token = props.token;
-    axios
-      .get(`${DOMAIN_API}:${PORT_API}/data/student/my-class`, {
-        headers: {'x-access-token': `Bearer ${token}`},
-      })
-      .then(res => setMyClass(res.data.result))
-      .catch(err => console.log(err));
-    // setIsUpdated(!isUpdated);
-  }, [isUpdated]);
+    if (!isLoadMorePressed) {
+      return;
+    }
+
+    getNewClass();
+  }, [isLoadMorePressed]);
+  useEffect(() => {
+    getNewClass();
+  }, [category, price]);
+  useEffect(() => {
+    if (!isSearchPressed) {
+      return;
+    }
+    getNewClass();
+  }, [isSearchPressed]);
 
   const registerHandler = id => {
     const token = props.token;
@@ -99,7 +223,9 @@ function Student({...props}) {
       )
       .then(res => {
         props.navigation.navigate('MyClass');
+        setMyClass([...myClass, res.data.result]);
         setIsUpdated(true);
+        setIsRegistered(true);
       })
       .catch(err => console.log(err));
   };
@@ -118,11 +244,9 @@ function Student({...props}) {
       }
     }
   };
-  // console.log(currPage, 'nooew');
-  // console.log(totalPage, 'total');
 
   return (
-    <ScrollView>
+    <ScrollView nestedScrollEnabled={true}>
       <View style={styles.container}>
         <Text style={styles.section}>My class</Text>
         <View style={styles.heading}>
@@ -132,72 +256,27 @@ function Student({...props}) {
         </View>
 
         {myClass ? (
-          <SafeAreaView style={{flex: 1}}>
-            <FlatList
-              data={myClass.slice(0, 3)}
-              keyExtractor={(item, index) => {
-                return index.toString();
-              }}
-              renderItem={({item}) => {
-                return (
-                  <View style={styles.myClassItem}>
-                    <Text
-                      style={styles.tbClassName}
-                      onPress={() =>
-                        props.navigation.navigate('ClassDetail', {
-                          ...item,
-                        })
-                      }>
-                      {item.course_name}
-                    </Text>
-                    <View style={styles.tbProgress}>
-                      <ProgressCircle
-                        percent={item.progress_in_percent}
-                        radius={20}
-                        borderWidth={2.8}
-                        color="#5784BA"
-                        shadowColor="#fff"
-                        bgColor="#fff">
-                        <Text style={styles.txtProgress}>
-                          {item.progress_in_percent + '%'}
-                        </Text>
-                      </ProgressCircle>
-                    </View>
-                    <Text
-                      style={{
-                        ...styles.tbScore,
-                        color: setColor(item.score),
-                      }}>
-                      {item.score || 'N/A'}
-                    </Text>
-                    <Icon
-                      name="ellipsis-vertical"
-                      style={{
-                        position: 'absolute',
-                        right: 1,
-                        color: '#D2DEED',
-                        fontSize: 24,
-                      }}
-                    />
-                  </View>
-                );
-              }}
-            />
-          </SafeAreaView>
-        ) : null}
-
-        <View style={styles.moreClass}>
-          <Text
-            style={{fontFamily: 'Montserrat-Medium'}}
-            onPress={() => props.navigation.navigate('MyClass')}>
-            view all
+          myClassList
+        ) : (
+          <Text style={styles.notFound}>
+            You have not enrolled in any class
           </Text>
-          <Icon
-            name="chevron-forward"
-            style={{fontSize: 14}}
-            onPress={() => props.navigation.navigate('MyClass')}
-          />
-        </View>
+        )}
+
+        {myClass ? (
+          <View style={styles.moreClass}>
+            <Text
+              style={{fontFamily: 'Montserrat-Medium'}}
+              onPress={() => props.navigation.navigate('MyClass')}>
+              view all
+            </Text>
+            <Icon
+              name="chevron-forward"
+              style={{fontSize: 14}}
+              onPress={() => props.navigation.navigate('MyClass')}
+            />
+          </View>
+        ) : null}
         <View style={styles.newClassSection}>
           <Text style={{...styles.section, paddingLeft: 10}}>New class</Text>
           <KeyboardAvoidingView behavior="padding" style={{flex: 1}}>
@@ -214,7 +293,7 @@ function Student({...props}) {
                     onChangeText={e => setSearch(e)}
                   />
                 </Item>
-                <Button style={styles.btnSearch} onPress={() => getNewClass()}>
+                <Button style={styles.btnSearch} onPress={searchHandler}>
                   <Text
                     style={{
                       color: 'white',
@@ -233,9 +312,6 @@ function Student({...props}) {
               <Picker
                 mode="dialog"
                 style={{width: 145}}
-                placeholder="Select your SIM"
-                placeholderStyle={{color: '#bfc6ea'}}
-                placeholderIconColor="#007aff"
                 selectedValue={category}
                 onValueChange={e => setCategory(e)}>
                 <Picker.Item
@@ -316,52 +392,24 @@ function Student({...props}) {
             </Item>
           </View>
           <View style={styles.newClassItems}>
-            {newClass ? (
-              <FlatList
-                data={newClass}
-                keyExtractor={(item, index) => {
-                  return index.toString();
-                }}
-                renderItem={({item}) => {
-                  return (
-                    <View style={styles.newClassItem}>
-                      <Text
-                        style={styles.tbClassName}
-                        onPress={() =>
-                          props.navigation.navigate('ClassDetail', {
-                            ...item,
-                          })
-                        }>
-                        {item.name && item.name.length > 18
-                          ? item.name.slice(0, 18) + '...'
-                          : item.name}
-                      </Text>
-                      <Text style={styles.tbClassName}>{item.price}</Text>
-                      <Button
-                        style={styles.btnRegister}
-                        onPress={() => registerHandler(item.id)}>
-                        <Text style={styles.txtRegister}>Register</Text>
-                      </Button>
-                    </View>
-                  );
-                }}
-                ListFooterComponent={
-                  currPage < totalPage ? (
-                    <View style={styles.loadMore}>
-                      <Button
-                        style={styles.btnLoadMore}
-                        onPress={() => {
-                          setCurrPage(currPage + 1);
-                        }}>
-                        <Text
-                          style={{color: 'white', fontFamily: 'Roboto-Medium'}}>
-                          Load More
-                        </Text>
-                      </Button>
-                    </View>
-                  ) : null
-                }
-              />
+            {newClass && finishNewClass ? newClassList : null}
+            {isNotFound ? (
+              <Text style={styles.notFound}>
+                The search was weird and we didn't really get it
+              </Text>
+            ) : null}
+            {currPage < totalPage && !isNotFound ? (
+              <View style={styles.loadMore}>
+                <Button style={styles.btnLoadMore} onPress={loadMoreHandler}>
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontFamily: 'Roboto-Medium',
+                    }}>
+                    Load More
+                  </Text>
+                </Button>
+              </View>
             ) : null}
           </View>
         </View>
@@ -374,6 +422,7 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 24,
     paddingVertical: 16,
+    flex: 1,
   },
   section: {
     fontFamily: 'Montserrat-Bold',
@@ -519,6 +568,16 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     backgroundColor: '#5784BA',
+  },
+  notFound: {
+    textAlign: 'center',
+    marginTop: 10,
+    fontStyle: 'italic',
+    color: 'red',
+    padding: 3,
+    borderRadius: 8,
+    fontFamily: 'Montserrat-Medium',
+    fontSize: 15,
   },
 });
 
