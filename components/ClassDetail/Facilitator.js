@@ -167,21 +167,27 @@ function Facilitator(props) {
             </Text>
             <Text style={styles.infoTitle}>What will I learn</Text>
             <Text style={styles.infoDetail}>
-              {courseDetail &&
-                courseDetail.objectives
-                  .split('#')
-                  .map(item => (
-                    <Text key={item}>{item ? `\n \u2022 ${item}` : null}</Text>
-                  ))}
+              {courseDetail && courseDetail.objectives
+                ? courseDetail.objectives
+                    .split('#')
+                    .map(item => (
+                      <Text key={item}>
+                        {item ? `\n \u2022 ${item}` : null}
+                      </Text>
+                    ))
+                : null}
             </Text>
             <Text style={styles.infoTitle}>Requirements</Text>
             <Text style={styles.infoDetail}>
-              {courseDetail &&
-                courseDetail.requirements
-                  .split('#')
-                  .map(item => (
-                    <Text key={item}>{item ? `\n \u2022 ${item}` : null}</Text>
-                  ))}
+              {courseDetail && courseDetail.requirements
+                ? courseDetail.requirements
+                    .split('#')
+                    .map(item => (
+                      <Text key={item}>
+                        {item ? `\n \u2022 ${item}` : null}
+                      </Text>
+                    ))
+                : null}
             </Text>
           </View>
         </Tab>
