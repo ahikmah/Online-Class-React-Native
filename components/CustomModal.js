@@ -61,7 +61,11 @@ const CustomModal = props => {
               ) : props.iconStyle === 'confirm-danger' ? (
                 <Image
                   source={require('../assets/images/fail-modal.png')}
-                  style={{height: iconModal.height, width: iconModal.width}}
+                  style={{
+                    height: iconModal.height,
+                    width: iconModal.width,
+                    left: 15,
+                  }}
                 />
               ) : null}
               <View style={{alignItems: 'center'}}>
@@ -167,9 +171,9 @@ const styles = StyleSheet.create({
     height: 200,
   },
   modalText: {
-    marginBottom: 15,
+    marginVertical: 10,
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 18,
   },
   //   iconModal: {
   //     height: Dimensions.get('window').height > 700 ? 250 : 100,
