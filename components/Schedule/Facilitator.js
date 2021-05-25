@@ -1,9 +1,18 @@
 import React, {useState, useEffect} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {Button, View, StyleSheet, Text, Alert} from 'react-native';
 import {Icon} from 'native-base';
 import axios from 'axios';
 import {DOMAIN_API, PORT_API} from '@env';
 import {connect} from 'react-redux';
+import PushNotification from 'react-native-push-notification';
+import NotifService from '../../NotifService';
+// Notifications.setNotificationHandler({
+//   handleNotification: async () => {
+//     return {
+//       shouldShowAlert: true,
+//     };
+//   },
+// });
 const monthNames = [
   'January',
   'February',
@@ -48,6 +57,23 @@ for (let i = 0; i < 7; i++) {
 
 function Facilitator(props) {
   const [schedules, setSchedules] = useState();
+  const [registerToken, setRegisterToken] = useState('');
+  const [fcmRegister, setFcmRegister] = useState(false);
+
+  // const onRegister = token => {
+  //   setRegisterToken(token.token);
+  //   setFcmRegister(true);
+  // };
+  // const onNotif = notif => {
+  //   Alert.alert(notif.title, notif.message);
+  // };
+
+  // const notif = new NotifService(onRegister, onNotif);
+
+  // const handlePerm = perms => {
+  //   Alert.alert('Permission', JSON.stringify(perms));
+  // };
+
   let scheduleItems;
   useEffect(() => {
     const token = props.token;
@@ -103,6 +129,19 @@ function Facilitator(props) {
     );
   }
 
+  // const triggerNotificationHandler = () => {
+  //   Notifications.scheduleNotificationAsync({
+  //     content: {
+  //       title: 'My first local notification',
+  //       body: 'This is the first local notification we are sending!',
+  //       data: {mySpecialData: 'Some text'},
+  //     },
+  //     trigger: {
+  //       seconds: 10,
+  //     },
+  //   });
+  // };
+
   return (
     <>
       <View style={styles.container}>
@@ -114,7 +153,12 @@ function Facilitator(props) {
           {monthName} {y}
         </Text>
         <View style={styles.calendar}>{calendar}</View>
-
+        <Button
+          title="Trigger Notification"
+          // onPress={() => {
+          //   this.notif.localNotif();
+          // }}
+        />
         {scheduleItems && scheduleItems.length > 0 ? scheduleItems : noSchedule}
         <View style={{alignItems: 'center'}}>
           <View style={styles.newTask}>

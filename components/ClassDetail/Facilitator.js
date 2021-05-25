@@ -38,21 +38,6 @@ function Facilitator(props) {
       })
       .catch(err => console.log(err));
   }, []);
-  const setColor = score => {
-    if (courseMember) {
-      if (Number(score) > 90) {
-        return '#2BE6AE';
-      } else if (Number(score) > 70) {
-        return '#51E72B';
-      } else if (Number(score) > 50) {
-        return '#CCE72B';
-      } else if (Number(score) > 30) {
-        return '#E7852B';
-      } else {
-        return '#E6422B';
-      }
-    }
-  };
   if (courseMember) {
     progressItems = courseMember.map(item => {
       console.log(item);
@@ -270,10 +255,7 @@ function Facilitator(props) {
             borderBottomColor: '#5784BA',
           }}>
           {/* <ForYou /> */}
-          <View style={{paddingHorizontal: 50}}>
-            {/* <Text style={styles.notFound}>
-              This screen is amazing, but the world isn't ready for it
-            </Text> */}
+          <View style={{paddingHorizontal: 50, paddingTop: 10}}>
             {progressItems}
           </View>
         </Tab>

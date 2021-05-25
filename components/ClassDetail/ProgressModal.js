@@ -17,6 +17,7 @@ import {connect} from 'react-redux';
 import axios from 'axios';
 function ProgressModal({...props}) {
   const [progressItems, setProgressItems] = useState();
+  const [showModalScore, setShowModalScore] = useState(true);
   const [scoreData, setScoreData] = useState({
     chapter_id: '',
     enroll_id: '',
@@ -25,15 +26,15 @@ function ProgressModal({...props}) {
   const [modalSize, setModalSize] = useState(
     Dimensions.get('window').height > 700 ? 0.7 : 1,
   );
-  const setColor = score => {
+  const setColor = num => {
     if (progressItems) {
-      if (Number(score) > 90) {
+      if (Number(num) > 90) {
         return '#2BE6AE';
-      } else if (Number(score) > 70) {
+      } else if (Number(num) > 70) {
         return '#51E72B';
-      } else if (Number(score) > 50) {
+      } else if (Number(num) > 50) {
         return '#CCE72B';
-      } else if (Number(score) > 30) {
+      } else if (Number(num) > 30) {
         return '#E7852B';
       } else {
         return '#E6422B';
@@ -54,10 +55,10 @@ function ProgressModal({...props}) {
       })
       .catch(err => console.log(err));
   }, []);
-
+  // console.log('UserScore', scoreUser);
   const submitHandler = e => {
     e.preventDefault();
-    console.log(scoreData);
+    // console.log(scoreData);
     console.log(props.token);
     console.log(
       `${DOMAIN_API}:${PORT_API}/data/courses/scoring/${scoreData.chapter_id}/${scoreData.enroll_id}`,
@@ -84,25 +85,14 @@ function ProgressModal({...props}) {
       return (
         <View key={item.chapter_name} style={styles.progress}>
           <Text style={styles.topic}>{item.chapter_name}</Text>
-          <Input
+          <Text
             style={
               item.score !== 'Unfinished'
                 ? {...styles.statusScore, color: setColor(item.score)}
                 : styles.unfinished
-            }
-            value={
-              scoreData.score === '' ? item.score.toString() : scoreData.score
-            }
-            onPressIn={() => setScoreData({...scoreData, score: 0})}
-            onChangeText={text =>
-              setScoreData({
-                enroll_id: item.enroll_id,
-                chapter_id: item.chapter_id,
-                score: text,
-              })
             }>
-            {/* {item.score} */}
-          </Input>
+            {item.score}
+          </Text>
         </View>
       );
     });
@@ -160,15 +150,38 @@ function ProgressModal({...props}) {
                 <Text style={styles.tbScore}>Score</Text>
               </View>
             </View>
-            <ScrollView style={{marginVertical: 16}}>{progressList}</ScrollView>
-
-            <View>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={submitHandler}>
-                <Text style={styles.textStyle}>Save</Text>
-              </Pressable>
-            </View>
+            <ScrollView style={{marginTop: 16}}>
+              {progressList}
+              {showModalScore ? (
+                <View
+                  style={{
+                    ...styles.scoreModal,
+                    backgroundColor: '#5784BA',
+                    height: 100,
+                    paddingVertical: 12,
+                    width: '100%',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: 10,
+                    position: 'absolute',
+                  }}>
+                  <Text style={{color: 'white', textAlign: 'center'}}>
+                    Submit Score
+                  </Text>
+                  <Input
+                    style={{
+                      backgroundColor: 'white',
+                      width: '50%',
+                      height: '10%',
+                      padding: 0,
+                      textAlign: 'center',
+                    }}
+                    value=""
+                    onChangeText=""
+                  />
+                </View>
+              ) : null}
+            </ScrollView>
           </View>
         </View>
       </Modal>
@@ -204,8 +217,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-
-  header: {},
   profile: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
@@ -247,17 +258,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Bold',
     fontSize: 20,
     textAlign: 'center',
+    width: '25%',
   },
   unfinished: {
     width: '25%',
-    fontFamily: 'Roboto-Regular',
-    fontSize: 14,
+    color: 'red',
     textAlign: 'center',
-    textAlignVertical: 'center',
   },
   progress: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 12,
   },
   name: {
     fontFamily: 'Kanit-Regular',
