@@ -6,11 +6,8 @@ import {
   View,
   StyleSheet,
   Dimensions,
-  FlatList,
   KeyboardAvoidingView,
   ScrollView,
-  SafeAreaView,
-  LogBox,
   Image,
 } from 'react-native';
 import {Button, Icon, Input, Item, Picker, Textarea} from 'native-base';
