@@ -99,9 +99,9 @@ function Student(props) {
       );
     });
   }
-  const renderTabBar = props => {
-    props.tabStyle = Object.create(props.tabStyle);
-    return <DefaultTabBar {...props} />;
+  const renderTabBar = prop => {
+    prop.tabStyle = Object.create(prop.tabStyle);
+    return <DefaultTabBar {...prop} />;
   };
 
   const register =
