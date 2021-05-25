@@ -5,14 +5,7 @@ import axios from 'axios';
 import {DOMAIN_API, PORT_API} from '@env';
 import {connect} from 'react-redux';
 import PushNotification from 'react-native-push-notification';
-import NotifService from '../../NotifService';
-// Notifications.setNotificationHandler({
-//   handleNotification: async () => {
-//     return {
-//       shouldShowAlert: true,
-//     };
-//   },
-// });
+
 const monthNames = [
   'January',
   'February',
@@ -88,6 +81,14 @@ function Facilitator(props) {
       .catch(err => console.log(err));
   });
 
+  const showNotif = () => {
+    PushNotification.localNotification({
+      /* iOS and Android properties */
+      title: 'Local Notification', // (optional)
+      message: 'My Notification Message', // (required)
+    });
+  };
+
   if (schedules) {
     scheduleItems = schedules.map(cl => {
       return (
@@ -153,12 +154,7 @@ function Facilitator(props) {
           {monthName} {y}
         </Text>
         <View style={styles.calendar}>{calendar}</View>
-        <Button
-          title="Trigger Notification"
-          // onPress={() => {
-          //   this.notif.localNotif();
-          // }}
-        />
+        <Button title="Trigger Notification" onPress={showNotif} />
         {scheduleItems && scheduleItems.length > 0 ? scheduleItems : noSchedule}
         <View style={{alignItems: 'center'}}>
           <View style={styles.newTask}>

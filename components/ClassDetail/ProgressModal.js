@@ -10,6 +10,7 @@ import {
   Image,
   Dimensions,
   ScrollView,
+  Button,
 } from 'react-native';
 import {Icon, Input} from 'native-base';
 import {DOMAIN_API, PORT_API} from '@env';
@@ -17,11 +18,13 @@ import {connect} from 'react-redux';
 import axios from 'axios';
 function ProgressModal({...props}) {
   const [progressItems, setProgressItems] = useState();
-  const [showModalScore, setShowModalScore] = useState(true);
+  const [showModalScore, setShowModalScore] = useState(false);
+  const [isUpdated, setIsUpdated] = useState(false);
   const [scoreData, setScoreData] = useState({
     chapter_id: '',
     enroll_id: '',
     score: '',
+    chapter_name: '',
   });
   const [modalSize, setModalSize] = useState(
     Dimensions.get('window').height > 700 ? 0.7 : 1,
@@ -58,11 +61,7 @@ function ProgressModal({...props}) {
   // console.log('UserScore', scoreUser);
   const submitHandler = e => {
     e.preventDefault();
-    // console.log(scoreData);
-    console.log(props.token);
-    console.log(
-      `${DOMAIN_API}:${PORT_API}/data/courses/scoring/${scoreData.chapter_id}/${scoreData.enroll_id}`,
-    );
+
     axios
       .patch(
         `${DOMAIN_API}:${PORT_API}/data/courses/scoring/${scoreData.chapter_id}/${scoreData.enroll_id}`,
@@ -72,11 +71,26 @@ function ProgressModal({...props}) {
         },
       )
       .then(res => {
+        setShowModalScore(false);
         console.log('sukses', res);
-        // setProgressItems(res.data.result);
+        setIsUpdated(!isUpdated);
       })
       .catch(err => console.log(err));
   };
+
+  useEffect(() => {
+    axios
+      .get(
+        `${DOMAIN_API}:${PORT_API}/data/instructor/member-progress/${props.data.course_id}/${props.data.member_id}`,
+        {
+          headers: {'x-access-token': `Bearer ${props.token}`},
+        },
+      )
+      .then(res => {
+        setProgressItems(res.data.result);
+      })
+      .catch(err => console.log(err));
+  }, [isUpdated]);
 
   let progressList;
   if (progressItems) {
@@ -90,7 +104,16 @@ function ProgressModal({...props}) {
               item.score !== 'Unfinished'
                 ? {...styles.statusScore, color: setColor(item.score)}
                 : styles.unfinished
-            }>
+            }
+            onPress={() => {
+              setShowModalScore(true);
+              setScoreData({
+                chapter_id: item.chapter_id,
+                enroll_id: item.enroll_id,
+                score: item.score,
+                chapter_name: item.chapter_name,
+              });
+            }}>
             {item.score}
           </Text>
         </View>
@@ -157,28 +180,75 @@ function ProgressModal({...props}) {
                   style={{
                     ...styles.scoreModal,
                     backgroundColor: '#5784BA',
-                    height: 100,
-                    paddingVertical: 12,
+                    // height: 100,
+                    paddingTop: 15,
+                    paddingBottom: 25,
                     width: '100%',
-                    justifyContent: 'center',
                     alignItems: 'center',
                     borderRadius: 10,
                     position: 'absolute',
                   }}>
-                  <Text style={{color: 'white', textAlign: 'center'}}>
-                    Submit Score
-                  </Text>
-                  <Input
+                  <Icon
+                    onPress={() => setShowModalScore(false)}
+                    name="close-outline"
                     style={{
-                      backgroundColor: 'white',
-                      width: '50%',
-                      height: '10%',
-                      padding: 0,
-                      textAlign: 'center',
+                      position: 'absolute',
+                      top: 5,
+                      right: 10,
+                      color: 'white',
                     }}
-                    value=""
-                    onChangeText=""
                   />
+                  <Text
+                    style={{
+                      color: 'white',
+                      textAlign: 'center',
+                      fontSize: 16,
+                      marginBottom: 10,
+                    }}>
+                    {scoreData.chapter_name.length > 25
+                      ? scoreData.chapter_name.slice(0, 25) + '...'
+                      : scoreData.chapter_name}
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      width: '50%',
+                      height: 45,
+                    }}>
+                    <Input
+                      style={{
+                        backgroundColor: 'white',
+                        textAlign: 'center',
+                        fontSize: 20,
+                        width: 10,
+                        height: 45,
+                        borderTopLeftRadius: 5,
+                        borderBottomLeftRadius: 5,
+                        paddingTop: 7,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        // textAlignVertical: 'center',
+                      }}
+                      value={
+                        scoreData.score === 'Unfinished'
+                          ? setScoreData({...scoreData, score: ''})
+                          : scoreData.score.toString()
+                      }
+                      keyboardType="numeric"
+                      onPressIn={() => console.log('HELLLL', scoreData.score)}
+                      onChangeText={text =>
+                        setScoreData({...scoreData, score: text})
+                      }
+                    />
+
+                    <Pressable
+                      style={[styles.button, styles.buttonSave]}
+                      onPress={submitHandler}>
+                      <Text style={styles.textStyle}>Save</Text>
+                    </Pressable>
+
+                    {/* <Button style={styles.buttonSave} title="Save" /> */}
+                  </View>
                 </View>
               ) : null}
             </ScrollView>
@@ -268,7 +338,7 @@ const styles = StyleSheet.create({
   progress: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 15,
   },
   name: {
     fontFamily: 'Kanit-Regular',
@@ -276,9 +346,15 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
   button: {
-    borderRadius: 15,
-    padding: 10,
+    // borderRadius: 15,
+    // padding: 10,
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
+    width: 50,
+    // paddingHorizontal: 12,
     elevation: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonClose: {
     backgroundColor: '#5784BA',
