@@ -12,7 +12,7 @@ function Facilitator(props) {
   const [courseDetail, setCourseDetail] = useState();
   const [courseMember, setCourseMember] = useState();
   const [showModal, setShowModal] = useState(false);
-
+  const [memberData, setMemberData] = useState();
   let progressItems;
   const {...data} = props.data;
   console.log('fas', data);
@@ -55,7 +55,7 @@ function Facilitator(props) {
   };
   if (courseMember) {
     progressItems = courseMember.map(item => {
-      console.log(item.avatar, `${DOMAIN_API}:${PORT_API}${item.avatar}`);
+      console.log(item);
       return (
         <View
           key={item.id}
@@ -66,10 +66,17 @@ function Facilitator(props) {
             height: 50,
             marginBottom: 12,
           }}>
-          <Image
-            style={styles.avatar}
-            source={{uri: `${DOMAIN_API}:${PORT_API}${item.avatar}`}}
-          />
+          {item.avatar ? (
+            <Image
+              style={styles.avatar}
+              source={{uri: `${DOMAIN_API}:${PORT_API}${item.avatar}`}}
+            />
+          ) : (
+            <Image
+              source={require('../../assets/images/graduate.png')}
+              style={styles.avatar}
+            />
+          )}
           <View style={{justifyContent: 'flex-start', width: '80%'}}>
             <Text
               style={{
@@ -77,23 +84,43 @@ function Facilitator(props) {
                 fontSize: 13,
                 textAlign: 'left',
                 marginLeft: 12,
+              }}
+              onPress={() => {
+                setShowModal(true);
+                setMemberData({member_id: item.id, avatar_uri: item.avatar});
               }}>
-              {item.full_name}
+              {item.full_name ?? item.username}
             </Text>
           </View>
-          <Icon name="chevron-forward" />
+          <Icon
+            name="chevron-forward"
+            onPress={() => {
+              setShowModal(true);
+              setMemberData({member_id: item.id, avatar_uri: item.avatar});
+            }}
+          />
         </View>
       );
     });
   }
-  const renderTabBar = props => {
-    props.tabStyle = Object.create(props.tabStyle);
-    return <DefaultTabBar {...props} />;
+  const renderTabBar = prop => {
+    prop.tabStyle = Object.create(prop.tabStyle);
+    return <DefaultTabBar {...prop} />;
   };
 
   return (
     <View style={styles.container}>
-      {showModal ? <ProgressModal /> : null}
+      {showModal ? (
+        <ProgressModal
+          data={{
+            course_id: data.course_id,
+            member_id: memberData.member_id,
+            avatar: memberData.avatar_uri,
+          }}
+          modalVisible={showModal}
+          onClose={() => setShowModal(false)}
+        />
+      ) : null}
       <View>
         <Image
           source={require('../../assets/images/banner-course.png')}
