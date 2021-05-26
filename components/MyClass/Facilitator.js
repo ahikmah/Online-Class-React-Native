@@ -13,8 +13,11 @@ import CustomModal from '../CustomModal';
 import axios from 'axios';
 import {DOMAIN_API, PORT_API} from '@env';
 import {connect} from 'react-redux';
+import {useIsFocused} from '@react-navigation/native';
 
 function Facilitator({...props}) {
+  const isFocused = useIsFocused();
+
   const [myClass, setMyClass] = useState([]);
   const [isDeleted, setIsDeleted] = useState(false);
   const [currPage, setCurrPage] = useState(1);
@@ -70,7 +73,7 @@ function Facilitator({...props}) {
       })
       .catch(err => console.log(err));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDeleted]);
+  }, [isDeleted, isFocused]);
 
   useEffect(() => {
     getMyClass();
@@ -78,7 +81,7 @@ function Facilitator({...props}) {
   }, [currPage]);
 
   const deleteHandler = e => {
-    console.log(selectedCourseId);
+    // console.log(selectedCourseId);
     e.preventDefault();
     axios
       .delete(`${DOMAIN_API}:${PORT_API}/data/courses/${selectedCourseId}`, {

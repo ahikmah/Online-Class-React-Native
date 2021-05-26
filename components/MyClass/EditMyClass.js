@@ -22,17 +22,36 @@ import {connect} from 'react-redux';
 
 function EditMyClass(props) {
   const {...data} = props.route.params;
+  let categoryID;
+  if (data.category === 'Software') {
+    categoryID = 1;
+  } else if (data.category === 'History') {
+    categoryID = 2;
+  } else if (data.category === 'Psychology') {
+    categoryID = 3;
+  } else if (data.category === 'Finance') {
+    categoryID = 4;
+  } else if (data.category === 'Math') {
+    categoryID = 5;
+  } else if (data.category === 'Science') {
+    categoryID = 6;
+  } else if (data.category === 'Office Productivity') {
+    categoryID = 7;
+  } else if (data.category === 'Design') {
+    categoryID = 8;
+  }
   const [courseDetail, setCourseDetail] = useState(false);
   const [courseName, setCourseName] = useState(data.course_name);
-  const [category, setCategory] = useState(data.category);
-  const [level, setLevel] = useState(data.level);
+  const [category, setCategory] = useState(categoryID);
+  const [level, setLevel] = useState(data.level ?? 1);
   const [description, setDescription] = useState(data.description);
   const [objectives, setObjectives] = useState(data.objectives ?? '');
   const [requirements, setRequirements] = useState(data.requirements ?? '');
-  const [schedule, setSchedule] = useState('');
-  const [start, setStart] = useState('');
-  const [end, setEnd] = useState('');
+  const [schedule, setSchedule] = useState(data.day);
+  const [start, setStart] = useState(data.start_time);
+  const [end, setEnd] = useState(data.end_time);
   const [photo, setPhoto] = useState(null);
+  const [day, setDay] = useState(data.day);
 
   const [showMode, setShowMode] = useState(false);
   const [showMode2, setShowMode2] = useState(false);
@@ -61,26 +80,29 @@ function EditMyClass(props) {
   };
   const [errorMessage, setErrorMessage] = useState({
     courseName: '',
-    category: '',
     description: '',
     objectives: '',
     requirements: '',
     schedule: '',
-    start: '',
-    end: '',
   });
   const [inputValidation, setInputValidation] = useState({
     courseName: undefined,
-    category: undefined,
     description: undefined,
     objectives: undefined,
     requirements: undefined,
     schedule: undefined,
-    start: undefined,
-    end: undefined,
   });
-
+  const dayNames = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
   // =============================VALIDATION SECTION============================= //
+  console.log(courseDetail);
   // coursename : min. length = 5
   const nameValidation = () => {
     if (courseName === '') {
@@ -90,13 +112,13 @@ function EditMyClass(props) {
         courseName: "This field can't be empty",
       });
     } else if (courseName.length < 5) {
-      setInputValidation({...inputValidation, username: false});
+      setInputValidation({...inputValidation, courseName: false});
       setErrorMessage({
         ...errorMessage,
-        username: 'Course name must be at least 5 characters',
+        courseName: 'Course name must be at least 5 characters',
       });
     } else {
-      setInputValidation({...inputValidation, username: true});
+      setInputValidation({...inputValidation, courseName: true});
     }
   };
   const objectiveValidation = () => {
@@ -106,11 +128,11 @@ function EditMyClass(props) {
         ...errorMessage,
         objectives: "This field can't be empty",
       });
-    } else if (objectives.length < 5) {
+    } else if (objectives.length < 10) {
       setInputValidation({...inputValidation, objectives: false});
       setErrorMessage({
         ...errorMessage,
-        objectives: 'Course name must be at least 5 characters',
+        objectives: 'Course objectives must be at least 5 characters',
       });
     } else {
       setInputValidation({...inputValidation, objectives: true});
@@ -123,11 +145,11 @@ function EditMyClass(props) {
         ...errorMessage,
         description: "This field can't be empty",
       });
-    } else if (description.length < 5) {
+    } else if (description.length < 10) {
       setInputValidation({...inputValidation, description: false});
       setErrorMessage({
         ...errorMessage,
-        description: 'Course name must be at least 5 characters',
+        description: 'Description must be at least 10 characters',
       });
     } else {
       setInputValidation({...inputValidation, description: true});
@@ -150,8 +172,23 @@ function EditMyClass(props) {
       setInputValidation({...inputValidation, requirements: true});
     }
   };
-  // =============================END VALIDATION SECTION============================= //
 
+  const scheduleValidation = () => {
+    if (start > end) {
+      setInputValidation({...inputValidation, schedule: false});
+      setErrorMessage({
+        ...errorMessage,
+        schedule:
+          'Incorrect format. Make sure the start time is earlier than the finish time',
+      });
+    } else {
+      setInputValidation({...inputValidation, schedule: true});
+    }
+  };
+  // =============================END VALIDATION SECTION============================= //
+  useEffect(() => {
+    scheduleValidation();
+  }, [schedule, start, end]);
   const choosePhotoHandler = () => {
     launchImageLibrary({noData: true}, response => {
       // console.log(response);
@@ -169,24 +206,28 @@ function EditMyClass(props) {
     });
   };
   const updateHandler = e => {
+    // console.log(courseName);
+    // console.log(description);
+    // console.log(requirements);
+    // console.log(objectives);
+    // console.log(level);
+    // console.log(start);
+    // console.log(end);
+    // console.log(schedule);
+    // console.log(photo);
+    // console.log(category);
     e.preventDefault();
     if (
       inputValidation.courseName !== false &&
-      inputValidation.category !== false &&
       inputValidation.description !== false &&
       inputValidation.objectives !== false &&
       inputValidation.requirements !== false &&
       inputValidation.schedule !== false &&
-      inputValidation.start !== false &&
-      inputValidation.end !== false &&
       (inputValidation.courseName !== undefined ||
-        inputValidation.category !== undefined ||
         inputValidation.description !== undefined ||
         inputValidation.objectives !== undefined ||
-        inputValidation.requirements !== undefined ||
         inputValidation.schedule !== undefined ||
-        inputValidation.start !== undefined ||
-        inputValidation.end !== undefined)
+        inputValidation.requirements !== undefined)
     ) {
       const token = props.token;
       let formData = new FormData();
@@ -199,7 +240,13 @@ function EditMyClass(props) {
       formData.append('start_time', start);
       formData.append('end_time', end);
       formData.append('schedule', schedule);
-      formData.append('banner', photo);
+      photo
+        ? formData.append('banner', {
+            name: photo.fileName,
+            type: photo.type,
+            uri: photo.uri,
+          })
+        : null;
 
       axios
         .patch(
@@ -214,40 +261,15 @@ function EditMyClass(props) {
         )
         .then(res => {
           // console.log(res, 'Success');
-          props.getDataUser(`${DOMAIN_API}:${PORT_API}/data/users`, token);
-          setIsDisabled({
-            fullname: true,
-            username: true,
-            email: true,
-            phone: true,
-          });
+
           setModalVisible(false);
           setSuccessModalVisible(true);
+
+          props.navigation.goBack();
         })
         .catch(err => {
-          if (err.response.data.error.conflict === 'username') {
-            console.log('username is already taken');
-            setInputValidation({...inputValidation, username: false});
-            setErrorMessage({
-              ...errorMessage,
-              username: 'This username is already taken',
-            });
-            setModalVisible(false);
-          } else if (err.response.data.error.conflict === 'email') {
-            setInputValidation({...inputValidation, email: false});
-            setErrorMessage({
-              ...errorMessage,
-              email: 'This email is already taken',
-            });
-            setModalVisible(false);
-          } else if (err.response.data.error.conflict === 'phone') {
-            setInputValidation({...inputValidation, phone: false});
-            setErrorMessage({
-              ...errorMessage,
-              phone: 'This number is already used by another account',
-            });
-            setModalVisible(false);
-          }
+          console.log(err);
+          setModalVisible(false);
         });
     }
   };
@@ -279,25 +301,29 @@ function EditMyClass(props) {
                 ...styles.action,
                 color:
                   inputValidation.courseName !== false &&
-                  inputValidation.username !== false &&
-                  inputValidation.email !== false &&
-                  inputValidation.phone !== false &&
+                  inputValidation.description !== false &&
+                  inputValidation.objectives !== false &&
+                  inputValidation.requirements !== false &&
+                  inputValidation.schedule !== false &&
                   (inputValidation.courseName !== undefined ||
-                    inputValidation.username !== undefined ||
-                    inputValidation.email !== undefined ||
-                    inputValidation.phone !== undefined)
+                    inputValidation.description !== undefined ||
+                    inputValidation.objectives !== undefined ||
+                    inputValidation.schedule !== undefined ||
+                    inputValidation.requirements !== undefined)
                     ? 'white'
                     : '#ADA9BB',
               }}
               onPress={
                 inputValidation.courseName !== false &&
-                inputValidation.username !== false &&
-                inputValidation.email !== false &&
-                inputValidation.phone !== false &&
+                inputValidation.description !== false &&
+                inputValidation.objectives !== false &&
+                inputValidation.requirements !== false &&
+                inputValidation.schedule !== false &&
                 (inputValidation.courseName !== undefined ||
-                  inputValidation.username !== undefined ||
-                  inputValidation.email !== undefined ||
-                  inputValidation.phone !== undefined)
+                  inputValidation.description !== undefined ||
+                  inputValidation.objectives !== undefined ||
+                  inputValidation.schedule !== undefined ||
+                  inputValidation.requirements !== undefined)
                   ? () => setModalVisible(true)
                   : () => setModalVisible(false)
               }>
@@ -308,11 +334,18 @@ function EditMyClass(props) {
 
         <ScrollView style={styles.mainSection}>
           <Form>
-            <Text style={styles.label}>Course Name</Text>
+            <Text
+              style={
+                inputValidation.courseName === false
+                  ? {...styles.label, color: errorStyle.color}
+                  : {...styles.label}
+              }>
+              Course Name
+            </Text>
             <Item style={{marginRight: 20, marginBottom: 15}}>
               <Input
                 style={isDisabled.fullname ? styles.disable : styles.active}
-                value={courseDetail && courseDetail.course_name}
+                value={courseName}
                 onChangeText={text => setCourseName(text)}
                 onPressIn={() => {
                   setErrorMessage({...errorMessage, courseName: ''});
@@ -337,7 +370,7 @@ function EditMyClass(props) {
                 <Text
                   style={{width: '100%'}}
                   onPress={() => setShowMode('date')}>
-                  {schedule.toString().substr(4, 12)}
+                  {day}
                 </Text>
               </View>
               {showMode && (
@@ -348,14 +381,24 @@ function EditMyClass(props) {
                   is24Hour={true}
                   display="default"
                   onChange={(event, selectedDate) => {
-                    setSchedule(selectedDate || schedule);
+                    setDay(dayNames[selectedDate.getDay()]);
+                    setSchedule(
+                      selectedDate.toISOString().slice(0, 10) || schedule,
+                    );
                     setShowMode(false);
                   }}
                 />
               )}
             </Item>
 
-            <Text style={styles.label}>Start Time</Text>
+            <Text
+              style={
+                inputValidation.schedule === false
+                  ? {...styles.label, color: errorStyle.color}
+                  : {...styles.label}
+              }>
+              Start Time
+            </Text>
             <Item style={{marginRight: 20, marginBottom: 15}}>
               <View
                 style={{width: '100%', paddingVertical: 15, paddingLeft: 7}}
@@ -363,7 +406,7 @@ function EditMyClass(props) {
                 <Text
                   style={{width: '100%'}}
                   onPress={() => setShowMode2('time')}>
-                  {start.toString().substr(15, 6)}
+                  {start.slice(0, 5) + ' WIB'}
                 </Text>
               </View>
               {showMode2 && (
@@ -374,14 +417,21 @@ function EditMyClass(props) {
                   is24Hour={true}
                   display="default"
                   onChange={(event, selectedDate) => {
-                    setStart(selectedDate || start);
+                    setStart(selectedDate.toTimeString().slice(0, 5) || start);
                     setShowMode2(false);
                   }}
                 />
               )}
             </Item>
 
-            <Text style={styles.label}>End Time</Text>
+            <Text
+              style={
+                inputValidation.schedule === false
+                  ? {...styles.label, color: errorStyle.color}
+                  : {...styles.label}
+              }>
+              End Time
+            </Text>
             <Item style={{marginRight: 20, marginBottom: 15}}>
               <View
                 style={{width: '100%', paddingVertical: 15, paddingLeft: 7}}
@@ -389,7 +439,7 @@ function EditMyClass(props) {
                 <Text
                   style={{width: '100%'}}
                   onPress={() => setShowMode3('time')}>
-                  {end.toString().substr(15, 6)}
+                  {end.slice(0, 5) + ' WIB'}
                 </Text>
               </View>
               {showMode3 && (
@@ -400,12 +450,15 @@ function EditMyClass(props) {
                   is24Hour={true}
                   display="default"
                   onChange={(event, selectedDate) => {
-                    setEnd(selectedDate || end);
+                    setEnd(selectedDate.toTimeString().slice(0, 5) || end);
                     setShowMode3(false);
                   }}
                 />
               )}
             </Item>
+            {inputValidation.schedule === false ? (
+              <Text style={styles.errorMessage}>{errorMessage.schedule}</Text>
+            ) : null}
 
             <Text style={styles.label}>Course Category</Text>
             <Item
@@ -416,7 +469,7 @@ function EditMyClass(props) {
                 style={{left: -10}}
                 placeholder="Select Category"
                 // placeholderStyle={{color: '#bfc6ea'}}
-                selectedValue={courseDetail && courseDetail.category}
+                selectedValue={category}
                 onValueChange={e => setCategory(e)}>
                 <Picker.Item label="Software" value="1" />
                 <Picker.Item label="History" value="2" />
@@ -437,25 +490,51 @@ function EditMyClass(props) {
                 style={{left: -10}}
                 placeholder="Select Category"
                 // placeholderStyle={{color: '#bfc6ea'}}
-                selectedValue={data.level}
-                onValueChange={e => setCategory(e)}>
+                selectedValue={level}
+                onValueChange={e => setLevel(e)}>
                 <Picker.Item label="Beginner" value="1" />
                 <Picker.Item label="Intermediate" value="2" />
                 <Picker.Item label="Advance" value="3" />
               </Picker>
             </Item>
 
-            <Text style={styles.label}>Course Description</Text>
+            <Text
+              style={
+                inputValidation.description === false
+                  ? {...styles.label, color: errorStyle.color}
+                  : {...styles.label}
+              }>
+              Course Description
+            </Text>
             <Item style={{paddingRight: 15, marginBottom: 15}}>
               <Textarea
                 rowSpan={3}
-                placeholder="Underline Textbox"
+                placeholder="Describe your class"
                 value={description}
                 onChangeText={text => setDescription(text)}
+                onPressIn={() => {
+                  setErrorMessage({...errorMessage, description: ''});
+                  setInputValidation({
+                    ...inputValidation,
+                    description: undefined,
+                  });
+                }}
+                onBlur={() => {
+                  descriptionValidation();
+                }}
+                disableFullscreenUI={true}
               />
             </Item>
+            <Text style={styles.errorMessage}>{errorMessage.description}</Text>
 
-            <Text style={styles.label}>Course Objectives</Text>
+            <Text
+              style={
+                inputValidation.objectives === false
+                  ? {...styles.label, color: errorStyle.color}
+                  : {...styles.label}
+              }>
+              Course Objectives
+            </Text>
             <Item
               style={{
                 paddingRight: 15,
@@ -467,12 +546,32 @@ function EditMyClass(props) {
                   marginRight: 20,
                 }}
                 rowSpan={5}
-                placeholder="Course Objectives. Please separate each objective point using a hashtag (#)"
+                placeholder="Separate each objective point using a hashtag (#)"
                 value={objectives}
                 onChangeText={text => setObjectives(text)}
+                onPressIn={() => {
+                  setErrorMessage({...errorMessage, objectives: ''});
+                  setInputValidation({
+                    ...inputValidation,
+                    objectives: undefined,
+                  });
+                }}
+                onBlur={() => {
+                  objectiveValidation();
+                }}
+                disableFullscreenUI={true}
               />
             </Item>
-            <Text style={styles.label}>Course Requirements</Text>
+            <Text style={styles.errorMessage}>{errorMessage.objectives}</Text>
+
+            <Text
+              style={
+                inputValidation.requirements === false
+                  ? {...styles.label, color: errorStyle.color}
+                  : {...styles.label}
+              }>
+              Course Requirements
+            </Text>
             <Item
               style={{
                 paddingRight: 15,
@@ -484,11 +583,23 @@ function EditMyClass(props) {
                   marginRight: 20,
                 }}
                 rowSpan={5}
-                placeholder="Please separate each requirement point using a hashtag (#)"
+                placeholder="Separate each requirement point using a hashtag (#)"
                 value={requirements}
                 onChangeText={text => setRequirements(text)}
+                onPressIn={() => {
+                  setErrorMessage({...errorMessage, requirements: ''});
+                  setInputValidation({
+                    ...inputValidation,
+                    requirements: undefined,
+                  });
+                }}
+                onBlur={() => {
+                  requirementsValidation();
+                }}
+                disableFullscreenUI={true}
               />
             </Item>
+            <Text style={styles.errorMessage}>{errorMessage.requirements}</Text>
 
             <Text style={styles.label}>Course Icon</Text>
             {photo && (
@@ -598,7 +709,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   formItem: {marginBottom: 15},
-  label: {paddingLeft: 16, color: '#ADA9BB'},
+  label: {paddingLeft: 16, color: '#ADA9BB', marginTop: 12},
 
   disable: {
     color: '#ADA9BB',

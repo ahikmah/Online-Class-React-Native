@@ -89,13 +89,6 @@ function Facilitator({...props}) {
     setEnd('');
     setDay('');
     setDescription('');
-    // setInputValidation({
-    //   name: true,
-    //   category: true,
-    //   price: true,
-    //   schedule: true,
-    //   description: true,
-    // });
   }, [isCreated, isFocused]);
 
   const choosePhotoHandler = () => {

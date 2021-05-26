@@ -15,7 +15,7 @@ function Facilitator(props) {
   const [memberData, setMemberData] = useState();
   let progressItems;
   const {...data} = props.data;
-  console.log('fas', data);
+  // console.log('fas', data);
   useEffect(() => {
     const token = props.token;
     axios
@@ -40,7 +40,7 @@ function Facilitator(props) {
   }, []);
   if (courseMember) {
     progressItems = courseMember.map(item => {
-      console.log(item);
+      // console.log(item);
       return (
         <View
           key={item.id}
