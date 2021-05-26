@@ -30,11 +30,11 @@ function Facilitator({...props}) {
   const [isDisabled, setIsDisabled] = useState(true);
 
   const [inputValidation, setInputValidation] = useState({
-    name: undefined,
-    category: undefined,
-    price: undefined,
-    schedule: undefined,
-    description: undefined,
+    name: true,
+    category: true,
+    price: true,
+    schedule: true,
+    description: true,
   });
   const [errorMessage, setErrorMessage] = useState({
     name: 'Required',
@@ -81,14 +81,6 @@ function Facilitator({...props}) {
       })
       .then(res => setMyClass(res.data.result))
       .catch(err => console.log(err));
-    setClassName('');
-    setCategories('');
-    setPrice('');
-    setSchedule('');
-    setStart('');
-    setEnd('');
-    setDay('');
-    setDescription('');
   }, [isCreated, isFocused]);
 
   const choosePhotoHandler = () => {
@@ -156,11 +148,11 @@ function Facilitator({...props}) {
         setPhoto(null);
 
         setInputValidation({
-          name: undefined,
-          category: undefined,
-          price: undefined,
-          schedule: undefined,
-          description: undefined,
+          name: true,
+          category: true,
+          price: true,
+          schedule: true,
+          description: true,
         });
         setIsCreated(!isCreated);
         props.navigation.navigate('ActivityDashboard');
@@ -281,21 +273,21 @@ function Facilitator({...props}) {
     inputValidation.description,
   ]);
 
-  useEffect(() => {
-    nameValidation();
-  }, [className]);
-  useEffect(() => {
-    categoryValidation();
-  }, [categories]);
-  useEffect(() => {
-    priceValidation();
-  }, [price]);
-  useEffect(() => {
-    scheduleValidation();
-  }, [schedule, start, end]);
-  useEffect(() => {
-    descriptionValidation();
-  }, [description]);
+  // useEffect(() => {
+  //   nameValidation();
+  // }, [className]);
+  // useEffect(() => {
+  //   categoryValidation();
+  // }, [categories]);
+  // useEffect(() => {
+  //   priceValidation();
+  // }, [price]);
+  // useEffect(() => {
+  //   scheduleValidation();
+  // }, [schedule, start, end]);
+  // useEffect(() => {
+  //   descriptionValidation();
+  // }, [description]);
 
   return (
     <>
@@ -368,9 +360,9 @@ function Facilitator({...props}) {
                     setClassName(text);
                   }}
                   onPressIn={() =>
-                    setInputValidation({...inputValidation, name: undefined})
+                    setInputValidation({...inputValidation, name: true})
                   }
-                  // onBlur={nameValidation}
+                  onBlur={nameValidation}
                 />
               </View>
               {inputValidation.name === false ? (
@@ -465,11 +457,11 @@ function Facilitator({...props}) {
                   onChangeText={text => setPrice(text)}
                   keyboardType="numeric"
                   onPressIn={() => {
-                    setInputValidation({...inputValidation, price: undefined});
+                    setInputValidation({...inputValidation, price: true});
 
-                    // categoryValidation();
+                    categoryValidation();
                   }}
-                  // onBlur={priceValidation}
+                  onBlur={priceValidation}
                 />
               </View>
               {inputValidation.price === false ? (
@@ -498,7 +490,13 @@ function Facilitator({...props}) {
                 >
                   <Text
                     style={{width: '100%'}}
-                    onPress={() => setShowMode('date')}>
+                    onPress={() => {
+                      setShowMode('date');
+                      setInputValidation({
+                        ...inputValidation,
+                        schedule: true,
+                      });
+                    }}>
                     {day}
                   </Text>
                 </View>
@@ -515,6 +513,7 @@ function Facilitator({...props}) {
                         selectedDate.toISOString().slice(0, 10) || schedule,
                       );
                       setShowMode(false);
+                      scheduleValidation();
                     }}
                   />
                 )}
@@ -525,13 +524,20 @@ function Facilitator({...props}) {
                     borderBottomWidth: 1,
                     width: 50,
                   }}
-                  onPress={() => setShowMode2('time')}>
+                  // onPress={() => setShowMode2('time')}
+                >
                   <Text
                     style={{
                       textAlign: 'center',
                       width: '100%',
                     }}
-                    onPress={() => setShowMode2('time')}>
+                    onPress={() => {
+                      setShowMode2('time');
+                      setInputValidation({
+                        ...inputValidation,
+                        schedule: true,
+                      });
+                    }}>
                     {start}
                   </Text>
                 </View>
@@ -547,6 +553,7 @@ function Facilitator({...props}) {
                         selectedDate.toTimeString().slice(0, 5) || start,
                       );
                       setShowMode2(false);
+                      scheduleValidation();
                     }}
                   />
                 )}
@@ -555,10 +562,17 @@ function Facilitator({...props}) {
 
                 <View
                   style={{borderBottomWidth: 1, width: 50}}
-                  onPress={() => setShowMode3('time')}>
+                  // onPress={() => setShowMode3('time')}
+                >
                   <Text
                     style={{width: '100%', textAlign: 'center'}}
-                    onPress={() => setShowMode3('time')}>
+                    onPress={() => {
+                      setShowMode3('time');
+                      setInputValidation({
+                        ...inputValidation,
+                        schedule: true,
+                      });
+                    }}>
                     {end}
                   </Text>
                 </View>
@@ -572,6 +586,7 @@ function Facilitator({...props}) {
                     onChange={(event, selectedDate) => {
                       setEnd(selectedDate.toTimeString().slice(0, 5) || end);
                       setShowMode3(false);
+                      scheduleValidation();
                     }}
                   />
                 )}
@@ -600,13 +615,13 @@ function Facilitator({...props}) {
                   backgroundColor: '#EBEBEB',
                   marginHorizontal: 14,
                 }}
-                onPressIn={() => {
+                onPress={() => {
                   setInputValidation({
                     ...inputValidation,
-                    description: undefined,
+                    description: true,
                   });
                 }}
-                // onBlur={descriptionValidation}
+                onBlur={descriptionValidation}
                 value={description}
                 onChangeText={text => setDescription(text)}
               />
