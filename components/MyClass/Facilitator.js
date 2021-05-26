@@ -16,11 +16,12 @@ import {connect} from 'react-redux';
 
 function Facilitator({...props}) {
   const [myClass, setMyClass] = useState([]);
+  const [isDeleted, setIsDeleted] = useState(false);
   const [currPage, setCurrPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [showModalDelete, setShowModalDelete] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState();
-
+  const [memberCount, setMemberCount] = useState();
   const scrollRef = useRef();
 
   const getMyClass = () => {
@@ -57,11 +58,42 @@ function Facilitator({...props}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
+    const token = props.token;
+    axios
+      .get(`${DOMAIN_API}:${PORT_API}/data/instructor/my-course`, {
+        headers: {'x-access-token': `Bearer ${token}`},
+      })
+      .then(res => {
+        setMyClass(res.data.result);
+        setCurrPage(res.data.info.page);
+        setTotalPage(res.data.info.totalPage);
+      })
+      .catch(err => console.log(err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDeleted]);
+
+  useEffect(() => {
     getMyClass();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currPage]);
 
-  const deleteHandler = () => {};
+  const deleteHandler = e => {
+    console.log(selectedCourseId);
+    e.preventDefault();
+    axios
+      .delete(`${DOMAIN_API}:${PORT_API}/data/courses/${selectedCourseId}`, {
+        headers: {'x-access-token': `Bearer ${props.token}`},
+      })
+      .then(res => {
+        // console.log('Success', res);
+        setShowModalDelete(false);
+        setIsDeleted(!isDeleted);
+        // history.go(0);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
 
   const renderHiddenItem = data => (
     <View style={styles.rowBack}>
@@ -76,7 +108,8 @@ function Facilitator({...props}) {
         style={[styles.backRightBtn, styles.backRightBtnRight]}
         onPress={() => {
           setShowModalDelete(true);
-          setSelectedCourseId(data.item.num_of_student);
+          setSelectedCourseId(data.item.course_id);
+          setMemberCount(data.item.num_of_student);
         }}>
         <Text style={styles.backTextWhite}>Delete</Text>
       </TouchableOpacity>
@@ -168,7 +201,7 @@ function Facilitator({...props}) {
           </View>
         ) : null}
 
-        {showModalDelete && !selectedCourseId ? (
+        {showModalDelete && !memberCount ? (
           <CustomModal
             iconStyle="confirm-danger"
             modalVisible={showModalDelete}
@@ -181,7 +214,7 @@ function Facilitator({...props}) {
             btnLabel4="Yes I'm sure"
             onAction4={deleteHandler}
           />
-        ) : showModalDelete && selectedCourseId ? (
+        ) : showModalDelete && memberCount ? (
           <CustomModal
             iconStyle="confirm-danger"
             modalVisible={showModalDelete}
