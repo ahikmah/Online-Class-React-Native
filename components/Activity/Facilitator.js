@@ -1,6 +1,9 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
+
+import {useIsFocused} from '@react-navigation/native';
+
 import {
   Text,
   View,
@@ -8,17 +11,42 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   ScrollView,
+  ActivityIndicator,
+  StatusBar,
   Image,
 } from 'react-native';
 import {Button, Icon, Input, Item, Picker, Textarea} from 'native-base';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
+import CustomModal from '../CustomModal';
 import axios from 'axios';
 import {DOMAIN_API, PORT_API} from '@env';
 import {connect} from 'react-redux';
 function Facilitator({...props}) {
+  const isFocused = useIsFocused();
   const [myClass, setMyClass] = useState();
 
+  const [isCreated, setIsCreated] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(true);
+
+  const [inputValidation, setInputValidation] = useState({
+    name: undefined,
+    category: undefined,
+    price: undefined,
+    schedule: undefined,
+    description: undefined,
+  });
+  const [errorMessage, setErrorMessage] = useState({
+    name: 'Required',
+    category: '',
+    price: '',
+    schedule: '',
+    description: '',
+  });
+  const errorStyle = {
+    borderColor: '#EB4335',
+    color: '#EB4335',
+  };
   const [day, setDay] = useState('');
 
   // input state
@@ -31,12 +59,11 @@ function Facilitator({...props}) {
   const [description, setDescription] = useState('');
   const [photo, setPhoto] = useState(null);
 
+  const [indicatorVisible, setIndicatorVisible] = useState(false);
   const [showMode, setShowMode] = useState(false);
   const [showMode2, setShowMode2] = useState(false);
   const [showMode3, setShowMode3] = useState(false);
-  // useEffect(() => {
-  //   LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
-  // }, []);
+  const [showModalConfirm, setShowModalConfirm] = useState(false);
   useEffect(() => {
     const token = props.token;
     axios
@@ -46,6 +73,30 @@ function Facilitator({...props}) {
       .then(res => setMyClass(res.data.result))
       .catch(err => console.log(err));
   }, []);
+  useEffect(() => {
+    const token = props.token;
+    axios
+      .get(`${DOMAIN_API}:${PORT_API}/data/instructor/my-course`, {
+        headers: {'x-access-token': `Bearer ${token}`},
+      })
+      .then(res => setMyClass(res.data.result))
+      .catch(err => console.log(err));
+    setClassName('');
+    setCategories('');
+    setPrice('');
+    setSchedule('');
+    setStart('');
+    setEnd('');
+    setDescription('');
+    setInputValidation({
+      name: true,
+      category: true,
+      price: true,
+      schedule: true,
+      description: true,
+    });
+    // setIsDisabled(true);
+  }, [isCreated, isFocused]);
 
   const choosePhotoHandler = () => {
     launchImageLibrary({noData: true}, response => {
@@ -63,7 +114,6 @@ function Facilitator({...props}) {
       }
     });
   };
-  var d = new Date();
   const dayNames = [
     'Sunday',
     'Monday',
@@ -75,15 +125,9 @@ function Facilitator({...props}) {
   ];
   const uploadHandler = e => {
     e.preventDefault();
+    setShowModalConfirm(false);
+    setIndicatorVisible(true);
     const token = props.token;
-    console.log(token);
-    console.log(className);
-    console.log(categories);
-    console.log(description);
-    console.log(price);
-    console.log(schedule);
-    console.log(start);
-    console.log(end);
     let formData = new FormData();
     formData.append('name', className);
     formData.append('category_id', categories);
@@ -92,11 +136,13 @@ function Facilitator({...props}) {
     formData.append('schedule', schedule);
     formData.append('start_time', start);
     formData.append('end_time', end);
-    formData.append('banner', {
-      name: photo.fileName,
-      type: photo.type,
-      uri: photo.uri,
-    });
+    photo
+      ? formData.append('banner', {
+          name: photo.fileName,
+          type: photo.type,
+          uri: photo.uri,
+        })
+      : null;
     axios
       .post(`${DOMAIN_API}:${PORT_API}/data/courses/`, formData, {
         headers: {
@@ -105,7 +151,7 @@ function Facilitator({...props}) {
         },
       })
       .then(res => {
-        console.log(res, 'Success');
+        // console.log(res, 'Success');
         setClassName('');
         setCategories('');
         setPrice('');
@@ -114,15 +160,19 @@ function Facilitator({...props}) {
         setEnd('');
         setDescription('');
         setPhoto(null);
+        setIsCreated(!isCreated);
         props.navigation.navigate('ActivityDashboard');
+        setIsDisabled(true);
       })
       .catch(err => {
         props.navigation.navigate('ActivityDashboard');
         console.log(err);
-      });
+      })
+      .finally(() => setIndicatorVisible(false));
   };
   let myClassItems;
   if (myClass) {
+    // console.log(myClass.length);
     myClassItems = myClass.slice(0, 3).map(item => {
       return (
         <View key={item.course_id} style={styles.myClassItem}>
@@ -152,333 +202,513 @@ function Facilitator({...props}) {
       );
     });
   }
+
+  const nameValidation = () => {
+    if (className.length === 0) {
+      setInputValidation({...inputValidation, name: false});
+      setErrorMessage({...errorMessage, name: "This field can't be empty"});
+    } else if (className.length < 5) {
+      setInputValidation({...inputValidation, name: false});
+      setErrorMessage({
+        ...errorMessage,
+        name: 'Class name must be at least 5 characters',
+      });
+    } else {
+      setInputValidation({...inputValidation, name: true});
+    }
+  };
+
+  const categoryValidation = () => {
+    if (categories.length < 1) {
+      setInputValidation({...inputValidation, category: false});
+      setErrorMessage({...errorMessage, category: "This field can't be empty"});
+    } else {
+      setInputValidation({...inputValidation, category: true});
+    }
+  };
+  const priceValidation = () => {
+    if (price.length === 0) {
+      setInputValidation({...inputValidation, price: false});
+      setErrorMessage({...errorMessage, price: "This field can't be empty"});
+    } else {
+      setInputValidation({...inputValidation, price: true});
+    }
+  };
+  const scheduleValidation = () => {
+    if (schedule.length === 0 || start.length === 0 || end.length === 0) {
+      setInputValidation({...inputValidation, schedule: false});
+      setErrorMessage({...errorMessage, schedule: "This field can't be empty"});
+    } else if (start > end) {
+      setInputValidation({...inputValidation, schedule: false});
+      setErrorMessage({
+        ...errorMessage,
+        schedule:
+          'Incorrect format. Make sure the start time is earlier than the finish time',
+      });
+    } else {
+      setInputValidation({...inputValidation, schedule: true});
+    }
+  };
+  const descriptionValidation = () => {
+    if (description.length === 0) {
+      setInputValidation({...inputValidation, description: false});
+      setErrorMessage({
+        ...errorMessage,
+        description: "This field can't be empty",
+      });
+    } else if (description.length < 10) {
+      setInputValidation({...inputValidation, description: false});
+      setErrorMessage({
+        ...errorMessage,
+        description: 'Description must be at least 10 characters',
+      });
+    } else {
+      setInputValidation({...inputValidation, description: true});
+    }
+  };
+
+  useEffect(() => {
+    if (
+      inputValidation.name !== false &&
+      inputValidation.category !== false &&
+      inputValidation.price !== false &&
+      inputValidation.schedule !== false &&
+      inputValidation.description !== false
+    ) {
+      setIsDisabled(false);
+    }
+  }, [
+    inputValidation.name,
+    inputValidation.category,
+    inputValidation.price,
+    inputValidation.schedule,
+    inputValidation.description,
+  ]);
+
+  useEffect(() => {
+    nameValidation();
+  }, [className]);
+  useEffect(() => {
+    categoryValidation();
+  }, [categories]);
+  useEffect(() => {
+    priceValidation();
+  }, [price]);
+  useEffect(() => {
+    scheduleValidation();
+  }, [schedule, start, end]);
+  useEffect(() => {
+    descriptionValidation();
+  }, [description]);
+
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <Text style={styles.section}>My class</Text>
-        <View style={styles.heading}>
-          <Text style={{...styles.headtext, ...styles.name}}>Class Name</Text>
-          <Text style={{...styles.headtext, ...styles.student}}>Students</Text>
+    <>
+      {indicatorVisible ? (
+        <View
+          style={{
+            height:
+              Dimensions.get('window').height < 700
+                ? StatusBar.currentHeight + 700
+                : StatusBar.currentHeight + Dimensions.get('window').height,
+            position: 'absolute',
+            width: '100%',
+          }}>
+          <View
+            style={{
+              justifyContent: 'center',
+              flex: 1,
+              // top: '50%',
+              backgroundColor: 'white',
+              opacity: 0.6,
+              zIndex: 10,
+            }}>
+            <ActivityIndicator size={64} color="#5784BA" />
+          </View>
         </View>
+      ) : null}
+      <ScrollView>
+        <View style={styles.container}>
+          <Text style={styles.section}>My class</Text>
+          <View style={styles.heading}>
+            <Text style={{...styles.headtext, ...styles.name}}>Class Name</Text>
+            <Text style={{...styles.headtext, ...styles.student}}>
+              Students
+            </Text>
+          </View>
 
-        {myClass ? myClassItems : null}
+          {myClass ? myClassItems : null}
 
-        <View style={styles.moreClass}>
-          <Text
-            style={{fontFamily: 'Montserrat-Medium'}}
-            onPress={() => props.navigation.navigate('MyClass')}>
-            view all
-          </Text>
-          <Icon
-            name="chevron-forward"
-            style={{fontSize: 14}}
-            onPress={() => props.navigation.navigate('MyClass')}
-          />
-        </View>
+          <View style={styles.moreClass}>
+            <Text
+              style={{fontFamily: 'Montserrat-Medium'}}
+              onPress={() => props.navigation.navigate('MyClass')}>
+              view all
+            </Text>
+            <Icon
+              name="chevron-forward"
+              style={{fontSize: 14}}
+              onPress={() => props.navigation.navigate('MyClass')}
+            />
+          </View>
 
-        <View style={styles.newClassSection}>
-          <Text style={{...styles.section, paddingLeft: 10}}>
-            Create new class
-          </Text>
-          <KeyboardAvoidingView behavior="padding" style={{flex: 1}}>
-            <View style={styles.inputSection}>
-              <Text>Class Name : </Text>
-              <Input
-                value={className}
-                onChangeText={text => {
-                  setClassName(text);
-                }}
-              />
-            </View>
-            <View style={styles.inputSection}>
-              <Text>Categories : </Text>
-              <Item
-                picker
-                style={{
-                  width: 300,
-                  overflow: 'hidden',
-                  borderBottomWidth: 0,
-                }}>
-                <Picker
-                  mode="dropdown"
-                  style={{width: 50, borderBottomWidth: 0}}
-                  placeholder="Select your SIM"
-                  placeholderStyle={{color: '#bfc6ea'}}
-                  selectedValue={categories}
-                  onValueChange={e => setCategories(e)}>
-                  <Picker.Item
-                    label=""
-                    value=""
-                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                  />
-                  <Picker.Item
-                    label="Software"
-                    value="1"
-                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                  />
-                  <Picker.Item
-                    label="History"
-                    value="2"
-                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                  />
-                  <Picker.Item
-                    label="Psychology"
-                    value="3"
-                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                  />
-                  <Picker.Item
-                    label="Finance"
-                    value="4"
-                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                  />
-                  <Picker.Item
-                    label="Math"
-                    value="5"
-                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                  />
-                  <Picker.Item
-                    label="Science"
-                    value="6"
-                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                  />
-                  <Picker.Item
-                    label="Office Productivity"
-                    value="7"
-                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
-                  />
-                </Picker>
-              </Item>
-            </View>
-            <View style={styles.inputSection}>
-              <Text>Pricing : </Text>
-              <Input
-                value={price}
-                onChangeText={text => setPrice(text)}
-                keyboardType="numeric"
-              />
-            </View>
-            <View
-              style={{
-                ...styles.inputSection,
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-              }}>
-              <Text>Schedule : </Text>
-              <View
-                style={{width: 104}}
-                // onPress={() => setShowMode('date')}
-              >
-                <Text
-                  style={{width: '100%'}}
-                  onPress={() => setShowMode('date')}>
-                  {day}
-                </Text>
-              </View>
-              {showMode && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  mode={showMode}
-                  value={new Date()}
-                  is24Hour={true}
-                  display="default"
-                  onChange={(event, selectedDate) => {
-                    const today = dayNames[selectedDate.getDay()];
-                    setDay(today);
-                    setSchedule(
-                      selectedDate.toISOString().slice(0, 10) || schedule,
-                    );
-                    setShowMode(false);
-                  }}
-                />
-              )}
-
-              <View
-                style={{
-                  marginLeft: 10,
-                  borderBottomWidth: 1,
-                  width: 50,
-                }}
-                onPress={() => setShowMode2('time')}>
+          <View style={styles.newClassSection}>
+            <Text style={{...styles.section, paddingLeft: 10}}>
+              Create new class
+            </Text>
+            <KeyboardAvoidingView style={{flex: 1}}>
+              <View style={styles.inputSection}>
                 <Text
                   style={{
-                    textAlign: 'center',
-                    width: '100%',
-                  }}
-                  onPress={() => setShowMode2('time')}>
-                  {start}
+                    color:
+                      inputValidation.name === false
+                        ? errorStyle.color
+                        : '#000',
+                  }}>
+                  Class Name :
                 </Text>
-              </View>
-              {showMode2 && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  mode={showMode2}
-                  value={new Date()}
-                  is24Hour={true}
-                  display="default"
-                  onChange={(event, selectedDate) => {
-                    setStart(selectedDate.toTimeString().slice(0, 5) || start);
-                    setShowMode2(false);
+                <Input
+                  value={className}
+                  onChangeText={text => {
+                    setClassName(text);
                   }}
+                  onPressIn={() =>
+                    setInputValidation({...inputValidation, name: undefined})
+                  }
+                  // onBlur={nameValidation}
                 />
-              )}
+              </View>
+              {inputValidation.name === false ? (
+                <Text style={{...styles.inputSection, color: errorStyle.color}}>
+                  {errorMessage.name}
+                </Text>
+              ) : null}
+              <View style={styles.inputSection}>
+                <Text
+                  style={{
+                    color:
+                      inputValidation.category === false
+                        ? errorStyle.color
+                        : '#000',
+                  }}>
+                  Categories :
+                </Text>
+                <Item
+                  picker
+                  style={{
+                    width: 300,
+                    overflow: 'hidden',
+                    borderBottomWidth: 0,
+                  }}>
+                  <Picker
+                    mode="dialog"
+                    style={{width: 50, borderBottomWidth: 0}}
+                    placeholder="Select your SIM"
+                    placeholderStyle={{color: '#bfc6ea'}}
+                    selectedValue={categories}
+                    onValueChange={e => setCategories(e)}>
+                    <Picker.Item
+                      label=""
+                      value=""
+                      style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                    />
+                    <Picker.Item
+                      label="Software"
+                      value="1"
+                      style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                    />
+                    <Picker.Item
+                      label="History"
+                      value="2"
+                      style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                    />
+                    <Picker.Item
+                      label="Psychology"
+                      value="3"
+                      style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                    />
+                    <Picker.Item
+                      label="Finance"
+                      value="4"
+                      style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                    />
+                    <Picker.Item
+                      label="Math"
+                      value="5"
+                      style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                    />
+                    <Picker.Item
+                      label="Science"
+                      value="6"
+                      style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                    />
+                    <Picker.Item
+                      label="Office Productivity"
+                      value="7"
+                      style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                    />
+                  </Picker>
+                </Item>
+              </View>
+              {inputValidation.category === false ? (
+                <Text style={{...styles.inputSection, color: errorStyle.color}}>
+                  {errorMessage.category}
+                </Text>
+              ) : null}
+              <View style={styles.inputSection}>
+                <Text
+                  style={{
+                    color:
+                      inputValidation.price === false
+                        ? errorStyle.color
+                        : '#000',
+                  }}>
+                  Pricing :
+                </Text>
+                <Input
+                  value={price}
+                  onChangeText={text => setPrice(text)}
+                  keyboardType="numeric"
+                  onPressIn={() => {
+                    setInputValidation({...inputValidation, price: undefined});
 
-              <Text style={{marginLeft: 5, marginRight: 5}}>-</Text>
-
+                    // categoryValidation();
+                  }}
+                  // onBlur={priceValidation}
+                />
+              </View>
+              {inputValidation.price === false ? (
+                <Text style={{...styles.inputSection, color: errorStyle.color}}>
+                  {errorMessage.price}
+                </Text>
+              ) : null}
               <View
-                style={{borderBottomWidth: 1, width: 50}}
-                onPress={() => setShowMode3('time')}>
+                style={{
+                  ...styles.inputSection,
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                }}>
                 <Text
-                  style={{width: '100%', textAlign: 'center'}}
-                  onPress={() => setShowMode3('time')}>
-                  {end}
+                  style={{
+                    color:
+                      inputValidation.schedule === false
+                        ? errorStyle.color
+                        : '#000',
+                  }}>
+                  Schedule :
                 </Text>
-              </View>
-              {showMode3 && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  mode={showMode3}
-                  value={new Date()}
-                  is24Hour={true}
-                  display="default"
-                  onChange={(event, selectedDate) => {
-                    setEnd(selectedDate.toTimeString().slice(0, 5) || end);
-                    setShowMode3(false);
-                  }}
-                />
-              )}
-            </View>
-
-            {/* <View style={styles.inputSection}>
-              <Text>Start : </Text>
-              <View style={{width: '30%'}} onPress={() => setShowMode2('time')}>
-                <Text
-                  style={{width: '100%', borderBottomWidth: 1}}
-                  onPress={() => setShowMode2('time')}>
-                  {start.toString().substr(15, 6)}
-                </Text>
-              </View>
-              {showMode2 && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  mode={showMode2}
-                  value={new Date()}
-                  is24Hour={true}
-                  display="default"
-                  onChange={(event, selectedDate) => {
-                    setStart(selectedDate || start);
-                    setShowMode2(false);
-                  }}
-                />
-              )}
-            </View>
-            <View style={styles.inputSection}>
-              <Text>End : </Text>
-              <View
-                style={{width: '100%', borderBottomWidth: 1}}
-                onPress={() => setShowMode3('time')}>
-                <Text
-                  style={{width: '30%'}}
-                  onPress={() => setShowMode3('time')}>
-                  {end.toString().substr(15, 6)}
-                </Text>
-              </View>
-              {showMode3 && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  mode={showMode3}
-                  value={new Date()}
-                  is24Hour={true}
-                  display="default"
-                  onChange={(event, selectedDate) => {
-                    setEnd(selectedDate || end);
-                    setShowMode3(false);
-                  }}
-                />
-              )}
-            </View> */}
-
-            <View style={styles.inputSection}>
-              <Text>Description : </Text>
-            </View>
-            <Textarea
-              rowSpan={5}
-              style={{
-                borderRadius: 10,
-                backgroundColor: '#EBEBEB',
-                marginHorizontal: 14,
-              }}
-              value={description}
-              onChangeText={text => setDescription(text)}
-            />
-            <View
-              style={{
-                marginTop: 12,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              {photo && (
-                <>
-                  <Image
-                    source={{uri: photo.uri}}
-                    style={{
-                      width: 250,
-                      height: 250,
+                <View
+                  style={{width: 104}}
+                  // onPress={() => setShowMode('date')}
+                >
+                  <Text
+                    style={{width: '100%'}}
+                    onPress={() => setShowMode('date')}>
+                    {day}
+                  </Text>
+                </View>
+                {showMode && (
+                  <DateTimePicker
+                    mode={showMode}
+                    value={new Date()}
+                    is24Hour={true}
+                    display="default"
+                    onChange={(event, selectedDate) => {
+                      const today = dayNames[selectedDate.getDay()];
+                      setDay(today);
+                      setSchedule(
+                        selectedDate.toISOString().slice(0, 10) || schedule,
+                      );
+                      setShowMode(false);
                     }}
                   />
-                </>
-              )}
-            </View>
-            <View
-              style={{
-                marginTop: 12,
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-around',
-              }}>
-              <Button
-                onPress={choosePhotoHandler}
-                style={{
-                  padding: 5,
-                  borderRadius: 10,
-                  backgroundColor: '#5784BA',
-                }}>
-                <Text style={{color: 'white'}}>Choose Photo</Text>
-              </Button>
-              <Button
-                onPress={launchCameraHandler}
-                style={{
-                  padding: 5,
-                  borderRadius: 10,
-                  backgroundColor: '#5784BA',
-                }}>
-                <Text style={{color: 'white'}}>Launch Camera</Text>
-              </Button>
-            </View>
+                )}
 
-            <Button
-              style={{
-                backgroundColor: '#57BA61',
-                width: Dimensions.get('window').width - 100,
-                borderRadius: 14,
-                margin: 14,
-              }}
-              onPress={uploadHandler}>
-              <Text
+                <View
+                  style={{
+                    marginLeft: 10,
+                    borderBottomWidth: 1,
+                    width: 50,
+                  }}
+                  onPress={() => setShowMode2('time')}>
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      width: '100%',
+                    }}
+                    onPress={() => setShowMode2('time')}>
+                    {start}
+                  </Text>
+                </View>
+                {showMode2 && (
+                  <DateTimePicker
+                    testID="dateTimePicker"
+                    mode={showMode2}
+                    value={new Date()}
+                    is24Hour={true}
+                    display="default"
+                    onChange={(event, selectedDate) => {
+                      setStart(
+                        selectedDate.toTimeString().slice(0, 5) || start,
+                      );
+                      setShowMode2(false);
+                    }}
+                  />
+                )}
+
+                <Text style={{marginLeft: 5, marginRight: 5}}>-</Text>
+
+                <View
+                  style={{borderBottomWidth: 1, width: 50}}
+                  onPress={() => setShowMode3('time')}>
+                  <Text
+                    style={{width: '100%', textAlign: 'center'}}
+                    onPress={() => setShowMode3('time')}>
+                    {end}
+                  </Text>
+                </View>
+                {showMode3 && (
+                  <DateTimePicker
+                    testID="dateTimePicker"
+                    mode={showMode3}
+                    value={new Date()}
+                    is24Hour={true}
+                    display="default"
+                    onChange={(event, selectedDate) => {
+                      setEnd(selectedDate.toTimeString().slice(0, 5) || end);
+                      setShowMode3(false);
+                    }}
+                  />
+                )}
+              </View>
+              {inputValidation.schedule === false ? (
+                <Text style={{...styles.inputSection, color: errorStyle.color}}>
+                  {errorMessage.schedule}
+                </Text>
+              ) : null}
+
+              <View style={styles.inputSection}>
+                <Text
+                  style={{
+                    color:
+                      inputValidation.description === false
+                        ? errorStyle.color
+                        : '#000',
+                  }}>
+                  Description :
+                </Text>
+              </View>
+              <Textarea
+                rowSpan={5}
                 style={{
-                  color: 'white',
-                  width: '100%',
-                  textAlign: 'center',
-                  fontFamily: 'Montserrat-SemiBold',
-                  fontSize: 15,
+                  borderRadius: 10,
+                  backgroundColor: '#EBEBEB',
+                  marginHorizontal: 14,
+                }}
+                onPressIn={() => {
+                  setInputValidation({
+                    ...inputValidation,
+                    description: undefined,
+                  });
+                }}
+                // onBlur={descriptionValidation}
+                value={description}
+                onChangeText={text => setDescription(text)}
+              />
+              {inputValidation.description === false ? (
+                <Text style={{...styles.inputSection, color: errorStyle.color}}>
+                  {errorMessage.description}
+                </Text>
+              ) : null}
+              <View style={styles.inputSection}>
+                <Text>Thumbnail (Opsional)</Text>
+              </View>
+              <View
+                style={{
+                  marginTop: 12,
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}>
-                Create
-              </Text>
-            </Button>
-          </KeyboardAvoidingView>
+                {photo && (
+                  <>
+                    <Image
+                      source={{uri: photo.uri}}
+                      style={{
+                        width: 250,
+                        height: 250,
+                      }}
+                    />
+                  </>
+                )}
+              </View>
+              <View
+                style={{
+                  marginTop: 12,
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-around',
+                }}>
+                <Button
+                  onPress={choosePhotoHandler}
+                  style={{
+                    padding: 5,
+                    borderRadius: 10,
+                    backgroundColor: '#5784BA',
+                  }}>
+                  <Text style={{color: 'white'}}>Choose Photo</Text>
+                </Button>
+                <Button
+                  onPress={launchCameraHandler}
+                  style={{
+                    padding: 5,
+                    borderRadius: 10,
+                    backgroundColor: '#5784BA',
+                  }}>
+                  <Text style={{color: 'white'}}>Launch Camera</Text>
+                </Button>
+              </View>
+
+              <Button
+                style={{
+                  backgroundColor: '#57BA61',
+                  width: Dimensions.get('window').width - 100,
+                  borderRadius: 14,
+                  margin: 14,
+                  opacity: isDisabled ? 0.7 : 1,
+                }}
+                onPress={() => setShowModalConfirm(true)}
+                disabled={isDisabled}>
+                <Text
+                  style={{
+                    color: 'white',
+                    width: '100%',
+                    textAlign: 'center',
+                    fontFamily: 'Montserrat-SemiBold',
+                    fontSize: 15,
+                  }}>
+                  Create
+                </Text>
+              </Button>
+            </KeyboardAvoidingView>
+          </View>
+
+          {showModalConfirm ? (
+            <CustomModal
+              iconStyle="confirm"
+              modalVisible={showModalConfirm}
+              title="Confirmation"
+              msg="Are you sure want to create this class?"
+              btnLabel3="Cancel"
+              onAction3={() => {
+                setShowModalConfirm(false);
+              }}
+              btnLabel4="Yes I'm sure"
+              onAction4={uploadHandler}
+            />
+          ) : null}
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </>
   );
 }
 
