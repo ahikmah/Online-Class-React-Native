@@ -143,39 +143,14 @@ function ProgressModal({...props}) {
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
           }}>
           <View style={{...styles.modalView, flex: modalSize}}>
-            <Icon
-              onPress={props.onClose}
-              name="close-outline"
-              style={{position: 'absolute', top: 15, right: 20}}
-            />
-
-            <View style={styles.header}>
-              <View style={styles.profile}>
-                {props.data.avatar ? (
-                  <Image
-                    style={styles.avatar}
-                    source={{
-                      uri: `${DOMAIN_API}:${PORT_API}${props.data.avatar}`,
-                    }}
-                  />
-                ) : (
-                  <Image
-                    source={require('../../assets/images/graduate.png')}
-                    style={styles.avatar}
-                  />
-                )}
-                <Text style={styles.name}>
-                  {progressItems && progressItems[0].student_name}
-                </Text>
-              </View>
-              <View style={styles.headerTable}>
-                <Text style={styles.tbTopic}>Topic</Text>
-                <Text style={styles.tbScore}>Score</Text>
-              </View>
-            </View>
-            <ScrollView style={{marginTop: 16}}>
-              {progressList}
-              {showModalScore ? (
+            {showModalScore ? (
+              <View
+                style={{
+                  top: Dimensions.get('window').height / 5,
+                  // left: 10,
+                  // zIndex: 100,
+                  // position: 'absolute',
+                }}>
                 <View
                   style={{
                     ...styles.scoreModal,
@@ -187,6 +162,7 @@ function ProgressModal({...props}) {
                     alignItems: 'center',
                     borderRadius: 10,
                     position: 'absolute',
+                    zIndex: 100,
                   }}>
                   <Icon
                     onPress={() => setShowModalScore(false)}
@@ -227,6 +203,7 @@ function ProgressModal({...props}) {
                         paddingTop: 7,
                         alignItems: 'center',
                         justifyContent: 'center',
+                        zIndex: 10000,
                         // textAlignVertical: 'center',
                       }}
                       value={
@@ -235,7 +212,7 @@ function ProgressModal({...props}) {
                           : scoreData.score.toString()
                       }
                       keyboardType="numeric"
-                      onPressIn={() => console.log('HELLLL', scoreData.score)}
+                      // onPressIn={() => console.log('HELLLL', scoreData.score)}
                       onChangeText={text =>
                         setScoreData({...scoreData, score: text})
                       }
@@ -250,8 +227,40 @@ function ProgressModal({...props}) {
                     {/* <Button style={styles.buttonSave} title="Save" /> */}
                   </View>
                 </View>
-              ) : null}
-            </ScrollView>
+              </View>
+            ) : null}
+            <Icon
+              onPress={props.onClose}
+              name="close-outline"
+              style={{position: 'absolute', top: 15, right: 20}}
+            />
+
+            <View style={styles.header}>
+              <View style={styles.profile}>
+                {props.data.avatar ? (
+                  <Image
+                    style={styles.avatar}
+                    source={{
+                      uri: `${DOMAIN_API}:${PORT_API}${props.data.avatar}`,
+                    }}
+                  />
+                ) : (
+                  <Image
+                    source={require('../../assets/images/graduate.png')}
+                    style={styles.avatar}
+                  />
+                )}
+                <Text style={styles.name}>
+                  {progressItems && progressItems[0].student_name}
+                </Text>
+              </View>
+              <View style={styles.headerTable}>
+                <Text style={styles.tbTopic}>Topic</Text>
+                <Text style={styles.tbScore}>Score</Text>
+              </View>
+            </View>
+
+            <ScrollView style={{marginTop: 16}}>{progressList}</ScrollView>
           </View>
         </View>
       </Modal>
