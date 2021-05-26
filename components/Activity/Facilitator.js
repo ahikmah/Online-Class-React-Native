@@ -19,6 +19,8 @@ import {connect} from 'react-redux';
 function Facilitator({...props}) {
   const [myClass, setMyClass] = useState();
 
+  const [day, setDay] = useState('');
+
   // input state
   const [className, setClassName] = useState('');
   const [categories, setCategories] = useState('');
@@ -61,10 +63,27 @@ function Facilitator({...props}) {
       }
     });
   };
+  var d = new Date();
+  const dayNames = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
   const uploadHandler = e => {
     e.preventDefault();
     const token = props.token;
     console.log(token);
+    console.log(className);
+    console.log(categories);
+    console.log(description);
+    console.log(price);
+    console.log(schedule);
+    console.log(start);
+    console.log(end);
     let formData = new FormData();
     formData.append('name', className);
     formData.append('category_id', categories);
@@ -133,7 +152,6 @@ function Facilitator({...props}) {
       );
     });
   }
-
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -233,7 +251,11 @@ function Facilitator({...props}) {
             </View>
             <View style={styles.inputSection}>
               <Text>Pricing : </Text>
-              <Input value={price} onChangeText={text => setPrice(text)} />
+              <Input
+                value={price}
+                onChangeText={text => setPrice(text)}
+                keyboardType="numeric"
+              />
             </View>
             <View
               style={{
@@ -242,11 +264,14 @@ function Facilitator({...props}) {
                 justifyContent: 'flex-start',
               }}>
               <Text>Schedule : </Text>
-              <View style={{width: 104}} onPress={() => setShowMode('date')}>
+              <View
+                style={{width: 104}}
+                // onPress={() => setShowMode('date')}
+              >
                 <Text
                   style={{width: '100%'}}
                   onPress={() => setShowMode('date')}>
-                  {schedule.toString().substr(0, 15)}
+                  {day}
                 </Text>
               </View>
               {showMode && (
@@ -257,7 +282,11 @@ function Facilitator({...props}) {
                   is24Hour={true}
                   display="default"
                   onChange={(event, selectedDate) => {
-                    setSchedule(selectedDate || schedule);
+                    const today = dayNames[selectedDate.getDay()];
+                    setDay(today);
+                    setSchedule(
+                      selectedDate.toISOString().slice(0, 10) || schedule,
+                    );
                     setShowMode(false);
                   }}
                 />
@@ -276,7 +305,7 @@ function Facilitator({...props}) {
                     width: '100%',
                   }}
                   onPress={() => setShowMode2('time')}>
-                  {start.toString().substr(15, 6)}
+                  {start}
                 </Text>
               </View>
               {showMode2 && (
@@ -287,7 +316,7 @@ function Facilitator({...props}) {
                   is24Hour={true}
                   display="default"
                   onChange={(event, selectedDate) => {
-                    setStart(selectedDate || start);
+                    setStart(selectedDate.toTimeString().slice(0, 5) || start);
                     setShowMode2(false);
                   }}
                 />
@@ -301,7 +330,7 @@ function Facilitator({...props}) {
                 <Text
                   style={{width: '100%', textAlign: 'center'}}
                   onPress={() => setShowMode3('time')}>
-                  {end.toString().substr(15, 6)}
+                  {end}
                 </Text>
               </View>
               {showMode3 && (
@@ -312,7 +341,7 @@ function Facilitator({...props}) {
                   is24Hour={true}
                   display="default"
                   onChange={(event, selectedDate) => {
-                    setEnd(selectedDate || end);
+                    setEnd(selectedDate.toTimeString().slice(0, 5) || end);
                     setShowMode3(false);
                   }}
                 />
