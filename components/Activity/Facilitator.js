@@ -81,6 +81,13 @@ function Facilitator({...props}) {
       })
       .then(res => setMyClass(res.data.result))
       .catch(err => console.log(err));
+    setInputValidation({
+      name: true,
+      category: true,
+      price: true,
+      schedule: true,
+      description: true,
+    });
   }, [isCreated, isFocused]);
 
   const choosePhotoHandler = () => {
@@ -265,13 +272,7 @@ function Facilitator({...props}) {
     if (className && categories && price && schedule && description) {
       setIsDisabled(false);
     }
-  }, [
-    inputValidation.name,
-    inputValidation.category,
-    inputValidation.price,
-    inputValidation.schedule,
-    inputValidation.description,
-  ]);
+  }, [className, categories, price, schedule, description]);
 
   // useEffect(() => {
   //   nameValidation();

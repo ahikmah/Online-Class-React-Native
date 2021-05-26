@@ -59,9 +59,6 @@ function EditMyClass(props) {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [successModalVisible, setSuccessModalVisible] = useState(false);
-  const [isDisabled, setIsDisabled] = useState({
-    save: true,
-  });
 
   useEffect(() => {
     axios
@@ -101,6 +98,7 @@ function EditMyClass(props) {
     'Friday',
     'Saturday',
   ];
+
   // =============================VALIDATION SECTION============================= //
   console.log(courseDetail);
   // coursename : min. length = 5
@@ -344,7 +342,6 @@ function EditMyClass(props) {
             </Text>
             <Item style={{marginRight: 20, marginBottom: 15}}>
               <Input
-                style={isDisabled.fullname ? styles.disable : styles.active}
                 value={courseName}
                 onChangeText={text => setCourseName(text)}
                 onPressIn={() => {
