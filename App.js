@@ -29,6 +29,7 @@ import CreateNewPassword from './screens/CreateNewPassword';
 
 // PRIVATE SCREEN
 import Home from './screens/Home';
+import News from './screens/News';
 
 // Activity
 import ActivityDashboard from './screens/Activity';
@@ -94,11 +95,23 @@ function HomeTabs() {
       tabBarOptions={{
         showLabel: false,
       }}>
-      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="Home" component={HomeStack} />
       <Tab.Screen name="Activity" component={ActivityStack} />
       <Tab.Screen name="Chat" component={Chat} />
       <Tab.Screen name="Profile" component={ProfileStack} />
     </Tab.Navigator>
+  );
+}
+
+function HomeStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Stack.Screen name="HomeDashboard" component={Home} />
+      <Stack.Screen name="News" component={News} />
+    </Stack.Navigator>
   );
 }
 

@@ -9,7 +9,7 @@ import {Icon, Input, Item} from 'native-base';
 import StudentContainer from '../components/Schedule/Student';
 import FacilitatorContainer from '../components/Schedule/Facilitator';
 
-function Home(props) {
+function Home({...props}) {
   // console.log(props.auth.isLogin);
   // fake role test
   const role = props.role;
@@ -69,6 +69,11 @@ function Home(props) {
           </View>
         </View>
         <ScrollView>
+          <Text
+            style={styles.seeAll}
+            onPress={() => props.navigation.navigate('News')}>
+            See All
+          </Text>
           <NewsItems />
 
           {role === 'student' ? (
@@ -154,6 +159,13 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Roboto-Regular',
     fontSize: 14,
+  },
+  seeAll: {
+    textAlign: 'right',
+    paddingRight: 20,
+    paddingTop: 16,
+    color: '#ADA9BB',
+    fontFamily: 'Kanit-Regular',
   },
 });
 const mapStateToProps = state => ({
