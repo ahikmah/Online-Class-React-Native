@@ -47,12 +47,12 @@ function Facilitator({...props}) {
     borderColor: '#EB4335',
     color: '#EB4335',
   };
-  const [day, setDay] = useState('');
 
   // input state
   const [className, setClassName] = useState('');
   const [categories, setCategories] = useState('');
   const [price, setPrice] = useState('');
+  const [day, setDay] = useState('');
   const [schedule, setSchedule] = useState('');
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
@@ -87,15 +87,15 @@ function Facilitator({...props}) {
     setSchedule('');
     setStart('');
     setEnd('');
+    setDay('');
     setDescription('');
-    setInputValidation({
-      name: true,
-      category: true,
-      price: true,
-      schedule: true,
-      description: true,
-    });
-    // setIsDisabled(true);
+    // setInputValidation({
+    //   name: true,
+    //   category: true,
+    //   price: true,
+    //   schedule: true,
+    //   description: true,
+    // });
   }, [isCreated, isFocused]);
 
   const choosePhotoHandler = () => {
@@ -159,7 +159,16 @@ function Facilitator({...props}) {
         setStart('');
         setEnd('');
         setDescription('');
+        setDay('');
         setPhoto(null);
+
+        setInputValidation({
+          name: undefined,
+          category: undefined,
+          price: undefined,
+          schedule: undefined,
+          description: undefined,
+        });
         setIsCreated(!isCreated);
         props.navigation.navigate('ActivityDashboard');
         setIsDisabled(true);
@@ -268,13 +277,7 @@ function Facilitator({...props}) {
   };
 
   useEffect(() => {
-    if (
-      inputValidation.name !== false &&
-      inputValidation.category !== false &&
-      inputValidation.price !== false &&
-      inputValidation.schedule !== false &&
-      inputValidation.description !== false
-    ) {
+    if (className && categories && price && schedule && description) {
       setIsDisabled(false);
     }
   }, [
