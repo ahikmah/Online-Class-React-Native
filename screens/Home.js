@@ -8,6 +8,7 @@ import {DOMAIN_API, PORT_API} from '@env';
 import {Icon, Input, Item} from 'native-base';
 import StudentContainer from '../components/Schedule/Student';
 import FacilitatorContainer from '../components/Schedule/Facilitator';
+
 function Home(props) {
   // console.log(props.auth.isLogin);
   // fake role test
@@ -45,6 +46,7 @@ function Home(props) {
             <Icon
               name="notifications-sharp"
               style={{color: 'white', fontSize: 24}}
+              onPress={() => props.navigation.navigate('Notification')}
             />
             <View style={styles.notifFlag} />
           </View>

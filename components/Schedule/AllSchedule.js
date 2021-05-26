@@ -24,7 +24,11 @@ function AllSchedule(props) {
       .map(cl => {
         return (
           <View style={styles.scheduleItem} key={cl.id}>
-            <Text style={styles.scheduleName}>{cl.course_name}</Text>
+            <Text style={styles.scheduleName}>
+              {cl.course_name.length > 20
+                ? cl.course_name.slice(0, 18) + '...'
+                : cl.course_name}
+            </Text>
             <ProgressCircle
               percent={cl.progress_in_percent}
               radius={20}
@@ -44,7 +48,11 @@ function AllSchedule(props) {
       .map(cl => {
         return (
           <View style={styles.scheduleItem} key={cl.id}>
-            <Text style={styles.scheduleName}>{cl.course_name}</Text>
+            <Text style={styles.scheduleName}>
+              {cl.course_name.length > 20
+                ? cl.course_name.slice(0, 18) + '...'
+                : cl.course_name}
+            </Text>
             <ProgressCircle
               percent={cl.progress_in_percent}
               radius={20}
@@ -64,7 +72,11 @@ function AllSchedule(props) {
       .map(cl => {
         return (
           <View style={styles.scheduleItem} key={cl.id}>
-            <Text style={styles.scheduleName}>{cl.course_name}</Text>
+            <Text style={styles.scheduleName}>
+              {cl.course_name.length > 20
+                ? cl.course_name.slice(0, 18) + '...'
+                : cl.course_name}
+            </Text>
             <ProgressCircle
               percent={cl.progress_in_percent}
               radius={20}
@@ -84,7 +96,11 @@ function AllSchedule(props) {
       .map(cl => {
         return (
           <View style={styles.scheduleItem} key={cl.id}>
-            <Text style={styles.scheduleName}>{cl.course_name}</Text>
+            <Text style={styles.scheduleName}>
+              {cl.course_name.length > 20
+                ? cl.course_name.slice(0, 18) + '...'
+                : cl.course_name}
+            </Text>
             <ProgressCircle
               percent={cl.progress_in_percent}
               radius={20}

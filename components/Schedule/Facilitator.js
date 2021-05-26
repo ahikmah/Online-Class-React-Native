@@ -1,3 +1,5 @@
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
 import {Button, View, StyleSheet, Text, Alert} from 'react-native';
 import {Icon} from 'native-base';
@@ -5,6 +7,7 @@ import axios from 'axios';
 import {DOMAIN_API, PORT_API} from '@env';
 import {connect} from 'react-redux';
 import PushNotification from 'react-native-push-notification';
+import {useIsFocused} from '@react-navigation/native';
 
 const monthNames = [
   'January',
@@ -50,6 +53,8 @@ for (let i = 0; i < 7; i++) {
 
 function Facilitator({...props}) {
   const [schedules, setSchedules] = useState();
+  const isFocused = useIsFocused();
+
   // const [registerToken, setRegisterToken] = useState('');
   // const [fcmRegister, setFcmRegister] = useState(false);
 
@@ -79,7 +84,19 @@ function Facilitator({...props}) {
       )
       .then(res => setSchedules(res.data.result))
       .catch(err => console.log(err));
-  });
+  }, []);
+  useEffect(() => {
+    const token = props.token;
+    axios
+      .get(
+        `${DOMAIN_API}:${PORT_API}/data/instructor/my-schedule/?day=${dayName}`,
+        {
+          headers: {'x-access-token': `Bearer ${token}`},
+        },
+      )
+      .then(res => setSchedules(res.data.result))
+      .catch(err => console.log(err));
+  }, [isFocused]);
 
   const showNotif = () => {
     PushNotification.localNotification({
@@ -98,7 +115,11 @@ function Facilitator({...props}) {
             0,
             5,
           )} - ${cl.end_time.slice(0, 5)}`}</Text>
-          <Text style={styles.scheduleName}>{cl.course_name}</Text>
+          <Text style={styles.scheduleName}>
+            {cl.course_name.length > 20
+              ? cl.course_name.slice(0, 18) + '...'
+              : cl.course_name}
+          </Text>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Text style={styles.memberCount}>{cl.num_of_member}</Text>
             <Icon name="school-sharp" style={{fontSize: 20}} />
