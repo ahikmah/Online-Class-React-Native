@@ -5,6 +5,21 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
+import {
+  TransitionSpecs,
+  HeaderStyleInterpolators,
+} from '@react-navigation/stack';
+
+const MyTransition = {
+  gestureDirection: 'vertical',
+  transitionSpec: {
+    open: TransitionSpecs.RevealFromBottomAndroidSpec,
+    close: TransitionSpecs.RevealFromBottomAndroidSpec,
+  },
+
+  headerStyleInterpolator: HeaderStyleInterpolators.forNoAnimation,
+};
+
 // AUTH
 import Login from './screens/Login';
 import Register from './screens/Register';
@@ -30,6 +45,8 @@ import ChatGroupDetail from './screens/ChatGroupDetail';
 import Profile from './screens/Profile';
 import BasicInfo from './components/Profile/BasicInfo';
 import ChangePassword from './components/Profile/ChangePassword';
+
+import Notification from './components/Notification';
 
 import {connect} from 'react-redux';
 
@@ -144,6 +161,14 @@ function App(props) {
             <Stack.Screen name="Home" component={HomeTabs} />
             <Stack.Screen name="CreateNewChat" component={CreateNewChat} />
             <Stack.Screen name="ChatGroupDetail" component={ChatGroupDetail} />
+            <Stack.Screen
+              name="Notification"
+              component={Notification}
+              options={{
+                title: 'Custom animation',
+                ...MyTransition,
+              }}
+            />
           </>
         )}
       </Stack.Navigator>
