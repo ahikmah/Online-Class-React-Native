@@ -235,13 +235,18 @@ function Facilitator({...props}) {
               <Text>Pricing : </Text>
               <Input value={price} onChangeText={text => setPrice(text)} />
             </View>
-            <View style={styles.inputSection}>
+            <View
+              style={{
+                ...styles.inputSection,
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+              }}>
               <Text>Schedule : </Text>
-              <View style={{width: '100%'}} onPress={() => setShowMode('date')}>
+              <View style={{width: 104}} onPress={() => setShowMode('date')}>
                 <Text
                   style={{width: '100%'}}
                   onPress={() => setShowMode('date')}>
-                  {schedule.toString().substr(4, 12)}
+                  {schedule.toString().substr(0, 15)}
                 </Text>
               </View>
               {showMode && (
@@ -257,14 +262,68 @@ function Facilitator({...props}) {
                   }}
                 />
               )}
-            </View>
-            <View style={styles.inputSection}>
-              <Text>Start : </Text>
+
               <View
-                style={{width: '100%'}}
+                style={{
+                  marginLeft: 10,
+                  borderBottomWidth: 1,
+                  width: 50,
+                }}
                 onPress={() => setShowMode2('time')}>
                 <Text
-                  style={{width: '100%'}}
+                  style={{
+                    textAlign: 'center',
+                    width: '100%',
+                  }}
+                  onPress={() => setShowMode2('time')}>
+                  {start.toString().substr(15, 6)}
+                </Text>
+              </View>
+              {showMode2 && (
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  mode={showMode2}
+                  value={new Date()}
+                  is24Hour={true}
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    setStart(selectedDate || start);
+                    setShowMode2(false);
+                  }}
+                />
+              )}
+
+              <Text style={{marginLeft: 5, marginRight: 5}}>-</Text>
+
+              <View
+                style={{borderBottomWidth: 1, width: 50}}
+                onPress={() => setShowMode3('time')}>
+                <Text
+                  style={{width: '100%', textAlign: 'center'}}
+                  onPress={() => setShowMode3('time')}>
+                  {end.toString().substr(15, 6)}
+                </Text>
+              </View>
+              {showMode3 && (
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  mode={showMode3}
+                  value={new Date()}
+                  is24Hour={true}
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    setEnd(selectedDate || end);
+                    setShowMode3(false);
+                  }}
+                />
+              )}
+            </View>
+
+            {/* <View style={styles.inputSection}>
+              <Text>Start : </Text>
+              <View style={{width: '30%'}} onPress={() => setShowMode2('time')}>
+                <Text
+                  style={{width: '100%', borderBottomWidth: 1}}
                   onPress={() => setShowMode2('time')}>
                   {start.toString().substr(15, 6)}
                 </Text>
@@ -286,10 +345,10 @@ function Facilitator({...props}) {
             <View style={styles.inputSection}>
               <Text>End : </Text>
               <View
-                style={{width: '100%'}}
+                style={{width: '100%', borderBottomWidth: 1}}
                 onPress={() => setShowMode3('time')}>
                 <Text
-                  style={{width: '100%'}}
+                  style={{width: '30%'}}
                   onPress={() => setShowMode3('time')}>
                   {end.toString().substr(15, 6)}
                 </Text>
@@ -307,7 +366,7 @@ function Facilitator({...props}) {
                   }}
                 />
               )}
-            </View>
+            </View> */}
 
             <View style={styles.inputSection}>
               <Text>Description : </Text>
