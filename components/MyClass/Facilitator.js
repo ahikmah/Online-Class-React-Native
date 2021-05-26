@@ -93,7 +93,7 @@ function Facilitator({...props}) {
 
         {myClass ? (
           <SwipeListView
-            ref={scrollRef}
+            listViewRef={scrollRef}
             data={myClass}
             keyExtractor={(_, index) => {
               return index.toString();
