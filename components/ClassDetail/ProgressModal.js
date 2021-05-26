@@ -72,7 +72,7 @@ function ProgressModal({...props}) {
       )
       .then(res => {
         setShowModalScore(false);
-        console.log('sukses', res);
+        // console.log('sukses', res);
         setIsUpdated(!isUpdated);
       })
       .catch(err => console.log(err));
@@ -94,7 +94,7 @@ function ProgressModal({...props}) {
 
   let progressList;
   if (progressItems) {
-    console.log(progressItems);
+    // console.log(progressItems);
     progressList = progressItems.map(item => {
       return (
         <View key={item.chapter_name} style={styles.progress}>
