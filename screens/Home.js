@@ -69,7 +69,11 @@ function Home(props) {
         <ScrollView>
           <NewsItems />
 
-          {role === 'student' ? <StudentContainer /> : <FacilitatorContainer />}
+          {role === 'student' ? (
+            <StudentContainer navigation={props.navigation} />
+          ) : (
+            <FacilitatorContainer navigation={props.navigation} />
+          )}
         </ScrollView>
       </View>
     </>

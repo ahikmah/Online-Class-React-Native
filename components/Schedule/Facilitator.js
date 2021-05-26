@@ -48,10 +48,10 @@ for (let i = 0; i < 7; i++) {
   weekDate.push(day);
 }
 
-function Facilitator(props) {
+function Facilitator({...props}) {
   const [schedules, setSchedules] = useState();
-  const [registerToken, setRegisterToken] = useState('');
-  const [fcmRegister, setFcmRegister] = useState(false);
+  // const [registerToken, setRegisterToken] = useState('');
+  // const [fcmRegister, setFcmRegister] = useState(false);
 
   // const onRegister = token => {
   //   setRegisterToken(token.token);
@@ -159,7 +159,9 @@ function Facilitator(props) {
         <View style={{alignItems: 'center'}}>
           <View style={styles.newTask}>
             <Icon name="add-circle-sharp" style={{color: 'white'}} />
-            <Text style={{color: 'white', fontFamily: 'Kanit-Medium'}}>
+            <Text
+              style={{color: 'white', fontFamily: 'Kanit-Medium'}}
+              onPress={() => props.navigation.navigate('Activity')}>
               New Task
             </Text>
           </View>
