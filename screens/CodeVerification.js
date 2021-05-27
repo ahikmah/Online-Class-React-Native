@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   StatusBar,
   TextInput,
+  BackHandler,
 } from 'react-native';
 import {Button, Root, Toast} from 'native-base';
 import axios from 'axios';
@@ -18,6 +19,7 @@ import {sendOTP, codeOTP} from '../redux/Action/auth';
 
 import {connect} from 'react-redux';
 import {DOMAIN_API, PORT_API} from '@env';
+import {useFocusEffect} from '@react-navigation/native';
 
 function CodeVerification({...props}) {
   const [numOne, setNumOne] = useState('');
@@ -31,6 +33,19 @@ function CodeVerification({...props}) {
   const [isDisabled, setIsDisabled] = useState(true);
 
   const [errorMessage, setErrorMessage] = useState('');
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, []),
+  );
 
   useEffect(() => {
     if (numOne && numTwo && numThree && numFour) {
