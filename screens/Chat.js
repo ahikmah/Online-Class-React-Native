@@ -67,7 +67,7 @@ function Chat({...props}) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#E6EDF6',
+    backgroundColor: '#F9F9F9',
     flex: 1,
   },
   header: {

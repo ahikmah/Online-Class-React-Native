@@ -1,7 +1,7 @@
 import React from 'react';
 import {List, ListItem, Left, Body, Right, Thumbnail, Text} from 'native-base';
 import chatList from '../../assets/dummy/chatList';
-import {ScrollView, StyleSheet} from 'react-native';
+import {Dimensions, ScrollView, StyleSheet} from 'react-native';
 function ChatItems() {
   const chatItem = chatList.map(item => {
     return (
@@ -25,7 +25,17 @@ function ChatItems() {
       </List>
     );
   });
-  return <ScrollView>{chatItem}</ScrollView>;
+  return (
+    <ScrollView
+      style={{
+        flex: 1,
+        height: Dimensions.get('window').height,
+        paddingBottom: 64,
+        // marginBottom: 32,
+      }}>
+      {chatItem}
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
