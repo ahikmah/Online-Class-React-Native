@@ -1,7 +1,7 @@
 package com.onlineclass;
 
 // com.myapp should be your package name
-// import com.onlineclass.generated.BasePackageList;
+import com.onlineclass.generated.BasePackageList;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.wix.reactnativenotifications.RNNotificationsPackage;
 
@@ -9,6 +9,8 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.imagepicker.ImagePickerPackage;
 import com.reactcommunity.rndatetimepicker.RNDateTimePickerPackage;
@@ -22,11 +24,11 @@ import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-// import java.util.Arrays;
+import java.util.Arrays;
  
-// import org.unimodules.adapters.react.ModuleRegistryAdapter;
-// import org.unimodules.adapters.react.ReactModuleRegistryProvider;
-// import org.unimodules.core.interfaces.SingletonModule;
+import org.unimodules.adapters.react.ModuleRegistryAdapter;
+import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import org.unimodules.core.interfaces.SingletonModule;
 
 public class MainApplication extends Application implements ReactApplication {
   // private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(new BasePackageList().getPackageList(), null);
@@ -46,15 +48,23 @@ public class MainApplication extends Application implements ReactApplication {
           // packages.add(new MyReactNativePackage());
 
           // Add unimodules
-          // List<ReactPackage> unimodules = Arrays.<ReactPackage>asList(
-          //   new ModuleRegistryAdapter(mModuleRegistryProvider)
-          // );
-          // packages.addAll(unimodules)
-
-        //  packages.add(newReactNativePushNotificationPackage());
-            
+          List<ReactPackage> unimodules = Arrays.<ReactPackage>asList(
+            new ModuleRegistryAdapter(mModuleRegistryProvider)
+          );
+          packages.addAll(unimodules);
           
-          return packages;
+          //  packages.add(newReactNativePushNotificationPackage());
+          
+          List<ReactPackage> pushnotif = Arrays.<ReactPackage>asList(
+            new MainReactPackage(),
+            new ReactNativePushNotificationPackage(),
+            new ReactNativePushNotificationPackage(),
+            new ReactNativePushNotificationPackage()
+            );
+          packages.addAll(pushnotif);
+            
+        
+        return packages;
         }
 
         @Override

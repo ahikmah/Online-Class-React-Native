@@ -1,6 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState, useRef} from 'react';
+import {useIsFocused} from '@react-navigation/native';
+
 import {
   Text,
   View,
@@ -45,6 +47,8 @@ function Student({...props}) {
   const [level, setLevel] = useState('');
   const [price, setPrice] = useState('');
   const [sort, setSort] = useState('');
+
+  const isFocused = useIsFocused();
 
   const setColor = score => {
     if (myClass) {
@@ -137,6 +141,30 @@ function Student({...props}) {
       .catch(err => console.log(err))
       .finally(() => setFinishNewClass(true));
   }, []);
+  useEffect(() => {
+    const token = props.token;
+    axios
+      .get(`${DOMAIN_API}:${PORT_API}/data/student/my-class`, {
+        headers: {'x-access-token': `Bearer ${token}`},
+      })
+      .then(res => setMyClass(res.data.result))
+      .catch(err => console.log(err))
+      .finally(() => setFinishMyClass(true));
+    axios
+      .get(
+        `${DOMAIN_API}:${PORT_API}/data/courses/?q=${search}&category=${category}&level=${level}&price=${price}&sort=${sort}&pages=${currPage}`,
+        {
+          headers: {'x-access-token': `Bearer ${token}`},
+        },
+      )
+      .then(res => {
+        setNewClass([...res.data.result]);
+        setCurrPage(res.data.info.page);
+        setTotalPage(res.data.info.totalPage);
+      })
+      .catch(err => console.log(err))
+      .finally(() => setFinishNewClass(true));
+  }, [isFocused]);
 
   let myClassList;
 

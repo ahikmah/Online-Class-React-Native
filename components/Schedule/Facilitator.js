@@ -175,7 +175,7 @@ function Facilitator({...props}) {
           {monthName} {y}
         </Text>
         <View style={styles.calendar}>{calendar}</View>
-        <Button title="Trigger Notification" onPress={showNotif} />
+        {/* <Button title="Trigger Notification" onPress={showNotif} /> */}
         {scheduleItems && scheduleItems.length > 0 ? scheduleItems : noSchedule}
         <View style={{alignItems: 'center'}}>
           <View style={styles.newTask}>

@@ -2,15 +2,16 @@
 
 buildscript {
     ext {
-        googlePlayServicesVersion = "+" // default: "+"
-        firebaseMessagingVersion = "21.1.0" // default: "21.1.0"
-        buildToolsVersion = "29.0.3"
-        //  buildToolsVersion = "30.0.0"
+        // googlePlayServicesVersion = "+" // default: "+"
+        // firebaseMessagingVersion = "21.1.0" // default: "21.1.0"
+        // buildToolsVersion = "29.0.3"
+        buildToolsVersion = "30.0.0"
         minSdkVersion = 21
         compileSdkVersion = 29
         // compileSdkVersion = 30
         // targetSdkVersion = 29
         targetSdkVersion = 30
+        // supportLibVersion = "23.1.1" // default: 23.1.1
         ndkVersion = "20.1.5948944"
     }
     repositories {
@@ -24,6 +25,9 @@ buildscript {
         classpath 'com.google.gms:google-services:4.3.8'
     }
 }
+
+
+
 
 allprojects {
     repositories {
@@ -41,4 +45,7 @@ allprojects {
         jcenter()
         maven { url 'https://www.jitpack.io' }
     }
+
+
 }
+
