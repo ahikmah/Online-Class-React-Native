@@ -41,13 +41,8 @@ function Login({...props}) {
   const [componentWidth, setComponentWidth] = useState(
     Dimensions.get('window').width - 64,
   );
-  const [marginTop, setMarginTop] = useState(
-    Dimensions.get('window').height > 700
-      ? StatusBar.currentHeight + 64
-      : StatusBar.currentHeight + 16,
-  );
   const [marginBottom, setMarginBottom] = useState(
-    Dimensions.get('window').height > 700 ? StatusBar.currentHeight + 64 : null,
+    Dimensions.get('window').height > 650 ? StatusBar.currentHeight + 32 : null,
   );
 
   // console.log({...props});
@@ -55,14 +50,10 @@ function Login({...props}) {
   useEffect(() => {
     const updateLayout = () => {
       setComponentWidth(Dimensions.get('window').width - 64);
-      setMarginTop(
-        Dimensions.get('window').height > 700
-          ? StatusBar.currentHeight + 64
-          : StatusBar.currentHeight + 16,
-      );
+
       setMarginBottom(
-        Dimensions.get('window').height > 700
-          ? StatusBar.currentHeight + 64
+        Dimensions.get('window').height > 650
+          ? StatusBar.currentHeight + 32
           : null,
       );
     };
@@ -189,7 +180,6 @@ function Login({...props}) {
             <Text
               style={{
                 ...styles.title,
-                marginTop: marginTop,
                 marginBottom: marginBottom,
               }}>
               Login
@@ -314,22 +304,19 @@ function Login({...props}) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 32,
+    // paddingBottom: 32,
     // paddingTop: ,
-    height:
-      Dimensions.get('window').height < 700
-        ? StatusBar.currentHeight + 700
-        : StatusBar.currentHeight + Dimensions.get('window').height,
     justifyContent: 'space-between',
+    height: Dimensions.get('window').height,
     alignItems: 'center',
-    alignContent: 'center',
     backgroundColor: '#F9F9F9',
-    // flex: 1,
+    flex: 1,
   },
   title: {
     fontSize: 40,
     fontFamily: 'Kanit-Medium',
     textAlign: 'center',
+    marginTop: 32,
   },
   formInput: {
     fontSize: 17,
@@ -405,6 +392,8 @@ const styles = StyleSheet.create({
   },
   txtFooter: {
     flexDirection: 'row',
+    paddingVertical: 30,
+    // paddingBottom: 30,
   },
   txtNewUser: {color: '#ADA9BB', fontFamily: 'Kanit-Medium', fontSize: 15},
   txtRegister: {

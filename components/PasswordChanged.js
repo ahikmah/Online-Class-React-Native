@@ -6,9 +6,22 @@ import {
   Dimensions,
   StatusBar,
   Image,
+  BackHandler,
 } from 'react-native';
-
+import {useFocusEffect} from '@react-navigation/native';
 function PasswordChanged(props, {navigation}) {
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, []),
+  );
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Password Changed</Text>

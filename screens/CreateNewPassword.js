@@ -8,15 +8,29 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   StatusBar,
+  BackHandler,
 } from 'react-native';
 import {Form, Item, Input, Label, Button, Icon} from 'native-base';
 import PasswordChanged from '../components/PasswordChanged';
-
+import {useFocusEffect} from '@react-navigation/native';
 import axios from 'axios';
 import {connect} from 'react-redux';
 import {DOMAIN_API, PORT_API} from '@env';
 
 function CreateNewPassword({...props}) {
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, []),
+  );
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [modalShow, setModalShow] = useState(false);
@@ -289,10 +303,7 @@ function CreateNewPassword({...props}) {
 const styles = StyleSheet.create({
   container: {
     paddingTop: StatusBar.currentHeight,
-    height:
-      Dimensions.get('window').height < 700
-        ? StatusBar.currentHeight + 700
-        : StatusBar.currentHeight + Dimensions.get('window').height,
+    height: Dimensions.get('window').height,
     flex: 1,
     paddingHorizontal: 32,
     backgroundColor: '#F9F9F9',
@@ -360,8 +371,8 @@ const styles = StyleSheet.create({
   },
   eyeToggler: {
     position: 'absolute',
-    right: 0,
-    top: 20,
+    right: 10,
+    top: 17,
   },
   errorMessage: {
     paddingLeft: 5,

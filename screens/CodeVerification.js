@@ -128,13 +128,16 @@ function CodeVerification({...props}) {
       <ScrollView>
         <View style={styles.container}>
           <View style={styles.main}>
-            <Text style={styles.title}>Account Verification</Text>
-            <Image source={require('../assets/images/ava-reset2.png')} />
-            <Text style={styles.msg1}>
-              Enter verification code we just sent to your email address
-            </Text>
+            <KeyboardAvoidingView style={{alignItems: 'center'}}>
+              <Text style={styles.title}>Account Verification</Text>
+              <Image
+                source={require('../assets/images/ava-reset2.png')}
+                style={{marginVertical: 20}}
+              />
+              <Text style={styles.msg1}>
+                Enter verification code we just sent to your email address
+              </Text>
 
-            <KeyboardAvoidingView>
               <View style={{...styles.otpGroupInput, width: componentWidth}}>
                 <TextInput
                   value={numOne}
@@ -240,17 +243,17 @@ function CodeVerification({...props}) {
 const styles = StyleSheet.create({
   container: {
     paddingTop: StatusBar.currentHeight,
-    height:
-      Dimensions.get('window').height < 700
-        ? StatusBar.currentHeight + 700
-        : StatusBar.currentHeight + Dimensions.get('window').height,
+    // height:
+    //   Dimensions.get('window').height < 700
+    //     ? StatusBar.currentHeight + 700
+    //     : StatusBar.currentHeight + Dimensions.get('window').height,
+    height: Dimensions.get('window').height,
     flex: 1,
     paddingHorizontal: 32,
     backgroundColor: '#F9F9F9',
     justifyContent: 'space-between',
   },
   main: {
-    paddingTop: 9,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'space-evenly',
@@ -271,6 +274,7 @@ const styles = StyleSheet.create({
     color: '#837F8F',
   },
   otpGroupInput: {
+    marginTop: 20,
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
@@ -304,7 +308,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#5784BA',
     height: 50,
-    marginBottom: 100,
+    // marginBottom: 100,
   },
 
   buttonLabel: {
