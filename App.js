@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Image, StyleSheet, View} from 'react-native';
+import {Image, StyleSheet, View, LogBox} from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -143,6 +143,7 @@ function ProfileStack() {
 }
 
 function App(props) {
+  LogBox.ignoreAllLogs();
   // console.log(props.isLogin);
   useEffect(() => {
     SplashScreen.hide();
