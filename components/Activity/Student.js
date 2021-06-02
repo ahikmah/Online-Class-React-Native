@@ -24,6 +24,7 @@ import {DOMAIN_API, PORT_API} from '@env';
 import {connect} from 'react-redux';
 import CustomModal from '../CustomModal';
 // import MyClass from '../../screens/MyClass';
+import PushNotification from 'react-native-push-notification';
 
 function Student({...props}) {
   const [myClass, setMyClass] = useState();
@@ -65,6 +66,28 @@ function Student({...props}) {
       }
     }
   };
+
+  const channel = 'notif';
+  useEffect(() => {
+    PushNotification.createChannel(
+      {
+        channelId: 'notif', // (required)
+        channelName: 'My Notification Channel', // (required)
+        channelDescription: 'A channel to categorise your notifications', // (optional) default: undefined.
+        soundName: 'default', // (optional) See `soundName` parameter of `localNotification` function
+        importance: 4, // (optional) default: 4. Int value of the Android notification importance
+        vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
+      },
+      created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+    );
+  }, []);
+
+  useEffect(() => {
+    PushNotification.getChannels(channel_ids => {
+      console.log(channel_ids); // ['channel_id_1']
+      // setChannel(channel_ids[0]);
+    });
+  }, []);
 
   const getNewClass = () => {
     const token = props.token;
@@ -307,6 +330,13 @@ function Student({...props}) {
           isRegistered: true,
         });
         // setMyClass(res.data.result);
+
+        PushNotification.localNotification({
+          channelId: channel,
+          title: 'Register Success',
+          message: 'Keep Learning and upgrade your knowledge',
+        });
+
         setIsRegistered(true);
       })
       .catch(err => console.log(err));

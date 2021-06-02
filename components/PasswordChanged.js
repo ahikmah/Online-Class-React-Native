@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     paddingTop: StatusBar.currentHeight + 64,
-    height: Dimensions.get('window').height,
+    height: Dimensions.get('window').height + StatusBar.currentHeight,
     width: Dimensions.get('window').width,
     backgroundColor: '#F9F9F9',
     alignItems: 'center',

@@ -247,7 +247,9 @@ const styles = StyleSheet.create({
     //   Dimensions.get('window').height < 700
     //     ? StatusBar.currentHeight + 700
     //     : StatusBar.currentHeight + Dimensions.get('window').height,
-    height: Dimensions.get('window').height,
+    // height: Dimensions.get('window').height,
+    height: Dimensions.get('window').height + StatusBar.currentHeight,
+
     flex: 1,
     paddingHorizontal: 32,
     backgroundColor: '#F9F9F9',

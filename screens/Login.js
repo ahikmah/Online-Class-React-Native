@@ -305,9 +305,9 @@ function Login({...props}) {
 const styles = StyleSheet.create({
   container: {
     // paddingBottom: 32,
-    // paddingTop: ,
+    paddingTop: StatusBar.currentHeight,
     justifyContent: 'space-between',
-    height: Dimensions.get('window').height,
+    height: Dimensions.get('window').height + StatusBar.currentHeight,
     alignItems: 'center',
     backgroundColor: '#F9F9F9',
     flex: 1,

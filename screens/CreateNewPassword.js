@@ -303,7 +303,8 @@ function CreateNewPassword({...props}) {
 const styles = StyleSheet.create({
   container: {
     paddingTop: StatusBar.currentHeight,
-    height: Dimensions.get('window').height,
+    height: Dimensions.get('window').height + StatusBar.currentHeight,
+
     flex: 1,
     paddingHorizontal: 32,
     backgroundColor: '#F9F9F9',

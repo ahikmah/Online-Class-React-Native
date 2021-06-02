@@ -496,7 +496,7 @@ const styles = StyleSheet.create({
     //   Dimensions.get('window').height < 700
     //     ? StatusBar.currentHeight + 700
     //     : StatusBar.currentHeight + Dimensions.get('window').height,
-    height: Dimensions.get('window').height,
+    height: Dimensions.get('window').height + StatusBar.currentHeight,
     // flex: 1,
     justifyContent: 'space-around',
     alignItems: 'center',
