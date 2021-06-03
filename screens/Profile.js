@@ -79,12 +79,13 @@ function Profile({...props}) {
   const uploadHandler = e => {
     e.preventDefault();
     const token = props.token;
-    console.log(token);
+    // console.log(token);
+    // console.log(newAvatar.assets[0].fileName);
     let formData = new FormData();
     formData.append('avatar', {
-      name: newAvatar.fileName,
-      type: newAvatar.type,
-      uri: newAvatar.uri,
+      name: newAvatar.assets[0].fileName,
+      type: newAvatar.assets[0].type,
+      uri: newAvatar.assets[0].uri,
     });
     axios
       .patch(`${DOMAIN_API}:${PORT_API}/data/users/`, formData, {
@@ -94,9 +95,9 @@ function Profile({...props}) {
         },
       })
       .then(res => {
-        console.log(res, 'Success');
+        // console.log(res, 'Success');
         setIsAvatarChanged(true);
-        setAvatar(newAvatar);
+        setAvatar(newAvatar.assets[0].uri);
         setModalVisible(false);
       })
       .catch(err => {
@@ -125,7 +126,7 @@ function Profile({...props}) {
               <Image
                 source={{
                   uri: isAvatarChanged
-                    ? newAvatar.uri
+                    ? newAvatar.assets[0].uri
                     : `${DOMAIN_API}:${PORT_API}${avatar}`,
                 }}
                 style={styles.avatar}
@@ -134,7 +135,7 @@ function Profile({...props}) {
               <Image
                 source={
                   isAvatarChanged
-                    ? {uri: newAvatar.uri}
+                    ? {uri: newAvatar.assets[0].uri}
                     : require('../assets/images/graduate.png')
                 }
                 style={styles.avatar}
@@ -272,7 +273,7 @@ function Profile({...props}) {
               // msg="Your account has been successfully registered. Login now and start learning!"
               content={
                 isAvatarUpdate
-                  ? {uri: newAvatar.uri}
+                  ? {uri: newAvatar.assets[0].uri}
                   : avatar
                   ? {uri: `${DOMAIN_API}:${PORT_API}${avatar}`}
                   : require('../assets/images/graduate.png')
