@@ -12,20 +12,20 @@ import {
 
 const CustomModal = props => {
   const [iconModal, setIconModal] = useState({
-    height: Dimensions.get('window').height > 700 ? 250 : 100,
-    width: Dimensions.get('window').height > 700 ? 180 : 80,
+    height: Dimensions.get('window').height > 650 ? 200 : 100,
+    width: Dimensions.get('window').height > 650 ? 140 : 80,
   });
   const [modalSize, setModalSize] = useState(
-    Dimensions.get('window').height > 700 ? 0.7 : 1,
+    Dimensions.get('window').height > 650 ? 0.7 : 1,
   );
 
   useEffect(() => {
     const updateLayout = () => {
       setIconModal({
-        height: Dimensions.get('window').height > 700 ? 250 : 100,
-        width: Dimensions.get('window').height > 700 ? 180 : 80,
+        height: Dimensions.get('window').height > 650 ? 200 : 100,
+        width: Dimensions.get('window').height > 650 ? 130 : 80,
       });
-      setModalSize(Dimensions.get('window').height > 700 ? 0.7 : 1);
+      setModalSize(Dimensions.get('window').height > 650 ? 0.7 : 1);
     };
     Dimensions.addEventListener('change', updateLayout);
 
@@ -126,12 +126,11 @@ const styles = StyleSheet.create({
     marginTop: 22,
   },
   modalView: {
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     // alignItems: 'stretch',
-    // flex: Dimensions.get('window').height > 700 ? 0.7 : 1,
-    width: '90%',
-    height: 'auto',
-    marginVertical: 20,
+    // flex: Dimensions.get('window').height > 650 ? 0.7 : 1,
+    width: '85%',
+    // marginVertical: 20,
     marginHorizontal: 10,
     backgroundColor: 'white',
     borderRadius: 20,
@@ -165,23 +164,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     fontSize: 16,
+    fontFamily: 'Montserrat-Regular',
   },
   avatar: {
     width: 200,
     height: 200,
   },
   modalText: {
-    marginVertical: 10,
+    fontFamily: 'Montserrat-Regular',
+    marginVertical: 16,
     textAlign: 'center',
-    fontSize: 18,
+    fontSize: 15,
   },
-  //   iconModal: {
-  //     height: Dimensions.get('window').height > 700 ? 250 : 100,
-  //     width: Dimensions.get('window').height > 700 ? 170 : 70,
-  //   },
   title: {
     fontFamily: 'Montserrat-Bold',
-    fontSize: 32,
+    fontSize: 30,
+    marginBottom: 16,
     textAlign: 'center',
     color: '#5784BA',
   },

@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     // paddingBottom: 32,
     paddingTop: StatusBar.currentHeight,
     justifyContent: 'space-between',
-    height: Dimensions.get('window').height + StatusBar.currentHeight,
+    height: Dimensions.get('window').height,
     alignItems: 'center',
     backgroundColor: '#F9F9F9',
     flex: 1,
