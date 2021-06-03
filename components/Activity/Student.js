@@ -164,6 +164,7 @@ function Student({...props}) {
       .catch(err => console.log(err))
       .finally(() => setFinishNewClass(true));
   }, []);
+
   useEffect(() => {
     const token = props.token;
     axios
