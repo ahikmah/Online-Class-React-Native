@@ -14,6 +14,7 @@ import {
   ActivityIndicator,
   StatusBar,
   Image,
+  Platform,
 } from 'react-native';
 import {Button, Icon, Input, Item, Picker, Textarea} from 'native-base';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -22,6 +23,7 @@ import CustomModal from '../CustomModal';
 import axios from 'axios';
 import {DOMAIN_API, PORT_API} from '@env';
 import {connect} from 'react-redux';
+
 function Facilitator({...props}) {
   const isFocused = useIsFocused();
   const [myClass, setMyClass] = useState();
@@ -54,15 +56,22 @@ function Facilitator({...props}) {
   const [price, setPrice] = useState('');
   const [day, setDay] = useState('');
   const [schedule, setSchedule] = useState('');
+
+  const [startTime, setStartTime] = useState('');
   const [start, setStart] = useState('');
+
+  const [endTime, setEndTime] = useState('');
   const [end, setEnd] = useState('');
   const [description, setDescription] = useState('');
   const [photo, setPhoto] = useState(null);
 
   const [indicatorVisible, setIndicatorVisible] = useState(false);
-  const [showMode, setShowMode] = useState(false);
-  const [showMode2, setShowMode2] = useState(false);
-  const [showMode3, setShowMode3] = useState(false);
+  const [show, setShow] = useState(false);
+  const [show2, setShow2] = useState(false);
+  const [show3, setShow3] = useState(false);
+  const [showMode, setShowMode] = useState();
+  const [showMode2, setShowMode2] = useState();
+  const [showMode3, setShowMode3] = useState();
   const [showModalConfirm, setShowModalConfirm] = useState(false);
   useEffect(() => {
     const token = props.token;
@@ -115,6 +124,7 @@ function Facilitator({...props}) {
     'Friday',
     'Saturday',
   ];
+  // console.log(schedule.toISOString().slice(0, 10));
   const uploadHandler = e => {
     e.preventDefault();
     setShowModalConfirm(false);
@@ -125,9 +135,9 @@ function Facilitator({...props}) {
     formData.append('category_id', categories);
     formData.append('description', description);
     formData.append('price', price);
-    formData.append('schedule', schedule);
-    formData.append('start_time', start);
-    formData.append('end_time', end);
+    formData.append('schedule', schedule.toISOString().slice(0, 10));
+    formData.append('start_time', startTime);
+    formData.append('end_time', endTime);
     photo
       ? formData.append('banner', {
           name: photo.assets[0].fileName,
@@ -149,7 +159,9 @@ function Facilitator({...props}) {
         setPrice('');
         setSchedule('');
         setStart('');
+        setStartTime('');
         setEnd('');
+        setEndTime('');
         setDescription('');
         setDay('');
         setPhoto(null);
@@ -203,6 +215,26 @@ function Facilitator({...props}) {
       );
     });
   }
+
+  useEffect(() => {
+    if (schedule) {
+      const today = dayNames[schedule.getDay()];
+      setDay(today);
+      console.log(today);
+    }
+  }, [schedule]);
+  useEffect(() => {
+    if (start) {
+      const start_time = start.toTimeString().slice(0, 5);
+      setStartTime(start_time);
+    }
+  }, [start]);
+  useEffect(() => {
+    if (end) {
+      const end_time = end.toTimeString().slice(0, 5);
+      setEndTime(end_time);
+    }
+  }, [end]);
 
   const nameValidation = () => {
     if (className.length === 0) {
@@ -492,28 +524,27 @@ function Facilitator({...props}) {
                   <Text
                     style={{width: '100%'}}
                     onPress={() => {
+                      setShow(true);
                       setShowMode('date');
                       setInputValidation({
                         ...inputValidation,
                         schedule: true,
                       });
                     }}>
-                    {day}
+                    {day ? day : ''}
                   </Text>
                 </View>
-                {showMode && (
+                {show && (
                   <DateTimePicker
                     mode={showMode}
-                    value={new Date()}
+                    value={schedule ? schedule : new Date()}
                     is24Hour={true}
                     display="default"
                     onChange={(event, selectedDate) => {
-                      const today = dayNames[selectedDate.getDay()];
-                      setDay(today);
-                      setSchedule(
-                        selectedDate.toISOString().slice(0, 10) || schedule,
-                      );
-                      setShowMode(false);
+                      const scl = selectedDate || schedule;
+                      setSchedule(scl);
+                      setShow(Platform.OS === 'ios');
+                      setShow(false);
                       scheduleValidation();
                     }}
                   />
@@ -533,27 +564,29 @@ function Facilitator({...props}) {
                       width: '100%',
                     }}
                     onPress={() => {
+                      setShow2(true);
                       setShowMode2('time');
                       setInputValidation({
                         ...inputValidation,
                         schedule: true,
                       });
                     }}>
-                    {start}
+                    {startTime}
                   </Text>
                 </View>
-                {showMode2 && (
+                {show2 && (
                   <DateTimePicker
                     testID="dateTimePicker"
                     mode={showMode2}
-                    value={new Date()}
+                    value={start ? start : new Date()}
                     is24Hour={true}
                     display="default"
                     onChange={(event, selectedDate) => {
-                      setStart(
-                        selectedDate.toTimeString().slice(0, 5) || start,
-                      );
-                      setShowMode2(false);
+                      // console.log(selectedDate.toTimeString());
+                      setStart(selectedDate || start);
+                      // // setShowMode2(false);
+                      setShow2(Platform.OS === 'ios');
+                      setShow2(false);
                       scheduleValidation();
                     }}
                   />
@@ -568,25 +601,28 @@ function Facilitator({...props}) {
                   <Text
                     style={{width: '100%', textAlign: 'center'}}
                     onPress={() => {
+                      setShow3(true);
                       setShowMode3('time');
                       setInputValidation({
                         ...inputValidation,
                         schedule: true,
                       });
                     }}>
-                    {end}
+                    {endTime}
                   </Text>
                 </View>
-                {showMode3 && (
+                {show3 && (
                   <DateTimePicker
                     testID="dateTimePicker"
                     mode={showMode3}
-                    value={new Date()}
+                    value={end ? end : new Date()}
                     is24Hour={true}
                     display="default"
                     onChange={(event, selectedDate) => {
-                      setEnd(selectedDate.toTimeString().slice(0, 5) || end);
-                      setShowMode3(false);
+                      setEnd(selectedDate || end);
+                      // // setShowMode2(false);
+                      setShow3(Platform.OS === 'ios');
+                      setShow3(false);
                       scheduleValidation();
                     }}
                   />

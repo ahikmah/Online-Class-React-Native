@@ -108,6 +108,7 @@ function Login({...props}) {
   }, [inputValidation]);
 
   const loginHandler = e => {
+    console.log('hae');
     e.preventDefault();
     props.login(`${DOMAIN_API}:${PORT_API}/data/auth/login`, dataLogin);
   };
