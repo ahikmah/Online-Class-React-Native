@@ -1,12 +1,14 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
-import {Button, View, StyleSheet, Text, Alert} from 'react-native';
+import {Button, View, StyleSheet, Text, Alert, Pressable} from 'react-native';
 import {Icon} from 'native-base';
 import axios from 'axios';
 import {DOMAIN_API, PORT_API} from '@env';
 import {connect} from 'react-redux';
 import PushNotification from 'react-native-push-notification';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
 import {useIsFocused} from '@react-navigation/native';
 
 const monthNames = [
@@ -53,9 +55,12 @@ for (let i = 0; i < 7; i++) {
 
 function Facilitator({...props}) {
   const [schedules, setSchedules] = useState();
+  const [selectedDay, setSelectedDay] = useState(dayName);
+  const [show, setShow] = useState(false);
+  const [mode, setMode] = useState('date');
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const isFocused = useIsFocused();
 
-  // const channel = 'notif';
   useEffect(() => {
     PushNotification.createChannel(
       {
@@ -73,7 +78,6 @@ function Facilitator({...props}) {
   useEffect(() => {
     PushNotification.getChannels(channel_ids => {
       console.log(channel_ids); // ['channel_id_1']
-      // setChannel(channel_ids[0]);
     });
   }, []);
 
@@ -90,6 +94,31 @@ function Facilitator({...props}) {
       .then(res => setSchedules(res.data.result))
       .catch(err => console.log(err));
   }, []);
+
+  useEffect(() => {
+    const token = props.token;
+    axios
+      .get(
+        `${DOMAIN_API}:${PORT_API}/data/instructor/my-schedule/?day=${selectedDay}`,
+        {
+          headers: {'x-access-token': `Bearer ${token}`},
+        },
+      )
+      .then(res => setSchedules(res.data.result))
+      .catch(err => console.log(err));
+  }, [selectedDay]);
+
+  const pickDateHandler = (event, selected) => {
+    const currentDate = selected || selectedDate;
+    // setShow(Platform.OS === 'ios');
+    setShow(false);
+    setSelectedDay(dayNames[currentDate.getDay()]);
+  };
+  const showMode = type => {
+    setShow(true);
+    setMode(type);
+  };
+
   useEffect(() => {
     const token = props.token;
     axios
@@ -138,21 +167,29 @@ function Facilitator({...props}) {
       You have no schedule today. Keep learning!
     </Text>
   );
+
+  // const selectScheduleHandler = () => {
+
+  // };
+
+  // active style
+
   let calendar = [];
   for (let i = 0; i < 7; i++) {
     calendar.push(
-      <View
+      <Pressable
         key={i}
-        style={dt === Number(weekDate[i]) ? styles.activeDay : styles.calGroup}>
+        style={dayNames[i] === selectedDay ? styles.activeDay : styles.calGroup}
+        onPress={() => setSelectedDay(dayNames[i])}>
         <Text
-          style={dt === Number(weekDate[i]) ? styles.dayActive : styles.day}>
+          style={dayNames[i] === selectedDay ? styles.dayActive : styles.day}>
           {weekDayName[i]}
         </Text>
         <Text
-          style={dt === Number(weekDate[i]) ? styles.dayActive : styles.date}>
+          style={dayNames[i] === selectedDay ? styles.dayActive : styles.date}>
           {weekDate[i]}
         </Text>
-      </View>,
+      </Pressable>,
     );
   }
 
@@ -161,8 +198,18 @@ function Facilitator({...props}) {
       <View style={styles.container}>
         <View style={styles.headSection}>
           <Text style={styles.title}>My Class</Text>
-          <Icon name="calendar-outline" />
+          <Icon name="calendar-outline" onPress={() => showMode('date')} />
         </View>
+        {show && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={selectedDate}
+            mode={mode}
+            is24Hour={true}
+            display="default"
+            onChange={pickDateHandler}
+          />
+        )}
         <Text style={styles.today}>
           {monthName} {y}
         </Text>
@@ -242,6 +289,7 @@ const styles = StyleSheet.create({
   },
   date: {
     fontFamily: 'Kanit-Regular',
+    color: 'black',
     padding: 2,
   },
 
