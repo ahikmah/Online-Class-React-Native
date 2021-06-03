@@ -541,10 +541,10 @@ function Facilitator({...props}) {
                     is24Hour={true}
                     display="default"
                     onChange={(event, selectedDate) => {
+                      setShow(false);
                       const scl = selectedDate || schedule;
                       setSchedule(scl);
                       setShow(Platform.OS === 'ios');
-                      setShow(false);
                       scheduleValidation();
                     }}
                   />
@@ -583,10 +583,10 @@ function Facilitator({...props}) {
                     display="default"
                     onChange={(event, selectedDate) => {
                       // console.log(selectedDate.toTimeString());
+                      setShow2(false);
                       setStart(selectedDate || start);
                       // // setShowMode2(false);
                       setShow2(Platform.OS === 'ios');
-                      setShow2(false);
                       scheduleValidation();
                     }}
                   />
@@ -619,10 +619,10 @@ function Facilitator({...props}) {
                     is24Hour={true}
                     display="default"
                     onChange={(event, selectedDate) => {
+                      setShow3(false);
                       setEnd(selectedDate || end);
                       // // setShowMode2(false);
                       setShow3(Platform.OS === 'ios');
-                      setShow3(false);
                       scheduleValidation();
                     }}
                   />
