@@ -93,7 +93,7 @@ function Facilitator({...props}) {
   const choosePhotoHandler = () => {
     launchImageLibrary({noData: true}, response => {
       // console.log(response);
-      if (response) {
+      if (response.assets) {
         setPhoto(response);
       }
     });
@@ -101,7 +101,7 @@ function Facilitator({...props}) {
   const launchCameraHandler = () => {
     launchCamera({noData: true}, response => {
       // console.log(response);
-      if (response) {
+      if (response.assets) {
         setPhoto(response);
       }
     });
@@ -130,9 +130,9 @@ function Facilitator({...props}) {
     formData.append('end_time', end);
     photo
       ? formData.append('banner', {
-          name: photo.fileName,
-          type: photo.type,
-          uri: photo.uri,
+          name: photo.assets[0].fileName,
+          type: photo.assets[0].type,
+          uri: photo.assets[0].uri,
         })
       : null;
     axios
@@ -391,7 +391,7 @@ function Facilitator({...props}) {
                   <Picker
                     mode="dialog"
                     style={{width: 50, borderBottomWidth: 0}}
-                    placeholder="Select your SIM"
+                    placeholder="Select Category"
                     placeholderStyle={{color: '#bfc6ea'}}
                     selectedValue={categories}
                     onValueChange={e => setCategories(e)}>
@@ -643,7 +643,7 @@ function Facilitator({...props}) {
                 {photo && (
                   <>
                     <Image
-                      source={{uri: photo.uri}}
+                      source={{uri: photo.assets[0].uri}}
                       style={{
                         width: 250,
                         height: 250,

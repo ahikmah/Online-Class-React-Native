@@ -56,7 +56,7 @@ function Profile({...props}) {
   const choosePhotoHandler = () => {
     launchImageLibrary({noData: true}, response => {
       // console.log(response);
-      if (response) {
+      if (response.assets) {
         setNewAvatar(response);
         setIsAvatarUpdate(true);
       } else {
@@ -67,7 +67,7 @@ function Profile({...props}) {
   const launchCameraHandler = () => {
     launchCamera({noData: true}, response => {
       // console.log(response);
-      if (response) {
+      if (response.assets) {
         setNewAvatar(response);
         setIsAvatarUpdate(true);
       } else {

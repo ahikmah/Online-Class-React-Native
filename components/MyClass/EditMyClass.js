@@ -22,6 +22,7 @@ import {connect} from 'react-redux';
 
 function EditMyClass(props) {
   const {...data} = props.route.params;
+  // console.log(data);
   let categoryID;
   if (data.category === 'Software') {
     categoryID = 1;
@@ -50,7 +51,9 @@ function EditMyClass(props) {
   const [schedule, setSchedule] = useState(data.day);
   const [start, setStart] = useState(data.start_time);
   const [end, setEnd] = useState(data.end_time);
-  const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState(data.banner ?? null);
+  const [isPhotoChanged, setIsPhotoChanged] = useState(false);
+
   const [day, setDay] = useState(data.day);
 
   const [showMode, setShowMode] = useState(false);
@@ -100,7 +103,7 @@ function EditMyClass(props) {
   ];
 
   // =============================VALIDATION SECTION============================= //
-  console.log(courseDetail);
+  // console.log(courseDetail);
   // coursename : min. length = 5
   const nameValidation = () => {
     if (courseName === '') {
@@ -190,16 +193,18 @@ function EditMyClass(props) {
   const choosePhotoHandler = () => {
     launchImageLibrary({noData: true}, response => {
       // console.log(response);
-      if (response) {
+      if (response.assets) {
         setPhoto(response);
+        setIsPhotoChanged(true);
       }
     });
   };
   const launchCameraHandler = () => {
     launchCamera({noData: true}, response => {
       // console.log(response);
-      if (response) {
+      if (response.assets) {
         setPhoto(response);
+        setIsPhotoChanged(true);
       }
     });
   };
@@ -240,9 +245,9 @@ function EditMyClass(props) {
       formData.append('schedule', schedule);
       photo
         ? formData.append('banner', {
-            name: photo.fileName,
-            type: photo.type,
-            uri: photo.uri,
+            name: photo.assets[0].fileName,
+            type: photo.assets[0].type,
+            uri: photo.assets[0].uri,
           })
         : null;
 
@@ -602,7 +607,13 @@ function EditMyClass(props) {
             {photo && (
               <View style={{alignItems: 'center'}}>
                 <Image
-                  source={{uri: photo.uri}}
+                  source={{
+                    uri: isPhotoChanged
+                      ? photo.assets[0].uri
+                      : photo
+                      ? `${DOMAIN_API}:${PORT_API}${photo}`
+                      : photo.assets[0].uri,
+                  }}
                   style={{
                     width: 250,
                     height: 250,
