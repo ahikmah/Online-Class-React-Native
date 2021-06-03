@@ -110,6 +110,7 @@ function Facilitator({...props}) {
 
   const pickDateHandler = (event, selected) => {
     const currentDate = selected || selectedDate;
+    setSelectedDate(selectedDate);
     // setShow(Platform.OS === 'ios');
     setShow(false);
     setSelectedDay(dayNames[currentDate.getDay()]);
