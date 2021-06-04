@@ -1,17 +1,19 @@
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, {useRef} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   StatusBar,
   Dimensions,
+  KeyboardAvoidingView,
   ScrollView,
 } from 'react-native';
 import {Button, Icon, Input, Item, Form, Textarea} from 'native-base';
 
 function ChatRoom({...props}) {
+  const scrollViewRef = useRef();
   return (
     <>
       <StatusBar
@@ -38,91 +40,100 @@ function ChatRoom({...props}) {
         </View>
         <ScrollView
           style={styles.chatBallon}
-          contentContainerStyle={{paddingBottom: 12}}>
-          <View style={styles.sender}>
-            <Text style={styles.chatContentSender}>
-              Helloo ini saya. Apakah dia mau memanjang. bagaimana kalo banyak
-              sekaliwkwkwk. Oh tidak, aku ternyata kebawah
-            </Text>
-            <View style={styles.chatInfoSender}>
-              <Text style={styles.timeStampSender}>12.45pm</Text>
-              <Icon
-                name="checkmark-outline"
-                style={{fontSize: 20, color: '#ADA9BB'}}
-              />
+          contentContainerStyle={{paddingBottom: 12}}
+          ref={scrollViewRef}
+          onContentSizeChange={() =>
+            scrollViewRef.current.scrollToEnd({animated: true})
+          }>
+          <KeyboardAvoidingView
+            style={{flex: 1}}
+            behavior="height"
+            keyboardVerticalOffset={-180}>
+            <View style={styles.sender}>
+              <Text style={styles.chatContentSender}>
+                Helloo ini saya. Apakah dia mau memanjang. bagaimana kalo banyak
+                sekaliwkwkwk. Oh tidak, aku ternyata kebawah
+              </Text>
+              <View style={styles.chatInfoSender}>
+                <Text style={styles.timeStampSender}>12.45pm</Text>
+                <Icon
+                  name="checkmark-outline"
+                  style={{fontSize: 20, color: '#ADA9BB'}}
+                />
+              </View>
+              <View style={styles.rightPoint}></View>
             </View>
-            <View style={styles.rightPoint}></View>
-          </View>
 
-          <View style={styles.receiver}>
-            <Text style={styles.chatContentReceiver}>
-              Helloo ini dia.. Tes dulu ini hasiln
-            </Text>
-            <View style={styles.chatInfoReceiver}>
-              <Text style={styles.timeStampReceiver}>13.50 pm</Text>
-              <Icon
-                name="checkmark-outline"
-                style={{fontSize: 20, color: '#ADA9BB'}}
-              />
+            <View style={styles.receiver}>
+              <Text style={styles.chatContentReceiver}>
+                Helloo ini dia.. Tes dulu ini hasiln
+              </Text>
+              <View style={styles.chatInfoReceiver}>
+                <Text style={styles.timeStampReceiver}>13.50 pm</Text>
+                <Icon
+                  name="checkmark-outline"
+                  style={{fontSize: 20, color: '#ADA9BB'}}
+                />
+              </View>
+              <View style={styles.leftPoint}></View>
             </View>
-            <View style={styles.leftPoint}></View>
-          </View>
 
-          <View style={styles.sender}>
-            <Text style={styles.chatContentSender}>Helloo ini saya</Text>
-            <View style={styles.chatInfoSender}>
-              <Text style={styles.timeStampSender}>12.45pm</Text>
-              <Icon
-                name="checkmark-outline"
-                style={{fontSize: 20, color: '#ADA9BB'}}
-              />
+            <View style={styles.sender}>
+              <Text style={styles.chatContentSender}>Helloo ini saya</Text>
+              <View style={styles.chatInfoSender}>
+                <Text style={styles.timeStampSender}>12.45pm</Text>
+                <Icon
+                  name="checkmark-outline"
+                  style={{fontSize: 20, color: '#ADA9BB'}}
+                />
+              </View>
+              <View style={styles.rightPoint}></View>
             </View>
-            <View style={styles.rightPoint}></View>
-          </View>
 
-          <View style={styles.receiver}>
-            <Text style={styles.chatContentReceiver}>
-              Iyaaaa... Apakabarrr??
-            </Text>
-            <View style={styles.chatInfoReceiver}>
-              <Text style={styles.timeStampReceiver}>13.50 pm</Text>
-              <Icon
-                name="checkmark-outline"
-                style={{fontSize: 20, color: '#ADA9BB'}}
-              />
+            <View style={styles.receiver}>
+              <Text style={styles.chatContentReceiver}>
+                Iyaaaa... Apakabarrr??
+              </Text>
+              <View style={styles.chatInfoReceiver}>
+                <Text style={styles.timeStampReceiver}>13.50 pm</Text>
+                <Icon
+                  name="checkmark-outline"
+                  style={{fontSize: 20, color: '#ADA9BB'}}
+                />
+              </View>
+              <View style={styles.leftPoint}></View>
             </View>
-            <View style={styles.leftPoint}></View>
-          </View>
 
-          <View style={styles.sender}>
-            <Text style={styles.chatContentSender}>
-              Helloo ini saya.. wkwkkw
-            </Text>
-            <View style={styles.chatInfoSender}>
-              <Text style={styles.timeStampSender}>12.45pm</Text>
-              <Icon
-                name="checkmark-outline"
-                style={{fontSize: 20, color: '#ADA9BB'}}
-              />
+            <View style={styles.sender}>
+              <Text style={styles.chatContentSender}>
+                Helloo ini saya.. wkwkkw
+              </Text>
+              <View style={styles.chatInfoSender}>
+                <Text style={styles.timeStampSender}>12.45pm</Text>
+                <Icon
+                  name="checkmark-outline"
+                  style={{fontSize: 20, color: '#ADA9BB'}}
+                />
+              </View>
+              <View style={styles.rightPoint}></View>
             </View>
-            <View style={styles.rightPoint}></View>
-          </View>
 
-          <View style={styles.receiver}>
-            <Text style={styles.chatContentReceiver}>
-              Mau nyoba tulisan panjang apa ya.. Lorem ipsum dolor sit amet,
-              consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-              labore et dolore magna aliqua.
-            </Text>
-            <View style={styles.chatInfoReceiver}>
-              <Text style={styles.timeStampReceiver}>13.50 pm</Text>
-              <Icon
-                name="checkmark-outline"
-                style={{fontSize: 20, color: '#ADA9BB'}}
-              />
+            <View style={styles.receiver}>
+              <Text style={styles.chatContentReceiver}>
+                Mau nyoba tulisan panjang apa ya.. Lorem ipsum dolor sit amet,
+                consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+                labore et dolore magna aliqua.
+              </Text>
+              <View style={styles.chatInfoReceiver}>
+                <Text style={styles.timeStampReceiver}>13.50 pm</Text>
+                <Icon
+                  name="checkmark-outline"
+                  style={{fontSize: 20, color: '#ADA9BB'}}
+                />
+              </View>
+              <View style={styles.leftPoint}></View>
             </View>
-            <View style={styles.leftPoint}></View>
-          </View>
+          </KeyboardAvoidingView>
         </ScrollView>
         <View style={styles.inputSection}>
           <View style={styles.chatBox}>
