@@ -1,10 +1,14 @@
 /* eslint-disable react-native/no-inline-styles */
 import {Icon} from 'native-base';
-import React from 'react';
+import React, {useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {Tab, Tabs, DefaultTabBar} from 'native-base';
+// import AllSchedule from './AllSchedule';
 import AllSchedule from './AllSchedule';
+// import ForYou from './ForYou';
 import ForYou from './ForYou';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
 const monthNames = [
   'January',
   'February',
@@ -20,18 +24,42 @@ const monthNames = [
   'December',
 ];
 
+const dayNames = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
+
 let curr = new Date();
 
 let monthName = monthNames[curr.getMonth()];
-// let dayName = dayNames[curr.getDay()]
+let dayName = dayNames[curr.getDay()];
 let dt = curr.getDate();
 
-const renderTabBar = props => {
-  props.tabStyle = Object.create(props.tabStyle);
-  return <DefaultTabBar {...props} />;
-};
-
 function Student() {
+  const [show, setShow] = useState(false);
+  const [selectedDay, setSelectedDay] = useState(dayName);
+  const [mode, setMode] = useState('date');
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [activeTab, setActiveTab] = useState(0);
+
+  const renderTabBar = props => {
+    props.tabStyle = Object.create(props.tabStyle);
+    setActiveTab(props.activeTab);
+    return <DefaultTabBar {...props} />;
+  };
+
+  const pickDateHandler = (event, selected) => {
+    const currentDate = selected || selectedDate;
+    setShow(false);
+    setSelectedDate(currentDate);
+    setSelectedDay(dayNames[currentDate.getDay()]);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.headSection}>
@@ -41,7 +69,26 @@ function Student() {
             Today, {monthName} {dt}
           </Text>
         </View>
-        <Icon name="calendar-outline" />
+        {activeTab && activeTab === 1 ? (
+          <Icon
+            name="calendar-outline"
+            onPress={() => {
+              setShow(true);
+              setMode('date');
+            }}
+          />
+        ) : null}
+
+        {show && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={selectedDate}
+            mode={mode}
+            is24Hour={true}
+            display="default"
+            onChange={pickDateHandler}
+          />
+        )}
       </View>
 
       <Tabs tabContainerStyle={{elevation: 0}} renderTabBar={renderTabBar}>
@@ -59,7 +106,7 @@ function Student() {
           activeTextStyle={{color: '#5784BA'}}
           tabStyle={{backgroundColor: '#F9F9F9', borderWidth: 0}}
           activeTabStyle={{backgroundColor: '#F9F9F9'}}>
-          <ForYou />
+          <ForYou day={selectedDay} />
         </Tab>
       </Tabs>
     </View>

@@ -152,12 +152,15 @@ const styles = StyleSheet.create({
   },
   buttonClose: {
     backgroundColor: '#5784BA',
+    minWidth: 110,
   },
   buttonSave: {
     backgroundColor: '#57BA61',
+    minWidth: 110,
   },
   buttonCancel: {
     backgroundColor: '#EB4335',
+    minWidth: 110,
   },
   textStyle: {
     color: 'white',
