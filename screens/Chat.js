@@ -59,7 +59,7 @@ function Chat({...props}) {
           )}
         </View>
         {chatAction && <View style={styles.overlay} />}
-        <ChatItems />
+        <ChatItems navigation={props.navigation} />
       </View>
     </>
   );

@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import {List, ListItem, Left, Body, Right, Thumbnail, Text} from 'native-base';
 import chatList from '../../assets/dummy/chatList';

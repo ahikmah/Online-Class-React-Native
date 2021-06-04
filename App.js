@@ -40,6 +40,7 @@ import EditMyClass from './components/MyClass/EditMyClass';
 // Chat
 import Chat from './screens/Chat';
 import CreateNewChat from './screens/ChatNew';
+import ChatRoom from './screens/ChatRoom';
 import ChatGroupDetail from './screens/ChatGroupDetail';
 
 // Profile
@@ -174,6 +175,7 @@ function App(props) {
           <>
             <Stack.Screen name="Home" component={HomeTabs} />
             <Stack.Screen name="CreateNewChat" component={CreateNewChat} />
+            <Stack.Screen name="ChatRoom" component={ChatRoom} />
             <Stack.Screen name="ChatGroupDetail" component={ChatGroupDetail} />
             <Stack.Screen
               name="Notification"
