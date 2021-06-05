@@ -8,12 +8,13 @@ import {DOMAIN_API, PORT_API} from '@env';
 import {Icon, Input, Item} from 'native-base';
 import StudentContainer from '../components/Schedule/Student';
 import FacilitatorContainer from '../components/Schedule/Facilitator';
+import {useSocket} from '../contexts/socketProvider';
 
 function Home({...props}) {
   // console.log(props.auth.isLogin);
   // fake role test
   const role = props.role;
-  console.log(role);
+  // console.log(role);
   const [dataUser, setDataUser] = useState('');
   const ref = useRef();
 
@@ -25,10 +26,23 @@ function Home({...props}) {
     } else {
       if (props.auth.isUserObtained) {
         setDataUser(props.auth.currentUser);
-        console.log(props.auth.currentUser);
+        // console.log(props.auth.currentUser);
       }
     }
   }, [props]);
+
+  const socket = useSocket();
+  // const socket = io(`${DOMAIN_API}:${PORT_API}`);
+  useEffect(() => {
+    if (socket === undefined) {
+      return;
+    }
+    socket.on('connect', () =>
+      console.log('connected from home page ' + socket.id),
+    );
+
+    return () => socket.off('connect');
+  }, [socket]);
 
   return (
     <>

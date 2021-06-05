@@ -1,10 +1,31 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {List, ListItem, Left, Body, Right, Thumbnail, Text} from 'native-base';
+import {
+  List,
+  ListItem,
+  Left,
+  Body,
+  Right,
+  Thumbnail,
+  Text,
+  Item,
+} from 'native-base';
 import chatList from '../../assets/dummy/chatList';
 import {Dimensions, ScrollView, StyleSheet} from 'react-native';
+import {connect} from 'react-redux';
+import {useSocket} from '../../contexts/socketProvider';
 
 function ChatItems({...props}) {
+  const socket = useSocket();
+  const joinHandler = room => {
+    // console.log(name);
+    socket.emit('private-room', room, ({status}) => {
+      if (status) {
+        console.log(`${props.username} joined ${room} room`);
+        props.navigation.navigate('ChatRoom', {roomName: room});
+      }
+    });
+  };
   const chatItem = chatList.map(item => {
     return (
       <List
@@ -20,7 +41,7 @@ function ChatItems({...props}) {
             <Text
               note
               style={styles.message}
-              onPress={() => props.navigation.navigate('ChatRoom')}>
+              onPress={() => joinHandler(`private_${item.id}`)}>
               {item.note.slice(0, 35)}
             </Text>
           </Body>
@@ -57,4 +78,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChatItems;
+const mapStateToProps = state => ({
+  username: state.auth.currentUser.username,
+});
+export default connect(mapStateToProps)(ChatItems);

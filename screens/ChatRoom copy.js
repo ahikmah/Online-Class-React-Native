@@ -1,4 +1,3 @@
-/* eslint-disable react/self-closing-comp */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useRef, useState, useEffect} from 'react';
 import {
@@ -13,11 +12,7 @@ import {
 import {Button, Icon, Textarea} from 'native-base';
 import {connect} from 'react-redux';
 import {useSocket} from '../contexts/socketProvider';
-
 function ChatRoom({...props}) {
-  const {roomName: room} = props.route.params;
-  // console.log('ini dia nama roomnya', room);
-
   const scrollViewRef = useRef();
   const [message, setMessage] = useState();
   const [messageList, setMessageList] = useState([]);
@@ -38,8 +33,7 @@ function ChatRoom({...props}) {
         });
       }
     };
-    socket.emit('send-message', body, room, cb);
-    setMessage('');
+    socket.emit('send-message', body, cb);
   };
 
   useEffect(() => {
@@ -49,7 +43,7 @@ function ChatRoom({...props}) {
       });
     });
   }, [socket]);
-  // console.log(messageList);
+
   return (
     <>
       <StatusBar
@@ -57,24 +51,23 @@ function ChatRoom({...props}) {
         backgroundColor="transparent"
         barStyle="light-content"
       />
-
-      <View style={styles.header}>
-        <View style={styles.topSection}>
-          <View style={styles.leftSection}>
-            <Icon
-              name="chevron-back"
-              style={{color: 'white', fontSize: 24}}
-              onPress={() => props.navigation.goBack()}
-            />
-            <Text
-              style={styles.title}
-              onPress={() => props.navigation.navigate('Chat')}>
-              Anonim
-            </Text>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.topSection}>
+            <View style={styles.leftSection}>
+              <Icon
+                name="chevron-back"
+                style={{color: 'white', fontSize: 24}}
+                onPress={() => props.navigation.goBack()}
+              />
+              <Text
+                style={styles.title}
+                onPress={() => props.navigation.navigate('Chat')}>
+                Anonim
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
-      <KeyboardAvoidingView style={{flex: 1}} behavi="padding">
         <ScrollView
           style={styles.chatBallon}
           contentContainerStyle={{paddingBottom: 12}}
@@ -82,57 +75,102 @@ function ChatRoom({...props}) {
           onContentSizeChange={() =>
             scrollViewRef.current.scrollToEnd({animated: true})
           }>
-          {messageList.map((item, index) => {
-            return (
-              <View
-                style={
-                  item.user_id === props.user_id
-                    ? styles.sender
-                    : styles.receiver
-                }
-                key={index}>
-                <Text
-                  style={
-                    item.user_id === props.user_id
-                      ? styles.chatContentSender
-                      : styles.chatContentReceiver
-                  }>
-                  {item.content}
-                </Text>
-                <View
-                  style={
-                    item.user_id === props.user_id
-                      ? styles.chatInfoSender
-                      : styles.chatInfoReceiver
-                  }>
-                  <Text
-                    style={
-                      item.user_id === props.user_id
-                        ? styles.timeStampSender
-                        : styles.timeStampReceiver
-                    }>
-                    12.45pm
-                  </Text>
-                  <Icon
-                    name="checkmark-outline"
-                    style={{fontSize: 20, color: '#ADA9BB'}}
-                  />
-                </View>
-                <View
-                  style={
-                    item.user_id === props.user_id
-                      ? styles.rightPoint
-                      : styles.leftPoint
-                  }></View>
+          <KeyboardAvoidingView
+            style={{flex: 1}}
+            behavior="height"
+            keyboardVerticalOffset={
+              screenHeight > 780 ? StatusBar.currentHeight : -180
+            }>
+            <View style={styles.sender}>
+              <Text style={styles.chatContentSender}>
+                Helloo ini saya. Apakah dia mau memanjang. bagaimana kalo banyak
+                sekaliwkwkwk. Oh tidak, aku ternyata kebawah
+              </Text>
+              <View style={styles.chatInfoSender}>
+                <Text style={styles.timeStampSender}>12.45pm</Text>
+                <Icon
+                  name="checkmark-outline"
+                  style={{fontSize: 20, color: '#ADA9BB'}}
+                />
               </View>
-            );
-          })}
+              <View style={styles.rightPoint}></View>
+            </View>
+
+            <View style={styles.receiver}>
+              <Text style={styles.chatContentReceiver}>
+                Helloo ini dia.. Tes dulu ini hasiln
+              </Text>
+              <View style={styles.chatInfoReceiver}>
+                <Text style={styles.timeStampReceiver}>13.50 pm</Text>
+                <Icon
+                  name="checkmark-outline"
+                  style={{fontSize: 20, color: '#ADA9BB'}}
+                />
+              </View>
+              <View style={styles.leftPoint}></View>
+            </View>
+
+            <View style={styles.sender}>
+              <Text style={styles.chatContentSender}>Helloo ini saya</Text>
+              <View style={styles.chatInfoSender}>
+                <Text style={styles.timeStampSender}>12.45pm</Text>
+                <Icon
+                  name="checkmark-outline"
+                  style={{fontSize: 20, color: '#ADA9BB'}}
+                />
+              </View>
+              <View style={styles.rightPoint}></View>
+            </View>
+
+            <View style={styles.receiver}>
+              <Text style={styles.chatContentReceiver}>
+                Iyaaaa... Apakabarrr??
+              </Text>
+              <View style={styles.chatInfoReceiver}>
+                <Text style={styles.timeStampReceiver}>13.50 pm</Text>
+                <Icon
+                  name="checkmark-outline"
+                  style={{fontSize: 20, color: '#ADA9BB'}}
+                />
+              </View>
+              <View style={styles.leftPoint}></View>
+            </View>
+
+            <View style={styles.sender}>
+              <Text style={styles.chatContentSender}>
+                Helloo ini saya.. wkwkkw
+              </Text>
+              <View style={styles.chatInfoSender}>
+                <Text style={styles.timeStampSender}>12.45pm</Text>
+                <Icon
+                  name="checkmark-outline"
+                  style={{fontSize: 20, color: '#ADA9BB'}}
+                />
+              </View>
+              <View style={styles.rightPoint}></View>
+            </View>
+
+            <View style={styles.receiver}>
+              <Text style={styles.chatContentReceiver}>
+                Mau nyoba tulisan panjang apa ya.. Lorem ipsum dolor sit amet,
+                consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+                labore et dolore magna aliqua.
+              </Text>
+              <View style={styles.chatInfoReceiver}>
+                <Text style={styles.timeStampReceiver}>13.50 pm</Text>
+                <Icon
+                  name="checkmark-outline"
+                  style={{fontSize: 20, color: '#ADA9BB'}}
+                />
+              </View>
+              <View style={styles.leftPoint}></View>
+            </View>
+          </KeyboardAvoidingView>
         </ScrollView>
         <View style={styles.inputSection}>
           <View style={styles.chatBox}>
             <Textarea
               // rowSpan={2}
-              value={message}
               bordered
               placeholder="Type a message"
               style={styles.inputMessage}
@@ -145,8 +183,8 @@ function ChatRoom({...props}) {
             </Button>
           </View>
         </View>
-      </KeyboardAvoidingView>
-      {/* <SelectPersonChat /> */}
+        {/* <SelectPersonChat /> */}
+      </View>
     </>
   );
 }
@@ -194,7 +232,6 @@ const styles = StyleSheet.create({
     // marginTop: 1,
     marginBottom: 10,
     paddingTop: 12,
-    flex: 1,
   },
 
   sender: {

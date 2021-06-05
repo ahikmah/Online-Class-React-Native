@@ -6,6 +6,9 @@ import {AppRegistry, Platform} from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
 
+// Socket.io
+import {SocketProvider} from './contexts/socketProvider';
+
 // redux
 import {store, persistor} from './redux/store';
 import {Provider} from 'react-redux';
@@ -47,11 +50,13 @@ PushNotification.configure({
 });
 
 const RNRedux = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <App />
-    </PersistGate>
-  </Provider>
+  <SocketProvider>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <App />
+      </PersistGate>
+    </Provider>
+  </SocketProvider>
 );
 
 AppRegistry.registerComponent(appName, () => RNRedux);
