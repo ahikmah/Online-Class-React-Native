@@ -42,9 +42,9 @@ function Login({...props}) {
     Dimensions.get('window').width - 64,
   );
   const [marginBottom, setMarginBottom] = useState(
-    Dimensions.get('window').height > 650 ? StatusBar.currentHeight + 32 : null,
+    Dimensions.get('window').height > 590 ? StatusBar.currentHeight + 32 : null,
   );
-
+  // console.log(Dimensions.get('window').height);
   // console.log({...props});
 
   useEffect(() => {
@@ -52,7 +52,7 @@ function Login({...props}) {
       setComponentWidth(Dimensions.get('window').width - 64);
 
       setMarginBottom(
-        Dimensions.get('window').height > 650
+        Dimensions.get('window').height > 590
           ? StatusBar.currentHeight + 32
           : null,
       );
@@ -156,7 +156,7 @@ function Login({...props}) {
         backgroundColor="#F9F9F9"
         barStyle="dark-content"
       />
-      <ScrollView>
+      <ScrollView style={{backgroundColor: '#F9F9F9'}}>
         <View style={styles.container}>
           {indicatorVisible ? (
             <View
