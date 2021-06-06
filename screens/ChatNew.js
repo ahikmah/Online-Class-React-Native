@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
 import {Icon, Input, Item} from 'native-base';
@@ -47,7 +48,7 @@ function ChatNew({...props}) {
             </Item>
           </View>
         </View>
-        <SelectPersonChat />
+        <SelectPersonChat navigation={props.navigation} />
       </View>
     </>
   );
@@ -55,8 +56,9 @@ function ChatNew({...props}) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#E6EDF6',
     flex: 1,
+    paddingBottom: 12,
+    backgroundColor: '#F9F9F9',
   },
   header: {
     paddingTop: StatusBar.currentHeight + 12 + (40 - StatusBar.currentHeight),
