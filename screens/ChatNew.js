@@ -35,7 +35,7 @@ function ChatNew({...props}) {
                   ? () => props.navigation.navigate('ChatGroupDetail')
                   : null
               }>
-              {isGroup ? 'Next' : 'Create'}
+              {isGroup ? 'Next' : null}
             </Text>
           </View>
           <View style={styles.searchSection}>

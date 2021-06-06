@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useRef, useState, useEffect} from 'react';
@@ -10,13 +11,20 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from 'react-native';
-import {Button, Icon, Textarea} from 'native-base';
+import {Button, Icon, Textarea, Thumbnail} from 'native-base';
 import {connect} from 'react-redux';
 import {useSocket} from '../contexts/socketProvider';
+import {DOMAIN_API, PORT_API} from '@env';
+import axios from 'axios';
 
 function ChatRoom({...props}) {
-  const {roomName: room} = props.route.params;
-  // console.log('ini dia nama roomnya', room);
+  const {roomName: room, sender, receiver} = props.route.params;
+  // console.log('room:', room, 'sender:', sender, 'receiver: ', receiver);eka
+
+  const all_data = props.data_user;
+
+  const data_receiver = all_data.findIndex(x => x.id === receiver);
+  // console.log(data_receiver, all_data[data_receiver].avatar);
 
   const scrollViewRef = useRef();
   const [message, setMessage] = useState();
@@ -24,18 +32,43 @@ function ChatRoom({...props}) {
   const screenHeight = Dimensions.get('window').height;
 
   const socket = useSocket();
+  const token = props.token;
+
+  useEffect(() => {
+    axios
+      .get(`${DOMAIN_API}:${PORT_API}/message/history/${room}`, {
+        headers: {'x-access-token': `Bearer ${token}`},
+      })
+      .then(res => {
+        console.log(res.data.result);
+        setMessageList(res.data.result);
+      })
+      .catch(err => console.log(err));
+  }, []);
 
   const sendHandler = () => {
-    // console.log(message);
     const body = {
-      user_id: props.user_id,
+      room_id: room,
+      sender_id: sender,
+      receiver_id: receiver,
       content: message,
+      timestamp: new Date(),
     };
+    console.log(body);
     const cb = ({status}) => {
       if (status) {
         setMessageList(prevMessage => {
           return [...prevMessage, body];
         });
+
+        axios
+          .post(`${DOMAIN_API}:${PORT_API}/message/send`, body, {
+            headers: {'x-access-token': `Bearer ${token}`},
+          })
+          .then(res => {
+            console.log('message stored');
+          })
+          .catch(err => console.log(err));
       }
     };
     socket.emit('send-message', body, room, cb);
@@ -48,8 +81,10 @@ function ChatRoom({...props}) {
         return [...prevMessage, newMessage];
       });
     });
+
+    return () => socket.off('message-received');
   }, [socket]);
-  // console.log(messageList);
+
   return (
     <>
       <StatusBar
@@ -66,10 +101,20 @@ function ChatRoom({...props}) {
               style={{color: 'white', fontSize: 24}}
               onPress={() => props.navigation.goBack()}
             />
+            <Thumbnail
+              style={styles.avatar}
+              source={
+                all_data[data_receiver].avatar
+                  ? {
+                      uri: `${DOMAIN_API}:${PORT_API}${all_data[data_receiver].avatar}`,
+                    }
+                  : require('../assets/images/graduate.png')
+              }
+            />
             <Text
               style={styles.title}
               onPress={() => props.navigation.navigate('Chat')}>
-              Anonim
+              {all_data[data_receiver].full_name}
             </Text>
           </View>
         </View>
@@ -86,14 +131,14 @@ function ChatRoom({...props}) {
             return (
               <View
                 style={
-                  item.user_id === props.user_id
+                  item.sender_id === props.user_id
                     ? styles.sender
                     : styles.receiver
                 }
                 key={index}>
                 <Text
                   style={
-                    item.user_id === props.user_id
+                    item.sender_id === props.user_id
                       ? styles.chatContentSender
                       : styles.chatContentReceiver
                   }>
@@ -101,17 +146,17 @@ function ChatRoom({...props}) {
                 </Text>
                 <View
                   style={
-                    item.user_id === props.user_id
+                    item.sender_id === props.user_id
                       ? styles.chatInfoSender
                       : styles.chatInfoReceiver
                   }>
                   <Text
                     style={
-                      item.user_id === props.user_id
+                      item.sender_id === props.user_id
                         ? styles.timeStampSender
                         : styles.timeStampReceiver
                     }>
-                    12.45pm
+                    {new Date(item.timestamp).toTimeString().slice(0, 5)}
                   </Text>
                   <Icon
                     name="checkmark-outline"
@@ -120,7 +165,7 @@ function ChatRoom({...props}) {
                 </View>
                 <View
                   style={
-                    item.user_id === props.user_id
+                    item.sender_id === props.user_id
                       ? styles.rightPoint
                       : styles.leftPoint
                   }></View>
@@ -178,6 +223,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  avatar: {
+    width: 43,
+    height: 43,
+    marginHorizontal: 12,
   },
   leftSection: {
     flexDirection: 'row',
@@ -337,7 +387,9 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = state => ({
+  token: state.auth.resultLogin.token,
   user_id: state.auth.currentUser.id,
+  data_user: state.users.allUser,
 });
 
 export default connect(mapStateToProps)(ChatRoom);

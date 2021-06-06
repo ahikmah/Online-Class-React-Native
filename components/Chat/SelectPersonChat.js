@@ -58,34 +58,38 @@ function SelectPersonChat({...props}) {
   };
   let userItem;
   if (userList) {
-    userItem = userList.map(item => {
-      let tes = true;
-      let sel = item.select;
-      return (
-        <List key={item.id} style={styles.list}>
-          <ListItem avatar onPress={() => selectHandler(item.id)}>
-            <Left>
-              <Thumbnail
-                source={
-                  item.avatar
-                    ? {uri: `${DOMAIN_API}:${PORT_API}${item.avatar}`}
-                    : require('../../assets/images/graduate.png')
-                }
-              />
-            </Left>
-            <Body style={{borderBottomWidth: 0}}>
-              <Text style={styles.name}>{item.full_name ?? item.username}</Text>
-            </Body>
-            {/* <Right style={{borderBottomWidth: 0}}>
+    userItem = userList
+      .filter(item => item.id !== props.sender_id)
+      .map(item => {
+        let tes = true;
+        let sel = item.select;
+        return (
+          <List key={item.id} style={styles.list}>
+            <ListItem avatar onPress={() => selectHandler(item.id)}>
+              <Left>
+                <Thumbnail
+                  source={
+                    item.avatar
+                      ? {uri: `${DOMAIN_API}:${PORT_API}${item.avatar}`}
+                      : require('../../assets/images/graduate.png')
+                  }
+                />
+              </Left>
+              <Body style={{borderBottomWidth: 0}}>
+                <Text style={styles.name}>
+                  {item.full_name ?? item.username}
+                </Text>
+              </Body>
+              {/* <Right style={{borderBottomWidth: 0}}>
               <CheckBox
                 value={sel === tes ? true : false}
                 onValueChange={e => (sel = e)}
               />
             </Right> */}
-          </ListItem>
-        </List>
-      );
-    });
+            </ListItem>
+          </List>
+        );
+      });
   }
   return (
     <ScrollView>

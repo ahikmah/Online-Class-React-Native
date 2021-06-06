@@ -1,9 +1,16 @@
-import React, {useState} from 'react';
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
 import {Icon, Input, Item} from 'native-base';
 import ChatItems from '../components/Chat/ChatItems';
+import {connect} from 'react-redux';
+import {DOMAIN_API, PORT_API} from '@env';
+import axios from 'axios';
+
 function Chat({...props}) {
   const [chatAction, setChatAction] = useState(false);
+
   return (
     <>
       <StatusBar
@@ -59,7 +66,11 @@ function Chat({...props}) {
           )}
         </View>
         {chatAction && <View style={styles.overlay} />}
-        <ChatItems navigation={props.navigation} />
+        {/* <ChatItems navigation={props.navigation} /> */}
+        <Text
+          style={{textAlign: 'center', textAlignVertical: 'center', flex: 1}}>
+          Tragically, nothing
+        </Text>
       </View>
     </>
   );
@@ -127,4 +138,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Chat;
+const mapStateToProps = state => ({
+  token: state.auth.resultLogin.token,
+});
+export default connect(mapStateToProps)(Chat);
