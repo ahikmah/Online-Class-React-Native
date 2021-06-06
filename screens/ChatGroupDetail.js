@@ -11,6 +11,8 @@ import {
 import {Icon, Input, Item, Label} from 'native-base';
 
 function ChatGroupDetail({...props}) {
+  const {members} = props.route.params;
+  console.log('Hello new member', members);
   return (
     <>
       <StatusBar
@@ -38,7 +40,20 @@ function ChatGroupDetail({...props}) {
         </View>
         <View style={styles.headSection}>
           <View style={styles.groupInfo}>
-            <Image source={require('../assets/images/ava-group-sample.png')} />
+            {/* <Image source={require('../assets/images/ava-group-sample.png')} /> */}
+            <Icon
+              name="people-sharp"
+              style={{
+                color: '#F9F9F9',
+                width: 65,
+                height: 65,
+                textAlign: 'center',
+                textAlignVertical: 'center',
+                fontSize: 35,
+                backgroundColor: '#5784BA',
+                borderRadius: 35,
+              }}
+            />
             <Input style={styles.groupName} placeholder="Group name" />
           </View>
           <Text style={styles.note}>
@@ -47,7 +62,9 @@ function ChatGroupDetail({...props}) {
         </View>
 
         <ScrollView style={styles.mainSection}>
-          <Text style={styles.txtParticipant}>Participants 3</Text>
+          <Text style={styles.txtParticipant}>
+            Participants {members.length}
+          </Text>
           <View style={styles.memberList}>
             <View style={styles.memberItem}>
               <Image

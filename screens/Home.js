@@ -1,20 +1,21 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState, useRef} from 'react';
 import {View, Text, StyleSheet, StatusBar, ScrollView} from 'react-native';
 import NewsItems from '../components/NewsItems';
 import {getDataUser} from '../redux/Action/auth';
+import {allUser} from '../redux/Action/users';
+
 import {connect} from 'react-redux';
 import {DOMAIN_API, PORT_API} from '@env';
 import {Icon, Input, Item} from 'native-base';
 import StudentContainer from '../components/Schedule/Student';
 import FacilitatorContainer from '../components/Schedule/Facilitator';
 import {useSocket} from '../contexts/socketProvider';
+import axios from 'axios';
 
 function Home({...props}) {
-  // console.log(props.auth.isLogin);
-  // fake role test
   const role = props.role;
-  // console.log(role);
   const [dataUser, setDataUser] = useState('');
   const ref = useRef();
 
@@ -30,6 +31,27 @@ function Home({...props}) {
       }
     }
   }, [props]);
+
+  useEffect(() => {
+    const token = props.token;
+    axios
+      .get(`${DOMAIN_API}:${PORT_API}/message`, {
+        headers: {'x-access-token': `Bearer ${token}`},
+      })
+      .then(res => {
+        let Temp = res.data.result;
+        let FormatData = [];
+        for (let i = 0; i < Temp.length - 1; i++) {
+          FormatData.push({
+            index: i,
+            ...Temp[i],
+            checked: false,
+          });
+        }
+        props.allUser(FormatData);
+      })
+      .catch(err => console.log(err));
+  }, []);
 
   const socket = useSocket();
   // const socket = io(`${DOMAIN_API}:${PORT_API}`);
@@ -190,6 +212,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getDataUser: (url, token) => {
     dispatch(getDataUser(url, token));
+  },
+  allUser: data => {
+    dispatch(allUser(data));
   },
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

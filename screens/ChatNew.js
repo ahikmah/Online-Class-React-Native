@@ -1,11 +1,23 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
 import {Icon, Input, Item} from 'native-base';
 import SelectPersonChat from '../components/Chat/SelectPersonChat';
+import {connect} from 'react-redux';
 
 function ChatNew({...props}) {
   const isGroup = props.route.params.isGroup;
+  const [selectedPerson, setSelectedPerson] = useState([]);
+  const onSelected = data => {
+    setSelectedPerson(oldData => {
+      return [...data];
+    });
+  };
+  console.log(selectedPerson);
+
+  const submitMemberHandler = () => {
+    props.navigation.navigate('ChatGroupDetail', {members: selectedPerson});
+  };
   return (
     <>
       <StatusBar
@@ -30,13 +42,18 @@ function ChatNew({...props}) {
             </View>
             <Text
               style={styles.action}
+              onPress={isGroup ? submitMemberHandler : null}>
+              {isGroup ? 'Next' : null}
+            </Text>
+            {/* <Text
+              style={styles.action}
               onPress={
                 isGroup
                   ? () => props.navigation.navigate('ChatGroupDetail')
                   : null
               }>
               {isGroup ? 'Next' : null}
-            </Text>
+            </Text> */}
           </View>
           <View style={styles.searchSection}>
             <Item style={styles.searchInputContainer}>
@@ -48,7 +65,11 @@ function ChatNew({...props}) {
             </Item>
           </View>
         </View>
-        <SelectPersonChat navigation={props.navigation} />
+        <SelectPersonChat
+          navigation={props.navigation}
+          isGroup={isGroup}
+          onSubmit={onSelected}
+        />
       </View>
     </>
   );
@@ -125,4 +146,10 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
 });
-export default ChatNew;
+const mapStateToProps = state => ({
+  token: state.auth.resultLogin.token,
+  user_id: state.auth.currentUser.id,
+  data_user: state.users.allUser,
+});
+
+export default connect(mapStateToProps)(ChatNew);

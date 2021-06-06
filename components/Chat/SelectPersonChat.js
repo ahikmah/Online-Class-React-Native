@@ -1,33 +1,30 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useState} from 'react';
-import {List, ListItem, Left, Body, Right, Thumbnail, Text} from 'native-base';
+import React, {useState} from 'react';
+import {
+  List,
+  ListItem,
+  Left,
+  Body,
+  Right,
+  Thumbnail,
+  Text,
+  Icon,
+} from 'native-base';
 // import chatList from '../../assets/dummy/chatList';
 import {ScrollView, StyleSheet} from 'react-native';
-// import CheckBox from '@react-native-community/checkbox';
+import CheckBox from '@react-native-community/checkbox';
 import {allUser} from '../../redux/Action/users';
 import {connect} from 'react-redux';
 import {DOMAIN_API, PORT_API} from '@env';
 import axios from 'axios';
 import {useSocket} from '../../contexts/socketProvider';
+// import SelectMultiple from 'react-native-select-multiple';
+// import {CheckBox} from 'react-native-elements';
 
 function SelectPersonChat({...props}) {
-  const [userList, setUserList] = useState();
   const socket = useSocket();
-
-  useEffect(() => {
-    const token = props.token;
-    axios
-      .get(`${DOMAIN_API}:${PORT_API}/message`, {
-        headers: {'x-access-token': `Bearer ${token}`},
-      })
-      .then(res => {
-        // console.log('oke', {...res.data.result});
-        setUserList(res.data.result);
-        props.allUser(res.data.result);
-      })
-      .catch(err => console.log(err));
-  }, []);
+  const [dataUser, setDataUser] = useState(props.data_user);
+  const dum = [];
 
   const selectHandler = receiver_id => {
     const room = `private_${props.sender_id + receiver_id}`;
@@ -56,13 +53,77 @@ function SelectPersonChat({...props}) {
     });
   };
 
+  const selectMemberHandler = idx => {
+    const index = dataUser.findIndex(x => x.index === idx);
+    dataUser[index].checked = !dataUser[index].checked;
+    console.log(index, idx);
+    setDataUser(dataUser);
+    props.onSubmit(dum);
+  };
+
+  const getSelectedPerson = () => {
+    const id = dataUser.map(item => item.id);
+    const check = dataUser.map(item => item.checked);
+    const selectedPerson = [props.sender_id];
+    // console.log('hei', check);
+
+    for (let i = 0; i < check.length; i++) {
+      if (check[i] == true) {
+        selectedPerson.push(id[i]);
+        props.onSubmit(selectedPerson);
+      }
+    }
+    // console.log(selectedPerson);
+  };
+
+  const renderUser = () => {
+    // console.log(dataUser);
+    return dataUser
+      .filter(item => item.id !== props.sender_id)
+      .map((item, index) => {
+        return (
+          <List key={index} style={styles.list}>
+            <ListItem
+              avatar
+              onPress={() => {
+                selectMemberHandler(item.index);
+                getSelectedPerson();
+              }}>
+              <Left>
+                <Thumbnail
+                  source={
+                    item.avatar
+                      ? {uri: `${DOMAIN_API}:${PORT_API}${item.avatar}`}
+                      : require('../../assets/images/graduate.png')
+                  }
+                />
+              </Left>
+              <Body style={{borderBottomWidth: 0}}>
+                <Text style={styles.name}>
+                  {item.full_name ?? item.username}
+                </Text>
+              </Body>
+
+              <Right style={{borderBottomWidth: 0}}>
+                <CheckBox
+                  value={item.checked}
+                  onValueChange={() => {
+                    selectMemberHandler(item.index);
+                    getSelectedPerson();
+                  }}
+                />
+              </Right>
+            </ListItem>
+          </List>
+        );
+      });
+  };
+
   let userItem;
-  if (userList) {
-    userItem = userList
+  if (props.data_user) {
+    userItem = props.data_user
       .filter(item => item.id !== props.sender_id)
       .map(item => {
-        // let tes = true;
-        // let sel = item.select;
         return (
           <List key={item.id} style={styles.list}>
             <ListItem avatar onPress={() => selectHandler(item.id)}>
@@ -80,18 +141,12 @@ function SelectPersonChat({...props}) {
                   {item.full_name ?? item.username}
                 </Text>
               </Body>
-              {/* <Right style={{borderBottomWidth: 0}}>
-              <CheckBox
-                value={sel === tes ? true : false}
-                onValueChange={e => (sel = e)}
-              />
-            </Right> */}
             </ListItem>
           </List>
         );
       });
   }
-  return <ScrollView>{userItem}</ScrollView>;
+  return <ScrollView>{props.isGroup ? renderUser() : userItem}</ScrollView>;
 }
 
 const styles = StyleSheet.create({
@@ -112,6 +167,7 @@ const mapStateToProps = state => ({
   token: state.auth.resultLogin.token,
   sender_id: state.auth.resultUserData.id,
   username: state.auth.resultUserData.username,
+  data_user: state.users.allUser,
 });
 const mapDispatchToProps = dispatch => ({
   allUser: data => {
