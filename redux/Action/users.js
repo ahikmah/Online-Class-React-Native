@@ -1,10 +1,6 @@
-import axios from 'axios';
-
-export const getUserList = (url, token) => {
+export const allUser = data => {
   return {
-    type: 'GET_USER_LIST',
-    payload: axios.get(url, {
-      headers: {'x-access-token': `Bearer ${token}`},
-    }),
+    type: 'ALL_USER',
+    payload: data,
   };
 };
