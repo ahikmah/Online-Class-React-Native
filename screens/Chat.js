@@ -66,7 +66,7 @@ function Chat({...props}) {
           )}
         </View>
         {chatAction && <View style={styles.overlay} />}
-        {/* <ChatItems navigation={props.navigation} /> */}
+        <ChatItems navigation={props.navigation} />
         <Text
           style={{textAlign: 'center', textAlignVertical: 'center', flex: 1}}>
           Tragically, nothing

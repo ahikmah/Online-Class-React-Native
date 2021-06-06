@@ -2,10 +2,9 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
 import {List, ListItem, Left, Body, Right, Thumbnail, Text} from 'native-base';
-import chatList from '../../assets/dummy/chatList';
+// import chatList from '../../assets/dummy/chatList';
 import {ScrollView, StyleSheet} from 'react-native';
-import CheckBox from '@react-native-community/checkbox';
-
+// import CheckBox from '@react-native-community/checkbox';
 import {allUser} from '../../redux/Action/users';
 import {connect} from 'react-redux';
 import {DOMAIN_API, PORT_API} from '@env';
@@ -56,13 +55,14 @@ function SelectPersonChat({...props}) {
       }
     });
   };
+
   let userItem;
   if (userList) {
     userItem = userList
       .filter(item => item.id !== props.sender_id)
       .map(item => {
-        let tes = true;
-        let sel = item.select;
+        // let tes = true;
+        // let sel = item.select;
         return (
           <List key={item.id} style={styles.list}>
             <ListItem avatar onPress={() => selectHandler(item.id)}>
@@ -91,18 +91,12 @@ function SelectPersonChat({...props}) {
         );
       });
   }
-  return (
-    <ScrollView>
-      {userItem}
-      {/* {chatItem} */}
-    </ScrollView>
-  );
+  return <ScrollView>{userItem}</ScrollView>;
 }
 
 const styles = StyleSheet.create({
   list: {
     backgroundColor: '#F9F9F9',
-    // paddingBottom: 12,
   },
   name: {
     fontFamily: 'Kanit-Regular',

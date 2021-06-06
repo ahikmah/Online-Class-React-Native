@@ -40,7 +40,7 @@ function ChatRoom({...props}) {
         headers: {'x-access-token': `Bearer ${token}`},
       })
       .then(res => {
-        console.log(res.data.result);
+        // console.log(res.data.result);
         setMessageList(res.data.result);
       })
       .catch(err => console.log(err));
@@ -52,9 +52,10 @@ function ChatRoom({...props}) {
       sender_id: sender,
       receiver_id: receiver,
       content: message,
-      timestamp: new Date(),
+      // timestamp: new Date().toLocaleString(),
     };
-    console.log(body);
+
+    // console.log(body);
     const cb = ({status}) => {
       if (status) {
         setMessageList(prevMessage => {
@@ -156,7 +157,11 @@ function ChatRoom({...props}) {
                         ? styles.timeStampSender
                         : styles.timeStampReceiver
                     }>
-                    {new Date(item.timestamp).toTimeString().slice(0, 5)}
+                    {item.timestamp
+                      ? new Date(item.timestamp)
+                          .toLocaleTimeString()
+                          .slice(0, 5)
+                      : new Date().toLocaleTimeString().slice(0, 5)}
                   </Text>
                   <Icon
                     name="checkmark-outline"
