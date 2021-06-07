@@ -37,12 +37,16 @@ function ChatRoom({...props}) {
   const scrollViewRef = useRef();
   const [message, setMessage] = useState();
   const [messageList, setMessageList] = useState([]);
+  const [groupMemberCount, setGroupMemberCount] = useState(0);
+
   const screenHeight = Dimensions.get('window').height;
 
   const socket = useSocket();
   const token = props.token;
+  // let groupMemberCount;
 
   useEffect(() => {
+    console.log(room);
     axios
       .get(`${DOMAIN_API}:${PORT_API}/message/history/${room}`, {
         headers: {'x-access-token': `Bearer ${token}`},
@@ -52,23 +56,30 @@ function ChatRoom({...props}) {
         setMessageList(res.data.result);
       })
       .catch(err => console.log(err));
+
+    axios
+      .get(`${DOMAIN_API}:${PORT_API}/message/room/${room}`, {
+        headers: {'x-access-token': `Bearer ${token}`},
+      })
+      .then(res => {
+        console.log(res.data.result[0].count);
+        setGroupMemberCount(res.data.result[0].count);
+      })
+      .catch(err => console.log('room info', err));
   }, []);
 
   const sendHandler = () => {
     const body = isGroup
       ? {
           room_id: room,
-          sender_id: groupCreator,
-          // receiver_id: room,
+          sender_id: props.user_id,
           content: message,
-          // timestamp: new Date().toLocaleString(),
         }
       : {
           room_id: room,
           sender_id: sender,
           receiver_id: receiver,
           content: message,
-          // timestamp: new Date().toLocaleString(),
         };
 
     // console.log(body);
@@ -91,7 +102,6 @@ function ChatRoom({...props}) {
     socket.emit('send-message', body, room, cb);
     setMessage('');
   };
-
   useEffect(() => {
     socket.on('message-received', newMessage => {
       setMessageList(prevMessage => {
@@ -138,7 +148,7 @@ function ChatRoom({...props}) {
                 props.navigation.navigate('Chat', {isGroup: isGroup})
               }>
               {isGroup
-                ? `${room.split('_')[1]} (${groupMember.length ?? groupMember})`
+                ? `${room.split('_')[1]} (${groupMemberCount})`
                 : all_data[data_receiver].full_name}
             </Text>
           </View>
@@ -153,6 +163,8 @@ function ChatRoom({...props}) {
             scrollViewRef.current.scrollToEnd({animated: true})
           }>
           {messageList.map((item, index) => {
+            let senderIndex = all_data.findIndex(x => x.id === item.sender_id);
+            // console.log(senderIndex);
             return (
               <View
                 style={
@@ -161,6 +173,19 @@ function ChatRoom({...props}) {
                     : styles.receiver
                 }
                 key={index}>
+                {item.sender_id !== props.user_id ? (
+                  <Text
+                    style={
+                      item.sender_id === props.user_id
+                        ? styles.nameSender
+                        : styles.nameReceiver
+                    }>
+                    {all_data[senderIndex] && item.sender_id !== props.user_id
+                      ? all_data[senderIndex].full_name ??
+                        all_data[senderIndex].username
+                      : null}
+                  </Text>
+                ) : null}
                 <Text
                   style={
                     item.sender_id === props.user_id
@@ -337,6 +362,12 @@ const styles = StyleSheet.create({
     color: '#3F4356',
     fontSize: 15,
     fontFamily: 'Roboto-Regular',
+  },
+  nameReceiver: {
+    color: '#BCB8CF',
+    fontSize: 15,
+    fontFamily: 'Montserrat-Regular',
+    fontWeight: 'bold',
   },
   chatInfoReceiver: {
     flexDirection: 'row',

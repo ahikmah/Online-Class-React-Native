@@ -84,7 +84,7 @@ function ChatItems({...props}) {
           roomName: room_id,
           groupCreator: props.user_id,
           groupReceiver: room_id,
-          groupMember: 4,
+          // groupMember: 4,
         });
       }
     });
