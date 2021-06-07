@@ -6,8 +6,9 @@ import SelectPersonChat from '../components/Chat/SelectPersonChat';
 import {connect} from 'react-redux';
 
 function ChatNew({...props}) {
-  const isGroup = props.route.params.isGroup;
+  const {isGroup} = props.route.params;
   const [selectedPerson, setSelectedPerson] = useState([]);
+
   const onSelected = data => {
     setSelectedPerson(oldData => {
       return [...data];
@@ -45,15 +46,6 @@ function ChatNew({...props}) {
               onPress={isGroup ? submitMemberHandler : null}>
               {isGroup ? 'Next' : null}
             </Text>
-            {/* <Text
-              style={styles.action}
-              onPress={
-                isGroup
-                  ? () => props.navigation.navigate('ChatGroupDetail')
-                  : null
-              }>
-              {isGroup ? 'Next' : null}
-            </Text> */}
           </View>
           <View style={styles.searchSection}>
             <Item style={styles.searchInputContainer}>

@@ -399,7 +399,7 @@ function Student({...props}) {
                       style={{
                         color: 'white',
                         fontFamily: 'Montserrat-SemiBold',
-                        fontSize: 13,
+                        fontSize: 12,
                         textAlign: 'center',
                       }}>
                       Search
@@ -550,7 +550,7 @@ function Student({...props}) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     paddingTop: 16,
   },
   section: {

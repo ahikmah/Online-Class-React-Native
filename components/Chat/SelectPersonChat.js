@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   List,
   ListItem,
@@ -22,9 +23,31 @@ import {useSocket} from '../../contexts/socketProvider';
 // import {CheckBox} from 'react-native-elements';
 
 function SelectPersonChat({...props}) {
+  // const {isGroup} = props.isGroup;
   const socket = useSocket();
   const [dataUser, setDataUser] = useState(props.data_user);
   const dum = [];
+
+  useEffect(() => {
+    const token = props.token;
+    axios
+      .get(`${DOMAIN_API}:${PORT_API}/message`, {
+        headers: {'x-access-token': `Bearer ${token}`},
+      })
+      .then(res => {
+        let Temp = res.data.result;
+        let FormatData = [];
+        for (let i = 0; i < Temp.length - 1; i++) {
+          FormatData.push({
+            index: i,
+            ...Temp[i],
+            checked: false,
+          });
+        }
+        props.allUser(FormatData);
+      })
+      .catch(err => console.log(err));
+  }, []);
 
   const selectHandler = receiver_id => {
     const room = `private_${props.sender_id + receiver_id}`;

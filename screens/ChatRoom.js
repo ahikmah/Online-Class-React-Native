@@ -18,7 +18,15 @@ import {DOMAIN_API, PORT_API} from '@env';
 import axios from 'axios';
 
 function ChatRoom({...props}) {
-  const {roomName: room, sender, receiver} = props.route.params;
+  const {
+    roomName: room,
+    sender,
+    receiver,
+    isGroup,
+    groupCreator,
+    groupReceiver,
+    groupMember,
+  } = props.route.params;
   // console.log('room:', room, 'sender:', sender, 'receiver: ', receiver);eka
 
   const all_data = props.data_user;
@@ -47,13 +55,21 @@ function ChatRoom({...props}) {
   }, []);
 
   const sendHandler = () => {
-    const body = {
-      room_id: room,
-      sender_id: sender,
-      receiver_id: receiver,
-      content: message,
-      // timestamp: new Date().toLocaleString(),
-    };
+    const body = isGroup
+      ? {
+          room_id: room,
+          sender_id: groupCreator,
+          // receiver_id: room,
+          content: message,
+          // timestamp: new Date().toLocaleString(),
+        }
+      : {
+          room_id: room,
+          sender_id: sender,
+          receiver_id: receiver,
+          content: message,
+          // timestamp: new Date().toLocaleString(),
+        };
 
     // console.log(body);
     const cb = ({status}) => {
@@ -100,12 +116,16 @@ function ChatRoom({...props}) {
             <Icon
               name="chevron-back"
               style={{color: 'white', fontSize: 24}}
-              onPress={() => props.navigation.goBack()}
+              onPress={() =>
+                props.navigation.navigate('Chat', {isGroup: isGroup})
+              }
             />
             <Thumbnail
               style={styles.avatar}
               source={
-                all_data[data_receiver].avatar
+                isGroup
+                  ? require('../assets/images/group-icon.png')
+                  : all_data[data_receiver].avatar
                   ? {
                       uri: `${DOMAIN_API}:${PORT_API}${all_data[data_receiver].avatar}`,
                     }
@@ -114,8 +134,12 @@ function ChatRoom({...props}) {
             />
             <Text
               style={styles.title}
-              onPress={() => props.navigation.navigate('Chat')}>
-              {all_data[data_receiver].full_name}
+              onPress={() =>
+                props.navigation.navigate('Chat', {isGroup: isGroup})
+              }>
+              {isGroup
+                ? `${room.split('_')[1]} (${groupMember.length ?? groupMember})`
+                : all_data[data_receiver].full_name}
             </Text>
           </View>
         </View>
@@ -233,6 +257,7 @@ const styles = StyleSheet.create({
     width: 43,
     height: 43,
     marginHorizontal: 12,
+    borderRadius: 30,
   },
   leftSection: {
     flexDirection: 'row',

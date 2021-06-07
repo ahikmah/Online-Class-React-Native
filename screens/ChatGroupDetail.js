@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -7,12 +8,87 @@ import {
   Dimensions,
   Image,
   ScrollView,
+  Pressable,
 } from 'react-native';
-import {Icon, Input, Item, Label} from 'native-base';
+import {Icon, Input, Item, Label, Thumbnail} from 'native-base';
+import {connect} from 'react-redux';
+import {useSocket} from '../contexts/socketProvider';
+import {DOMAIN_API, PORT_API} from '@env';
+import axios from 'axios';
 
 function ChatGroupDetail({...props}) {
   const {members} = props.route.params;
-  console.log('Hello new member', members);
+  const all_data = props.data_user;
+  const myIndex = all_data.findIndex(x => x.id === props.user_id);
+  const socket = useSocket();
+  const [groupName, setGroupName] = useState('');
+  const [showError, setShowError] = useState(false);
+
+  let memberList;
+  memberList = all_data
+    .filter(item => members.includes(item.id))
+    .map(item => {
+      if (item.id !== props.user_id) {
+        return (
+          <View style={styles.memberItem} key={item.user_id}>
+            <Thumbnail
+              source={
+                item.avatar
+                  ? {uri: `${DOMAIN_API}:${PORT_API}${item.avatar}`}
+                  : require('../assets/images/graduate.png')
+              }
+            />
+            <Text style={styles.memberName}>
+              {item.full_name
+                ? item.full_name.length > 5
+                  ? item.full_name.slice(0, 5) + '...'
+                  : item.full_name
+                : item.username.length > 5
+                ? item.username.slice(0, 5) + '...'
+                : item.username}
+            </Text>
+          </View>
+        );
+      }
+    });
+
+  const createGroupHandler = () => {
+    if (groupName.length < 3) {
+      setShowError(true);
+    } else {
+      setShowError(false);
+      const rand = Math.floor(1000 + Math.random() * 9000);
+      const room = `group_${groupName + '_' + rand}`;
+      console.log(room);
+      const body = [];
+      for (let i = 0; i < members.length; i++) {
+        body.push({room_id: room, member_id: members[i]});
+      }
+
+      socket.emit('group-room', room, ({status}) => {
+        if (status) {
+          console.log(`${all_data[myIndex].username} joined ${room} room`);
+
+          const token = props.token;
+          axios
+            .post(`${DOMAIN_API}:${PORT_API}/message`, body, {
+              headers: {'x-access-token': `Bearer ${token}`},
+            })
+            .then(res => {
+              props.navigation.navigate('ChatRoom', {
+                isGroup: true,
+                roomName: room,
+                groupCreator: props.user_id,
+                groupReceiver: groupName,
+                groupMember: members,
+              });
+            })
+            .catch(err => console.log(err));
+        }
+      });
+    }
+  };
+
   return (
     <>
       <StatusBar
@@ -35,61 +111,61 @@ function ChatGroupDetail({...props}) {
                 Group details
               </Text>
             </View>
-            <Text style={styles.action}>Create</Text>
+            <Text style={styles.action} onPress={createGroupHandler}>
+              Create
+            </Text>
           </View>
         </View>
         <View style={styles.headSection}>
           <View style={styles.groupInfo}>
             {/* <Image source={require('../assets/images/ava-group-sample.png')} /> */}
-            <Icon
-              name="people-sharp"
-              style={{
-                color: '#F9F9F9',
-                width: 65,
-                height: 65,
-                textAlign: 'center',
-                textAlignVertical: 'center',
-                fontSize: 35,
-                backgroundColor: '#5784BA',
-                borderRadius: 35,
-              }}
+            <Icon name="people-sharp" style={styles.groupPic} />
+            <Input
+              style={styles.groupName}
+              placeholder="Group name"
+              value={groupName}
+              onChangeText={txt => setGroupName(txt)}
+              onPressIn={() => setShowError(false)}
             />
-            <Input style={styles.groupName} placeholder="Group name" />
           </View>
+          {showError ? (
+            <Text style={styles.errorText}>
+              You must fill this field with a minimum length of 3 characters
+            </Text>
+          ) : null}
           <Text style={styles.note}>
             Fill group name and choose optional group profile
           </Text>
         </View>
 
-        <ScrollView style={styles.mainSection}>
+        <ScrollView
+          style={styles.mainSection}
+          contentContainerStyle={{paddingBottom: 36}}>
           <Text style={styles.txtParticipant}>
             Participants {members.length}
           </Text>
           <View style={styles.memberList}>
             <View style={styles.memberItem}>
-              <Image
-                source={require('../assets/images/ava-member-sample1.png')}
+              <Thumbnail
+                source={
+                  all_data[myIndex].avatar
+                    ? {
+                        uri: `${DOMAIN_API}:${PORT_API}${all_data[myIndex].avatar}`,
+                      }
+                    : require('../assets/images/graduate.png')
+                }
               />
               <Text style={styles.memberName}>You</Text>
             </View>
-            <View style={styles.memberItem}>
-              <Image
-                source={require('../assets/images/ava-member-sample2.png')}
-              />
-              <Text style={styles.memberName}>Nissa</Text>
-            </View>
-            <View style={styles.memberItem}>
-              <Image
-                source={require('../assets/images/ava-member-sample3.png')}
-              />
-              <Text style={styles.memberName}>Isyana</Text>
-            </View>
-            <View style={styles.memberItem}>
-              <Image
+            {memberList}
+            <Pressable
+              style={styles.memberItem}
+              onPress={() => props.navigation.goBack()}>
+              <Thumbnail
                 source={require('../assets/images/add-member-button.png')}
               />
               <Text style={styles.memberName}>Add</Text>
-            </View>
+            </Pressable>
           </View>
         </ScrollView>
       </View>
@@ -143,6 +219,16 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontFamily: 'Roboto-Regular',
   },
+  groupPic: {
+    color: '#F9F9F9',
+    width: 65,
+    height: 65,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    fontSize: 35,
+    backgroundColor: '#5784BA',
+    borderRadius: 35,
+  },
   note: {
     color: '#787878',
     fontFamily: 'Roboto-Regular',
@@ -162,14 +248,34 @@ const styles = StyleSheet.create({
   memberList: {
     marginTop: 26,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+    paddingLeft: 10,
+    flexWrap: 'wrap',
   },
   memberItem: {
+    marginBottom: 12,
+    marginHorizontal: 8,
     alignItems: 'center',
   },
   memberName: {
     fontFamily: 'Kanit-Regular',
     fontSize: 14,
   },
+
+  errorText: {
+    color: 'red',
+    fontSize: 11,
+    position: 'relative',
+    left: '35%',
+    flexWrap: 'wrap',
+    width: '60%',
+  },
 });
-export default ChatGroupDetail;
+
+const mapStateToProps = state => ({
+  token: state.auth.resultLogin.token,
+  user_id: state.auth.currentUser.id,
+  data_user: state.users.allUser,
+});
+
+export default connect(mapStateToProps)(ChatGroupDetail);

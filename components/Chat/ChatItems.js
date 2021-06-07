@@ -35,6 +35,7 @@ function ChatItems({...props}) {
       })
       .catch(err => console.log(err));
   }, []);
+
   useEffect(() => {
     axios
       .get(`${DOMAIN_API}:${PORT_API}/message/list`, {
@@ -73,33 +74,70 @@ function ChatItems({...props}) {
       }
     });
   };
+  const joinGroupHandler = room_id => {
+    // console.log(name);
+    socket.emit('group-room', room_id, ({status}) => {
+      if (status) {
+        console.log(`${props.username} joined ${room_id} room`);
+        props.navigation.navigate('ChatRoom', {
+          isGroup: true,
+          roomName: room_id,
+          groupCreator: props.user_id,
+          groupReceiver: room_id,
+          groupMember: 4,
+        });
+      }
+    });
+  };
 
   let chatItem;
   if (chatList) {
     chatItem = chatList.map((item, index) => {
+      let isPrivate;
       let receiver;
+      let last_sender;
+      let data_receiver;
+      const all_data = props.data_user;
 
-      if (item.receiver_id === props.user_id) {
+      if (item.room_id.split('_')[0] === 'group') {
+        receiver = item.room_id.split('_')[1];
+        isPrivate = false;
+      } else if (item.receiver_id === props.user_id) {
         receiver = item.sender_id;
+        isPrivate = true;
       } else {
         receiver = item.receiver_id;
+        isPrivate = true;
       }
 
-      const all_data = props.data_user;
-      const data_receiver = all_data.findIndex(x => x.id === receiver);
-      // console.log(receiver);
-      // console.log(all_data);
+      const chain = all_data[all_data.findIndex(x => x.id === item.sender_id)];
+
+      if (isPrivate) {
+        data_receiver = all_data.findIndex(x => x.id === receiver);
+      } else {
+        last_sender =
+          item.sender_id === props.user_id
+            ? 'You'
+            : chain.full_name
+            ? chain.full_name.split(' ')[0]
+            : chain.username;
+      }
 
       return (
-        <List
-          key={index}
-          style={{backgroundColor: '#F9F9F9'}}
-          onPress={() => props.navigation.navigate('ChatRoom')}>
-          <ListItem avatar onPress={() => joinHandler(receiver)}>
+        <List key={index} style={{backgroundColor: '#F9F9F9'}}>
+          <ListItem
+            avatar
+            onPress={
+              isPrivate
+                ? () => joinHandler(receiver)
+                : () => joinGroupHandler(item.room_id)
+            }>
             <Left>
               <Thumbnail
                 source={
-                  all_data[data_receiver].avatar
+                  !isPrivate
+                    ? require('../../assets/images/group-icon.png')
+                    : all_data[data_receiver].avatar
                     ? {
                         uri: `${DOMAIN_API}:${PORT_API}${all_data[data_receiver].avatar}`,
                       }
@@ -109,10 +147,16 @@ function ChatItems({...props}) {
             </Left>
             <Body style={{borderBottomWidth: 0}}>
               <Text style={styles.name}>
-                {all_data[data_receiver].full_name}
+                {!isPrivate
+                  ? receiver
+                  : all_data[data_receiver].full_name
+                  ? all_data[data_receiver].full_name
+                  : all_data[data_receiver].username}
               </Text>
               <Text note style={styles.message}>
-                {item.last_message.slice(0, 35)}
+                {!isPrivate
+                  ? `${last_sender} : ${item.last_message.slice(0, 35)}`
+                  : item.last_message.slice(0, 35)}
               </Text>
             </Body>
             <Right style={{borderBottomWidth: 0}}>
