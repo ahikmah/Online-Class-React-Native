@@ -176,7 +176,18 @@ function ChatItems({...props}) {
         height: Dimensions.get('window').height,
         paddingBottom: 64,
       }}>
-      {chatItem}
+      {chatItem ? (
+        chatItem
+      ) : (
+        <Text
+          style={{
+            textAlign: 'center',
+            textAlignVertical: 'center',
+            marginTop: 50,
+          }}>
+          Tragically, nothing
+        </Text>
+      )}
     </ScrollView>
   );
 }

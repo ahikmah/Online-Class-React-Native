@@ -10,7 +10,12 @@ import axios from 'axios';
 
 function Chat({...props}) {
   const [chatAction, setChatAction] = useState(false);
+  const [chatCount, setChatCount] = useState(1);
 
+  const countHandler = data => {
+    setChatCount(data);
+    console.log('main', data);
+  };
   return (
     <>
       <StatusBar
@@ -67,10 +72,15 @@ function Chat({...props}) {
         </View>
         {chatAction && <View style={styles.overlay} />}
         <ChatItems navigation={props.navigation} />
-        <Text
-          style={{textAlign: 'center', textAlignVertical: 'center', flex: 1}}>
-          Tragically, nothing
-        </Text>
+        {/* {chatCount > 0 ? (
+          <ChatItems navigation={props.navigation} onCount={countHandler} />
+        ) : (
+          // <ChatItems navigation={props.navigation} onCount={countHandler} />
+          <Text
+            style={{textAlign: 'center', textAlignVertical: 'center', flex: 1}}>
+            Tragically, nothing
+          </Text>
+        )} */}
       </View>
     </>
   );
