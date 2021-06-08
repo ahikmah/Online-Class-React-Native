@@ -28,16 +28,17 @@ function ChatItems({...props}) {
   const [isNewMessage, setIsNewMessage] = useState(false);
   const isFocused = useIsFocused();
 
-  useEffect(() => {
-    axios
-      .get(`${DOMAIN_API}:${PORT_API}/message/list`, {
-        headers: {'x-access-token': `Bearer ${props.token}`},
-      })
-      .then(res => {
-        setChatList(res.data.result);
-      })
-      .catch(err => console.log(err));
-  }, [isFocused, props.message_count]);
+  // useEffect(() => {
+  //   console.log('count', props.username, props.message_count);
+  //   axios
+  //     .get(`${DOMAIN_API}:${PORT_API}/message/list`, {
+  //       headers: {'x-access-token': `Bearer ${props.token}`},
+  //     })
+  //     .then(res => {
+  //       setChatList(res.data.result);
+  //     })
+  //     .catch(err => console.log(err));
+  // }, [isFocused, props.message_count]);
 
   useEffect(() => {
     axios
@@ -51,6 +52,8 @@ function ChatItems({...props}) {
   }, []);
 
   useEffect(() => {
+    console.log('count', props.username, props.message_count);
+
     axios
       .get(`${DOMAIN_API}:${PORT_API}/message/list`, {
         headers: {'x-access-token': `Bearer ${props.token}`},
@@ -59,7 +62,7 @@ function ChatItems({...props}) {
         setChatList(res.data.result);
       })
       .catch(err => console.log(err));
-  }, [isFocused]);
+  }, [isFocused, props.message_count]);
 
   const joinHandler = receiver_id => {
     const room = `private_${props.user_id + receiver_id}`;
