@@ -690,6 +690,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginTop: 12,
     backgroundColor: '#5784BA',
+    textAlign: 'center',
   },
   filterSection: {
     backgroundColor: '#EEEEEE',
@@ -729,11 +730,21 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     borderRadius: 25,
-    backgroundColor: '#5784BA',
+    // backgroundColor: '#5784BA',
     position: 'absolute',
     bottom: 10,
     right: 10,
     zIndex: 100,
+    backgroundColor: '#8199EB',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.36,
+    shadowRadius: 6.68,
+
+    elevation: 11,
   },
   notFound: {
     textAlign: 'center',

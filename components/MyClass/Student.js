@@ -85,6 +85,7 @@ function Student({...props}) {
             keyExtractor={(item, index) => {
               return index.toString();
             }}
+            style={{marginBottom: 30, paddingBottom: 150}}
             renderItem={({item}) => {
               return (
                 <View style={styles.myClassItem}>
@@ -261,11 +262,20 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     borderRadius: 25,
-    backgroundColor: '#5784BA',
+    backgroundColor: '#8199EB',
     zIndex: 100,
     position: 'absolute',
     right: 0,
-    bottom: 0,
+    bottom: 30,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.36,
+    shadowRadius: 6.68,
+
+    elevation: 11,
   },
 });
 
