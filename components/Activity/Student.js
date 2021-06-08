@@ -25,6 +25,7 @@ import {connect} from 'react-redux';
 import CustomModal from '../CustomModal';
 // import MyClass from '../../screens/MyClass';
 import PushNotification from 'react-native-push-notification';
+import {useSocket} from '../../contexts/socketProvider';
 
 function Student({...props}) {
   const [myClass, setMyClass] = useState();
@@ -38,6 +39,7 @@ function Student({...props}) {
   const [showModalRegister, setShowModalRegister] = useState(false);
   const [idRegister, setIdRegister] = useState('');
   const [classDetailItem, setClassDetailItem] = useState();
+  const [courseOwner, setCourseOwner] = useState();
 
   const [isRegistered, setIsRegistered] = useState(false);
   const [currPage, setCurrPage] = useState(1);
@@ -50,6 +52,7 @@ function Student({...props}) {
   const [sort, setSort] = useState('');
 
   const isFocused = useIsFocused();
+  const socket = useSocket();
 
   const setColor = score => {
     if (myClass) {
@@ -78,7 +81,7 @@ function Student({...props}) {
         importance: 4, // (optional) default: 4. Int value of the Android notification importance
         vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
       },
-      created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+      created => console.log(`student createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
     );
   }, []);
 
@@ -247,6 +250,7 @@ function Student({...props}) {
   if (newClass && finishNewClass) {
     // setFinishNewClass(false);
     newClassList = newClass.map(item => {
+      // console.log(item);
       return (
         <View key={item.id * Math.random()} style={styles.newClassItem}>
           <Text
@@ -264,8 +268,16 @@ function Student({...props}) {
           <Button
             style={styles.btnRegister}
             onPress={() => {
+              const room = `course_${item.instructor_id}`;
+
+              socket.emit('facilitator-room', room, ({status}) => {
+                if (status) {
+                  console.log(`$student joined ${room}`);
+                }
+              });
               setShowModalRegister(true);
               setIdRegister(item.id);
+              setCourseOwner(item.instructor_id);
               setClassDetailItem(item);
             }}>
             <Text style={styles.txtRegister}>Register</Text>
@@ -313,10 +325,12 @@ function Student({...props}) {
     }
     getMyClass();
   }, [isRegistered]);
-
-  const registerHandler = (id, classDetail) => {
+  // console.log(props.dataUser);
+  const registerHandler = (id, classDetail, courseOwnerID) => {
     setShowModalRegister(false);
     const token = props.token;
+    const room = `course_${courseOwnerID}`;
+    // const room = 'xxxsOdrZIMMX6jLYAAAH';
     axios
       .post(
         `${DOMAIN_API}:${PORT_API}/data/courses/register`,
@@ -326,11 +340,22 @@ function Student({...props}) {
         },
       )
       .then(res => {
+        const body = {
+          studentName: props.dataUser.full_name ?? props.dataUser.username,
+          courseName: classDetail.name,
+        };
+
+        const cb = ({status}) => {
+          if (status) {
+            console.log('Register success');
+          }
+        };
+        socket.emit('course-register', body, room, cb);
+
         props.navigation.navigate('ClassDetail', {
           ...classDetail,
           isRegistered: true,
         });
-        // setMyClass(res.data.result);
 
         PushNotification.localNotification({
           channelId: channel,
@@ -526,7 +551,9 @@ function Student({...props}) {
               setShowModalRegister(false);
             }}
             btnLabel4="Yes, I'm Sure"
-            onAction4={() => registerHandler(idRegister, classDetailItem)}
+            onAction4={() =>
+              registerHandler(idRegister, classDetailItem, courseOwner)
+            }
           />
         ) : null}
       </ScrollView>
@@ -722,5 +749,6 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
   token: state.auth.resultLogin.token,
+  dataUser: state.auth.currentUser,
 });
 export default connect(mapStateToProps)(Student);

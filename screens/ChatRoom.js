@@ -16,6 +16,7 @@ import {connect} from 'react-redux';
 import {useSocket} from '../contexts/socketProvider';
 import {DOMAIN_API, PORT_API} from '@env';
 import axios from 'axios';
+import PushNotification from 'react-native-push-notification';
 
 function ChatRoom({...props}) {
   const {
@@ -44,6 +45,27 @@ function ChatRoom({...props}) {
   const socket = useSocket();
   const token = props.token;
   // let groupMemberCount;
+  const channel = 'notif';
+
+  useEffect(() => {
+    PushNotification.createChannel(
+      {
+        channelId: 'notif', // (required)
+        channelName: 'My Notification Channel', // (required)
+        channelDescription: 'A channel to categorise your notifications', // (optional) default: undefined.
+        soundName: 'default', // (optional) See `soundName` parameter of `localNotification` function
+        importance: 4, // (optional) default: 4. Int value of the Android notification importance
+        vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
+      },
+      created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+    );
+  }, []);
+
+  useEffect(() => {
+    PushNotification.getChannels(channel_ids => {
+      console.log(channel_ids); // ['channel_id_1']
+    });
+  }, []);
 
   useEffect(() => {
     console.log(room);
@@ -107,9 +129,13 @@ function ChatRoom({...props}) {
       setMessageList(prevMessage => {
         return [...prevMessage, newMessage];
       });
-    });
 
-    return () => socket.off('message-received');
+      PushNotification.localNotification({
+        channelId: channel,
+        title: 'New Message',
+        message: 'You have received a new message',
+      });
+    });
   }, [socket]);
 
   return (
@@ -173,7 +199,7 @@ function ChatRoom({...props}) {
                     : styles.receiver
                 }
                 key={index}>
-                {item.sender_id !== props.user_id ? (
+                {isGroup && item.sender_id !== props.user_id ? (
                   <Text
                     style={
                       item.sender_id === props.user_id

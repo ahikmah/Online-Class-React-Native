@@ -12,12 +12,68 @@ import {Icon, Input, Item} from 'native-base';
 import StudentContainer from '../components/Schedule/Student';
 import FacilitatorContainer from '../components/Schedule/Facilitator';
 import {useSocket} from '../contexts/socketProvider';
+import PushNotification from 'react-native-push-notification';
+import {useIsFocused} from '@react-navigation/native';
+
 import axios from 'axios';
 
 function Home({...props}) {
   const role = props.role;
   const [dataUser, setDataUser] = useState('');
   const ref = useRef();
+  const isFocused = useIsFocused();
+
+  const socket = useSocket();
+  // const socket = io(`${DOMAIN_API}:${PORT_API}`);
+
+  const channel = 'notif';
+  useEffect(() => {
+    PushNotification.createChannel(
+      {
+        channelId: 'notif', // (required)
+        channelName: 'My Notification Channel',
+        channelDescription: 'A channel to categorise your notifications',
+        soundName: 'default',
+        importance: 4,
+        vibrate: true,
+      },
+      created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+    );
+  }, []);
+
+  useEffect(() => {
+    PushNotification.getChannels(channel_ids => {
+      console.log(channel_ids);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (socket === undefined) {
+      return;
+    }
+    socket.on('connect', () =>
+      console.log(`connected from home page  ${socket.id}`),
+    );
+    socket.on('new-registrant', body => {
+      const {studentName, courseName} = body;
+
+      PushNotification.localNotification({
+        channelId: channel,
+        title: 'New Regitrant',
+        message: `${studentName} has registered for ${courseName}`,
+      });
+    });
+
+    socket.on('message-received', newMessage => {
+      PushNotification.localNotification({
+        channelId: channel,
+        title: 'New Message',
+        message: 'You have received a new message',
+      });
+    });
+
+    return () => socket.off('connect');
+  }, [socket]);
 
   useEffect(() => {
     if (!ref.current) {
@@ -29,6 +85,16 @@ function Home({...props}) {
         setDataUser(props.auth.currentUser);
         // console.log(props.auth.currentUser);
       }
+    }
+
+    if (props.role !== 'student') {
+      socket.emit('facilitator-room', 'course_' + dataUser.id, ({status}) => {
+        if (status) {
+          console.log(
+            `${dataUser.username} joined ${'course_' + dataUser.id} room`,
+          );
+        }
+      });
     }
   }, [props]);
 
@@ -52,19 +118,6 @@ function Home({...props}) {
       })
       .catch(err => console.log(err));
   }, []);
-
-  const socket = useSocket();
-  // const socket = io(`${DOMAIN_API}:${PORT_API}`);
-  useEffect(() => {
-    if (socket === undefined) {
-      return;
-    }
-    socket.on('connect', () =>
-      console.log('connected from home page ' + socket.id),
-    );
-
-    return () => socket.off('connect');
-  }, [socket]);
 
   return (
     <>

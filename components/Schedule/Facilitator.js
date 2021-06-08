@@ -6,7 +6,6 @@ import {Icon} from 'native-base';
 import axios from 'axios';
 import {DOMAIN_API, PORT_API} from '@env';
 import {connect} from 'react-redux';
-import PushNotification from 'react-native-push-notification';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import {useIsFocused} from '@react-navigation/native';
@@ -61,26 +60,6 @@ function Facilitator({...props}) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const isFocused = useIsFocused();
 
-  useEffect(() => {
-    PushNotification.createChannel(
-      {
-        channelId: 'notif', // (required)
-        channelName: 'My Notification Channel', // (required)
-        channelDescription: 'A channel to categorise your notifications', // (optional) default: undefined.
-        soundName: 'default', // (optional) See `soundName` parameter of `localNotification` function
-        importance: 4, // (optional) default: 4. Int value of the Android notification importance
-        vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
-      },
-      created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
-    );
-  }, []);
-
-  useEffect(() => {
-    PushNotification.getChannels(channel_ids => {
-      console.log(channel_ids); // ['channel_id_1']
-    });
-  }, []);
-
   let scheduleItems;
   useEffect(() => {
     const token = props.token;
@@ -132,14 +111,6 @@ function Facilitator({...props}) {
       .then(res => setSchedules(res.data.result))
       .catch(err => console.log(err));
   }, [isFocused]);
-
-  // const showNotif = () => {
-  //   PushNotification.localNotification({
-  //     channelId: channel,
-  //     title: 'Hello',
-  //     message: 'This is notification',
-  //   });
-  // };
 
   if (schedules) {
     scheduleItems = schedules.map(cl => {
