@@ -14,6 +14,7 @@ import FacilitatorContainer from '../components/Schedule/Facilitator';
 import {useSocket} from '../contexts/socketProvider';
 import PushNotification from 'react-native-push-notification';
 import {useIsFocused} from '@react-navigation/native';
+import {newMessage, resetCount} from '../redux/Action/chat';
 
 import axios from 'axios';
 
@@ -65,6 +66,7 @@ function Home({...props}) {
     });
 
     socket.on('message-received', newMessage => {
+      props.newMessage(1);
       PushNotification.localNotification({
         channelId: channel,
         title: 'New Message',
@@ -268,6 +270,9 @@ const mapDispatchToProps = dispatch => ({
   },
   allUser: data => {
     dispatch(allUser(data));
+  },
+  newMessage: num => {
+    dispatch(newMessage(num));
   },
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

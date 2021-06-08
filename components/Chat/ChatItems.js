@@ -18,12 +18,26 @@ import {Dimensions, ScrollView, StyleSheet} from 'react-native';
 import {connect} from 'react-redux';
 import {DOMAIN_API, PORT_API} from '@env';
 import {useSocket} from '../../contexts/socketProvider';
+import {newMessage, resetCount} from '../../redux/Action/chat';
+
 import axios from 'axios';
 
 function ChatItems({...props}) {
   const socket = useSocket();
   const [chatList, setChatList] = useState();
+  const [isNewMessage, setIsNewMessage] = useState(false);
   const isFocused = useIsFocused();
+
+  useEffect(() => {
+    axios
+      .get(`${DOMAIN_API}:${PORT_API}/message/list`, {
+        headers: {'x-access-token': `Bearer ${props.token}`},
+      })
+      .then(res => {
+        setChatList(res.data.result);
+      })
+      .catch(err => console.log(err));
+  }, [isFocused, props.message_count]);
 
   useEffect(() => {
     axios
@@ -208,5 +222,6 @@ const mapStateToProps = state => ({
   token: state.auth.resultLogin.token,
   user_id: state.auth.currentUser.id,
   data_user: state.users.allUser,
+  message_count: state.chat.count,
 });
 export default connect(mapStateToProps)(ChatItems);
