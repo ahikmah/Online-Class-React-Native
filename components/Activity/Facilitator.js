@@ -396,6 +396,7 @@ function Facilitator({...props}) {
                     setInputValidation({...inputValidation, name: true})
                   }
                   onBlur={nameValidation}
+                  style={{fontSize: 15, paddingLeft: 11}}
                 />
               </View>
               {inputValidation.name === false ? (
@@ -419,6 +420,7 @@ function Facilitator({...props}) {
                     width: 300,
                     overflow: 'hidden',
                     borderBottomWidth: 0,
+                    fontSize: 15,
                   }}>
                   <Picker
                     mode="dialog"
@@ -495,6 +497,7 @@ function Facilitator({...props}) {
                     categoryValidation();
                   }}
                   onBlur={priceValidation}
+                  style={{fontSize: 15, paddingLeft: 11}}
                 />
               </View>
               {inputValidation.price === false ? (
@@ -522,7 +525,7 @@ function Facilitator({...props}) {
                   // onPress={() => setShowMode('date')}
                 >
                   <Text
-                    style={{width: '100%'}}
+                    style={{width: '100%', fontSize: 15, paddingLeft: 11}}
                     onPress={() => {
                       setShow(true);
                       setShowMode('date');

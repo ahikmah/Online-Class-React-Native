@@ -116,6 +116,8 @@ function ProgressModal({...props}) {
             }}>
             {item.score}
           </Text>
+          {/* <Text>Tes</Text> */}
+          <Icon name="create-outline" style={{fontSize: 20}} />
         </View>
       );
     });
@@ -309,7 +311,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   tbTopic: {
-    width: '75%',
+    width: '65%',
     fontFamily: 'Roboto-Regular',
     fontSize: 16,
     paddingLeft: 10,
@@ -321,7 +323,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   topic: {
-    width: '75%',
+    width: '65%',
     fontFamily: 'Roboto-Regular',
     fontSize: 14,
     paddingLeft: 10,
