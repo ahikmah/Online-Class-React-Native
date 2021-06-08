@@ -46,6 +46,8 @@ function Student() {
   const [mode, setMode] = useState('date');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [activeTab, setActiveTab] = useState(0);
+  const [getMonth, setGetMonth] = useState(monthName);
+  const [getDate, setGetDate] = useState(dt);
 
   const renderTabBar = props => {
     props.tabStyle = Object.create(props.tabStyle);
@@ -55,6 +57,12 @@ function Student() {
 
   const pickDateHandler = (event, selected) => {
     const currentDate = selected || selectedDate;
+    setGetMonth(monthNames[selected.getMonth()]);
+    setGetDate(selected.getDate());
+
+    // const month = selected.getMonth();
+    // const date = selected.getDate();
+    console.log(selected.getMonth());
     setShow(false);
     setSelectedDate(currentDate);
     setSelectedDay(dayNames[currentDate.getDay()]);
@@ -66,7 +74,7 @@ function Student() {
         <View style={styles.left}>
           <Text style={styles.title}>My Class</Text>
           <Text style={styles.today}>
-            Today, {monthName} {dt}
+            Today, {getMonth} {getDate}
           </Text>
         </View>
         {activeTab && activeTab === 1 ? (
