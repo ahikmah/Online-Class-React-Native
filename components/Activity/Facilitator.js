@@ -315,9 +315,9 @@ function Facilitator({...props}) {
   // useEffect(() => {
   //   priceValidation();
   // }, [price]);
-  // useEffect(() => {
-  //   scheduleValidation();
-  // }, [schedule, start, end]);
+  useEffect(() => {
+    scheduleValidation();
+  }, [schedule, start, end]);
   // useEffect(() => {
   //   descriptionValidation();
   // }, [description]);
@@ -505,12 +505,7 @@ function Facilitator({...props}) {
                   {errorMessage.price}
                 </Text>
               ) : null}
-              <View
-                style={{
-                  ...styles.inputSection,
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                }}>
+              <View style={styles.inputSection}>
                 <Text
                   style={{
                     color:
@@ -548,10 +543,21 @@ function Facilitator({...props}) {
                       const scl = selectedDate || schedule;
                       setSchedule(scl);
                       setShow(Platform.OS === 'ios');
-                      scheduleValidation();
                     }}
                   />
                 )}
+              </View>
+
+              <View style={styles.inputSection}>
+                <Text
+                  style={{
+                    color:
+                      inputValidation.schedule === false
+                        ? errorStyle.color
+                        : '#000',
+                  }}>
+                  Time :
+                </Text>
 
                 <View
                   style={{
@@ -590,7 +596,6 @@ function Facilitator({...props}) {
                       setStart(selectedDate || start);
                       // // setShowMode2(false);
                       setShow2(Platform.OS === 'ios');
-                      scheduleValidation();
                     }}
                   />
                 )}
@@ -626,7 +631,6 @@ function Facilitator({...props}) {
                       setEnd(selectedDate || end);
                       // // setShowMode2(false);
                       setShow3(Platform.OS === 'ios');
-                      scheduleValidation();
                     }}
                   />
                 )}
