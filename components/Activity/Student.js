@@ -74,21 +74,20 @@ function Student({...props}) {
   useEffect(() => {
     PushNotification.createChannel(
       {
-        channelId: 'notif', // (required)
-        channelName: 'My Notification Channel', // (required)
-        channelDescription: 'A channel to categorise your notifications', // (optional) default: undefined.
-        soundName: 'default', // (optional) See `soundName` parameter of `localNotification` function
-        importance: 4, // (optional) default: 4. Int value of the Android notification importance
-        vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
+        channelId: 'notif',
+        channelName: 'My Notification Channel',
+        channelDescription: 'A channel to categorise your notifications',
+        soundName: 'default',
+        importance: 4,
+        vibrate: true,
       },
-      created => console.log(`student createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+      created => console.log(`student createChannel returned '${created}'`),
     );
   }, []);
 
   useEffect(() => {
     PushNotification.getChannels(channel_ids => {
-      console.log(channel_ids); // ['channel_id_1']
-      // setChannel(channel_ids[0]);
+      console.log(channel_ids);
     });
   }, []);
 
@@ -105,7 +104,7 @@ function Student({...props}) {
       .then(res => {
         setIsNotFound(false);
 
-        if (!search && !price && !category && currPage < 2) {
+        if (!search && !price && !category && !sort && currPage < 2) {
           setNewClass([...res.data.result]);
         } else if (currPage > 1) {
           setNewClass([...newClass, ...res.data.result]);
@@ -311,7 +310,7 @@ function Student({...props}) {
 
   useEffect(() => {
     getNewClass();
-  }, [category, price]);
+  }, [category, price, sort]);
 
   useEffect(() => {
     if (!isSearchPressed) {
@@ -508,6 +507,56 @@ function Student({...props}) {
                   <Picker.Item
                     label="Free"
                     value="free"
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                </Picker>
+                <Icon
+                  name="chevron-down-outline"
+                  style={{position: 'absolute', right: 0, fontSize: 18}}
+                />
+              </Item>
+              <Item picker style={{width: 90, overflow: 'hidden'}}>
+                <Picker
+                  mode="dialog"
+                  style={{width: 145}}
+                  placeholder="Select sort method"
+                  placeholderStyle={{color: '#bfc6ea'}}
+                  placeholderIconColor="#007aff"
+                  selectedValue={sort}
+                  onValueChange={e => setSort(e)}>
+                  <Picker.Item
+                    label="Sort"
+                    value=""
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                  <Picker.Item
+                    label="Price ↑"
+                    value="price-AZ"
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                  <Picker.Item
+                    label="Price ↓"
+                    value="price-ZA"
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                  <Picker.Item
+                    label="Level ↑"
+                    value="level-ZA"
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                  <Picker.Item
+                    label="Level ↓"
+                    value="level-ZA"
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                  <Picker.Item
+                    label="Category ↑"
+                    value="category-AZ"
+                    style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                  />
+                  <Picker.Item
+                    label="Category ↓"
+                    value="category-ZA"
                     style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
                   />
                 </Picker>

@@ -173,9 +173,9 @@ function Home({...props}) {
 
           {role === 'student' ? (
             <StudentContainer navigation={props.navigation} />
-          ) : (
+          ) : role === 'instructor' ? (
             <FacilitatorContainer navigation={props.navigation} />
-          )}
+          ) : null}
         </ScrollView>
       </View>
     </>
