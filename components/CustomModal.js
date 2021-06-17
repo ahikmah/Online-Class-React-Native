@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Montserrat-Regular',
   },
   avatar: {
