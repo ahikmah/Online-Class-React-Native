@@ -57,13 +57,14 @@ function Student() {
 
   const pickDateHandler = (event, selected) => {
     const currentDate = selected || selectedDate;
+    setShow(false);
     setGetMonth(monthNames[selected.getMonth()]);
     setGetDate(selected.getDate());
+    setSelectedDay(dayNames[selected.getDay()]);
 
     // const month = selected.getMonth();
     // const date = selected.getDate();
     console.log(selected.getMonth());
-    setShow(false);
     setSelectedDate(currentDate);
     setSelectedDay(dayNames[currentDate.getDay()]);
   };
@@ -74,7 +75,7 @@ function Student() {
         <View style={styles.left}>
           <Text style={styles.title}>My Class</Text>
           <Text style={styles.today}>
-            Today, {getMonth} {getDate}
+            {selectedDay}, {getMonth} {getDate}
           </Text>
         </View>
         {activeTab && activeTab === 1 ? (

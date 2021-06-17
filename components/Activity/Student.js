@@ -521,7 +521,7 @@ function Student({...props}) {
               {newClass && finishNewClass ? newClassList : null}
               {isNotFound ? (
                 <Text style={styles.notFound}>
-                  The search was weird and we didn't really get it
+                  It was weird and we didn't really get it
                 </Text>
               ) : null}
               {currPage < totalPage && !isNotFound ? (
@@ -730,21 +730,22 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     borderRadius: 25,
-    // backgroundColor: '#5784BA',
+    backgroundColor: '#5784BA',
     position: 'absolute',
     bottom: 10,
     right: 10,
     zIndex: 100,
-    backgroundColor: '#8199EB',
+    // backgroundColor: '#8199EB',
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowOpacity: 0.36,
-    shadowRadius: 6.68,
+    // shadowOpacity: 100,
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 10,
+    // },
 
-    elevation: 11,
+    // elevation: 11,
+    borderWidth: 1,
+    borderColor: 'white',
   },
   notFound: {
     textAlign: 'center',

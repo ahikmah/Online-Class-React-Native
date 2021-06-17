@@ -74,7 +74,11 @@ function Home({...props}) {
       });
     });
 
-    return () => socket.off('connect');
+    return () => {
+      // socket.off('message-received');
+      // socket.off('new-registrant');
+      socket.off('connect');
+    };
   }, [socket]);
 
   useEffect(() => {

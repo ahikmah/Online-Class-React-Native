@@ -136,6 +136,8 @@ function ChatRoom({...props}) {
         message: 'You have received a new message',
       });
     });
+
+    // return () => socket.off('message-received');
   }, [socket]);
 
   return (

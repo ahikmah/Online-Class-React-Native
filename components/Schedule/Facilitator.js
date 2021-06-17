@@ -58,7 +58,31 @@ function Facilitator({...props}) {
   const [show, setShow] = useState(false);
   const [mode, setMode] = useState('date');
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [getMonth, setGetMonth] = useState(monthName);
+  const [getYear, setGetYear] = useState(y);
   const isFocused = useIsFocused();
+
+  ////////////////////////////////////////////////
+  ////////////////////////////////////////////////
+  ////////////////////////////////////////////////
+  ////////////////////////////////////////////////
+  ////////////////////////////////////////////////
+  ////////////////////////////////////////////////
+  // TEMP STATE FOR DATE PICKER
+  // const [currTime, setCurrTime] = useState(curr);
+  // const [dayArr, setDayArr] = useState();
+  // const [dateArr, setDateArr] = useState();
+
+  // useEffect(() => {
+  //   for (let i = 0; i < 7; i++) {
+  //     let first = currTime.getDate() - currTime.getDay() + i;
+  //     day = new Date(curr.setDate(first)).toISOString().slice(8, 10);
+  //     weekDayName.push(dayNames[i].slice(0, 2));
+  //     weekDate.push(day);
+  //   }
+  //   setDayArr(weekDayName);
+  //   setDateArr(weekDate);
+  // }, [currTime]);
 
   let scheduleItems;
   useEffect(() => {
@@ -89,7 +113,13 @@ function Facilitator({...props}) {
 
   const pickDateHandler = (event, selected) => {
     const currentDate = selected || selectedDate;
-    setSelectedDate(selectedDate);
+    console.log(currentDate);
+    console.log(new Date());
+    // setCurrTime(currentDate);
+    setSelectedDate(currentDate);
+    setGetMonth(monthNames[selected.getMonth()]);
+    setGetYear(selected.getFullYear());
+
     // setShow(Platform.OS === 'ios');
     setShow(false);
     setSelectedDay(dayNames[currentDate.getDay()]);
@@ -183,7 +213,7 @@ function Facilitator({...props}) {
           />
         )}
         <Text style={styles.today}>
-          {monthName} {y}
+          {getMonth} {getYear}
         </Text>
         <View style={styles.calendar}>{calendar}</View>
         {/* <Button title="Trigger Notification" onPress={showNotif} /> */}

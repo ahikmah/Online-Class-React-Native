@@ -62,7 +62,7 @@ function ChatItems({...props}) {
         setChatList(res.data.result);
       })
       .catch(err => console.log(err));
-  }, [isFocused, props.message_count]);
+  }, [isFocused, props.message_count, socket]);
 
   const joinHandler = receiver_id => {
     const room = `private_${props.user_id + receiver_id}`;
