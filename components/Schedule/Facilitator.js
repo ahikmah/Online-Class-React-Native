@@ -10,47 +10,12 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import {useIsFocused} from '@react-navigation/native';
 
-const monthNames = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-
-const dayNames = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-];
-
-let curr = new Date();
-let dt = curr.getDate();
-const dayName = dayNames[curr.getDay()];
-let monthName = monthNames[curr.getMonth()];
-let y = curr.getFullYear();
-
-let weekDayName = [];
-let weekDate = [];
-let day;
-
-for (let i = 0; i < 7; i++) {
-  let first = curr.getDate() - curr.getDay() + i;
-  day = new Date(curr.setDate(first)).toISOString().slice(8, 10);
-  weekDayName.push(dayNames[i].slice(0, 2));
-  weekDate.push(day);
-}
+// for (let i = 0; i < 7; i++) {
+//   let first = curr.getDate() - curr.getDay() + i;
+//   day = new Date(curr.setDate(first)).toISOString().slice(8, 10);
+//   weekDayName.push(dayNames[i].slice(0, 2));
+//   weekDate.push(day);
+// }
 
 function Facilitator({...props}) {
   const [schedules, setSchedules] = useState();
@@ -65,24 +30,63 @@ function Facilitator({...props}) {
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
+
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  const dayNames = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
+
+  let curr = new Date();
+  let dt = curr.getDate();
+  const dayName = dayNames[curr.getDay()];
+  let monthName = monthNames[curr.getMonth()];
+  let y = curr.getFullYear();
+
+  let weekDayName = [];
+  let weekDate = [];
+  let dayCopy = [];
+  let dateCopy = [];
+  let day;
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
   // TEMP STATE FOR DATE PICKER
-  // const [currTime, setCurrTime] = useState(curr);
-  // const [dayArr, setDayArr] = useState();
-  // const [dateArr, setDateArr] = useState();
+  const [currTime, setCurrTime] = useState(curr);
+  const [dayArr, setDayArr] = useState([]);
+  const [dateArr, setDateArr] = useState([]);
 
-  // useEffect(() => {
-  //   for (let i = 0; i < 7; i++) {
-  //     let first = currTime.getDate() - currTime.getDay() + i;
-  //     day = new Date(curr.setDate(first)).toISOString().slice(8, 10);
-  //     weekDayName.push(dayNames[i].slice(0, 2));
-  //     weekDate.push(day);
-  //   }
-  //   setDayArr(weekDayName);
-  //   setDateArr(weekDate);
-  // }, [currTime]);
+  useEffect(() => {
+    for (let i = 0; i < 7; i++) {
+      let first = currTime.getDate() - currTime.getDay() + i;
+      day = new Date(curr.setDate(first)).toISOString().slice(8, 10);
+      weekDayName.push(dayNames[i].slice(0, 2));
+      weekDate.push(day);
+    }
+    dayCopy = [...weekDayName];
+    dateCopy = [...weekDate];
+    setDayArr(dayCopy);
+    setDateArr(dateCopy);
+  }, [currTime]);
 
   let scheduleItems;
   useEffect(() => {
@@ -113,16 +117,16 @@ function Facilitator({...props}) {
 
   const pickDateHandler = (event, selected) => {
     const currentDate = selected || selectedDate;
-    console.log(currentDate);
-    console.log(new Date());
-    // setCurrTime(currentDate);
-    setSelectedDate(currentDate);
+    setShow(false);
     setGetMonth(monthNames[selected.getMonth()]);
     setGetYear(selected.getFullYear());
+    setSelectedDay(dayNames[selected.getDay()]);
+    setCurrTime(selected && selected);
+    console.log('Halloo', currentDate);
+    // console.log(new Date());
+    setSelectedDate(currentDate);
 
     // setShow(Platform.OS === 'ios');
-    setShow(false);
-    setSelectedDay(dayNames[currentDate.getDay()]);
   };
   const showMode = type => {
     setShow(true);
@@ -185,11 +189,11 @@ function Facilitator({...props}) {
         onPress={() => setSelectedDay(dayNames[i])}>
         <Text
           style={dayNames[i] === selectedDay ? styles.dayActive : styles.day}>
-          {weekDayName[i]}
+          {dayArr[i]}
         </Text>
         <Text
           style={dayNames[i] === selectedDay ? styles.dayActive : styles.date}>
-          {weekDate[i]}
+          {dateArr[i]}
         </Text>
       </Pressable>,
     );
