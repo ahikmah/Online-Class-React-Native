@@ -18,19 +18,6 @@ import {useIsFocused} from '@react-navigation/native';
 // }
 
 function Facilitator({...props}) {
-  const [schedules, setSchedules] = useState();
-  const [selectedDay, setSelectedDay] = useState(dayName);
-  const [show, setShow] = useState(false);
-  const [mode, setMode] = useState('date');
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [getMonth, setGetMonth] = useState(monthName);
-  const [getYear, setGetYear] = useState(y);
-  const isFocused = useIsFocused();
-
-  ////////////////////////////////////////////////
-  ////////////////////////////////////////////////
-  ////////////////////////////////////////////////
-
   const monthNames = [
     'January',
     'February',
@@ -64,9 +51,20 @@ function Facilitator({...props}) {
 
   let weekDayName = [];
   let weekDate = [];
-  let dayCopy = [];
-  let dateCopy = [];
   let day;
+
+  const [schedules, setSchedules] = useState();
+  const [selectedDay, setSelectedDay] = useState(dayName);
+  const [show, setShow] = useState(false);
+  const [mode, setMode] = useState('date');
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [getMonth, setGetMonth] = useState(monthName);
+  const [getYear, setGetYear] = useState(y);
+  const isFocused = useIsFocused();
+
+  ////////////////////////////////////////////////
+  ////////////////////////////////////////////////
+  ////////////////////////////////////////////////
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
@@ -82,10 +80,8 @@ function Facilitator({...props}) {
       weekDayName.push(dayNames[i].slice(0, 2));
       weekDate.push(day);
     }
-    dayCopy = [...weekDayName];
-    dateCopy = [...weekDate];
-    setDayArr(dayCopy);
-    setDateArr(dateCopy);
+    setDayArr(weekDayName);
+    setDateArr(weekDate);
   }, [currTime]);
 
   let scheduleItems;
@@ -123,7 +119,6 @@ function Facilitator({...props}) {
     setSelectedDay(dayNames[selected.getDay()]);
     setCurrTime(selected && selected);
     console.log('Halloo', currentDate);
-    // console.log(new Date());
     setSelectedDate(currentDate);
 
     // setShow(Platform.OS === 'ios');
@@ -131,6 +126,15 @@ function Facilitator({...props}) {
   const showMode = type => {
     setShow(true);
     setMode(type);
+  };
+
+  const setTodayHandler = () => {
+    const selected = curr;
+    setGetMonth(monthNames[selected.getMonth()]);
+    setGetYear(selected.getFullYear());
+    setSelectedDay(dayNames[selected.getDay()]);
+    setCurrTime(selected && selected);
+    setSelectedDate(selected);
   };
 
   useEffect(() => {
@@ -204,6 +208,11 @@ function Facilitator({...props}) {
       <View style={styles.container}>
         <View style={styles.headSection}>
           <Text style={styles.title}>My Class</Text>
+          <Text
+            onPress={setTodayHandler}
+            style={{color: '#5784BA', right: 40n, position: 'absolute'}}>
+            Today
+          </Text>
           <Icon name="calendar-outline" onPress={() => showMode('date')} />
         </View>
         {show && (
@@ -256,6 +265,7 @@ const styles = StyleSheet.create({
   headSection: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   title: {
     fontFamily: 'Kanit-Regular',
