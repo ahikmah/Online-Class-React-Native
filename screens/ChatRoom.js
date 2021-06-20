@@ -15,7 +15,6 @@ import {connect} from 'react-redux';
 import {useSocket} from '../contexts/socketProvider';
 import {DOMAIN_API, PORT_API} from '@env';
 import axios from 'axios';
-import PushNotification from 'react-native-push-notification';
 
 function ChatRoom({...props}) {
   const {
@@ -27,7 +26,7 @@ function ChatRoom({...props}) {
     // groupReceiver,
     // groupMember,
   } = props.route.params;
-  // console.log('room:', room, 'sender:', sender, 'receiver: ', receiver);eka
+  // console.log('room:', room, 'sender:', sender, 'receiver: ', receiver);
 
   const all_data = props.data_user;
 
@@ -44,27 +43,6 @@ function ChatRoom({...props}) {
   const socket = useSocket();
   const token = props.token;
   // let groupMemberCount;
-  const channel = 'notif';
-
-  useEffect(() => {
-    PushNotification.createChannel(
-      {
-        channelId: 'notif', // (required)
-        channelName: 'My Notification Channel', // (required)
-        channelDescription: 'A channel to categorise your notifications', // (optional) default: undefined.
-        soundName: 'default', // (optional) See `soundName` parameter of `localNotification` function
-        importance: 4, // (optional) default: 4. Int value of the Android notification importance
-        vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
-      },
-      created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
-    );
-  }, []);
-
-  useEffect(() => {
-    PushNotification.getChannels(channel_ids => {
-      console.log(channel_ids); // ['channel_id_1']
-    });
-  }, []);
 
   useEffect(() => {
     console.log(room);
@@ -90,53 +68,56 @@ function ChatRoom({...props}) {
   }, []);
 
   const sendHandler = () => {
-    const body = isGroup
-      ? {
-          room_id: room,
-          sender_id: props.user_id,
-          content: message,
+    if (!message || !message.trim()) {
+      return;
+    } else {
+      const body = isGroup
+        ? {
+            room_id: room,
+            sender_id: props.user_id,
+            content: message,
+          }
+        : {
+            room_id: room,
+            sender_id: sender,
+            receiver_id: receiver,
+            content: message,
+          };
+
+      // console.log(body);
+
+      const cb = ({status}) => {
+        if (status) {
+          setMessageList(prevMessage => {
+            return [...prevMessage, body];
+          });
+
+          axios
+            .post(`${DOMAIN_API}:${PORT_API}/message/send`, body, {
+              headers: {'x-access-token': `Bearer ${token}`},
+            })
+            .then(res => {
+              console.log('message stored');
+            })
+            .catch(err => console.log(err));
         }
-      : {
-          room_id: room,
-          sender_id: sender,
-          receiver_id: receiver,
-          content: message,
-        };
-
-    // console.log(body);
-    const cb = ({status}) => {
-      if (status) {
-        setMessageList(prevMessage => {
-          return [...prevMessage, body];
-        });
-
-        axios
-          .post(`${DOMAIN_API}:${PORT_API}/message/send`, body, {
-            headers: {'x-access-token': `Bearer ${token}`},
-          })
-          .then(res => {
-            console.log('message stored');
-          })
-          .catch(err => console.log(err));
-      }
-    };
-    socket.emit('send-message', body, room, cb);
-    setMessage('');
+      };
+      socket.emit('send-message', body, room, cb);
+      setMessage('');
+    }
   };
+
   useEffect(() => {
     socket.on('message-received', newMessage => {
       setMessageList(prevMessage => {
         return [...prevMessage, newMessage];
       });
-
-      PushNotification.localNotification({
-        channelId: channel,
-        title: 'New Message',
-        message: 'You have received a new message',
-      });
     });
 
-    // return () => socket.off('message-received');
+    return () => {
+      // socket.off('message-received');
+      socket.off('send-message');
+    };
   }, [socket]);
 
   return (
@@ -192,66 +173,68 @@ function ChatRoom({...props}) {
           {messageList.map((item, index) => {
             let senderIndex = all_data.findIndex(x => x.id === item.sender_id);
             // console.log(senderIndex);
-            return (
-              <View
-                style={
-                  item.sender_id === props.user_id
-                    ? styles.sender
-                    : styles.receiver
-                }
-                key={index}>
-                {isGroup && item.sender_id !== props.user_id ? (
-                  <Text
-                    style={
-                      item.sender_id === props.user_id
-                        ? styles.nameSender
-                        : styles.nameReceiver
-                    }>
-                    {all_data[senderIndex] && item.sender_id !== props.user_id
-                      ? all_data[senderIndex].full_name ??
-                        all_data[senderIndex].username
-                      : null}
-                  </Text>
-                ) : null}
-                <Text
-                  style={
-                    item.sender_id === props.user_id
-                      ? styles.chatContentSender
-                      : styles.chatContentReceiver
-                  }>
-                  {item.content}
-                </Text>
+            if (item.room_id === room) {
+              return (
                 <View
                   style={
                     item.sender_id === props.user_id
-                      ? styles.chatInfoSender
-                      : styles.chatInfoReceiver
-                  }>
+                      ? styles.sender
+                      : styles.receiver
+                  }
+                  key={index}>
+                  {isGroup && item.sender_id !== props.user_id ? (
+                    <Text
+                      style={
+                        item.sender_id === props.user_id
+                          ? styles.nameSender
+                          : styles.nameReceiver
+                      }>
+                      {all_data[senderIndex] && item.sender_id !== props.user_id
+                        ? all_data[senderIndex].full_name ??
+                          all_data[senderIndex].username
+                        : null}
+                    </Text>
+                  ) : null}
                   <Text
                     style={
                       item.sender_id === props.user_id
-                        ? styles.timeStampSender
-                        : styles.timeStampReceiver
+                        ? styles.chatContentSender
+                        : styles.chatContentReceiver
                     }>
-                    {item.timestamp
-                      ? new Date(item.timestamp)
-                          .toLocaleTimeString()
-                          .slice(0, 5)
-                      : new Date().toLocaleTimeString().slice(0, 5)}
+                    {item.content}
                   </Text>
-                  <Icon
-                    name="checkmark-outline"
-                    style={{fontSize: 20, color: '#ADA9BB'}}
-                  />
+                  <View
+                    style={
+                      item.sender_id === props.user_id
+                        ? styles.chatInfoSender
+                        : styles.chatInfoReceiver
+                    }>
+                    <Text
+                      style={
+                        item.sender_id === props.user_id
+                          ? styles.timeStampSender
+                          : styles.timeStampReceiver
+                      }>
+                      {item.timestamp
+                        ? new Date(item.timestamp)
+                            .toLocaleTimeString()
+                            .slice(0, 5)
+                        : new Date().toLocaleTimeString().slice(0, 5)}
+                    </Text>
+                    <Icon
+                      name="checkmark-outline"
+                      style={{fontSize: 20, color: '#ADA9BB'}}
+                    />
+                  </View>
+                  <View
+                    style={
+                      item.sender_id === props.user_id
+                        ? styles.rightPoint
+                        : styles.leftPoint
+                    }></View>
                 </View>
-                <View
-                  style={
-                    item.sender_id === props.user_id
-                      ? styles.rightPoint
-                      : styles.leftPoint
-                  }></View>
-              </View>
-            );
+              );
+            }
           })}
         </ScrollView>
         <View style={styles.inputSection}>

@@ -66,6 +66,7 @@ function Home({...props}) {
     });
 
     socket.on('message-received', newMessage => {
+      console.log(newMessage);
       props.newMessage(1);
       PushNotification.localNotification({
         channelId: channel,
@@ -75,8 +76,8 @@ function Home({...props}) {
     });
 
     return () => {
-      // socket.off('message-received');
-      // socket.off('new-registrant');
+      socket.off('message-received');
+      socket.off('new-registrant');
       socket.off('connect');
     };
   }, [socket]);
@@ -129,7 +130,7 @@ function Home({...props}) {
     <>
       <StatusBar
         translucent
-        backgroundColor="transparent"
+        backgroundColor="#5784BA"
         barStyle="light-content"
       />
       <View style={styles.container}>
