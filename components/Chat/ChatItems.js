@@ -1,16 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
-import {
-  List,
-  ListItem,
-  Left,
-  Body,
-  Right,
-  Thumbnail,
-  Text,
-  Item,
-} from 'native-base';
+import {List, ListItem, Left, Body, Right, Thumbnail, Text} from 'native-base';
 import {useIsFocused} from '@react-navigation/native';
 
 // import chatList from '../../assets/dummy/chatList';
@@ -18,14 +9,14 @@ import {Dimensions, ScrollView, StyleSheet} from 'react-native';
 import {connect} from 'react-redux';
 import {DOMAIN_API, PORT_API} from '@env';
 import {useSocket} from '../../contexts/socketProvider';
-import {newMessage, resetCount} from '../../redux/Action/chat';
+// import {newMessage, resetCount} from '../../redux/Action/chat';
 
 import axios from 'axios';
 
 function ChatItems({...props}) {
   const socket = useSocket();
   const [chatList, setChatList] = useState();
-  const [isNewMessage, setIsNewMessage] = useState(false);
+  // const [isNewMessage, setIsNewMessage] = useState(false);
   const isFocused = useIsFocused();
 
   // useEffect(() => {

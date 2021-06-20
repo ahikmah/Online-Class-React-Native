@@ -13,7 +13,7 @@ import StudentContainer from '../components/Schedule/Student';
 import FacilitatorContainer from '../components/Schedule/Facilitator';
 import {useSocket} from '../contexts/socketProvider';
 import PushNotification from 'react-native-push-notification';
-import {useIsFocused} from '@react-navigation/native';
+// import {useIsFocused} from '@react-navigation/native';
 import {newMessage, resetCount} from '../redux/Action/chat';
 
 import axios from 'axios';
@@ -22,7 +22,7 @@ function Home({...props}) {
   const role = props.role;
   const [dataUser, setDataUser] = useState('');
   const ref = useRef();
-  const isFocused = useIsFocused();
+  // const isFocused = useIsFocused();
 
   const socket = useSocket();
   // const socket = io(`${DOMAIN_API}:${PORT_API}`);

@@ -164,11 +164,11 @@ function Login({...props}) {
                 justifyContent: 'center',
                 flex: 1,
                 position: 'absolute',
-                // top: '50%',
                 backgroundColor: 'white',
                 opacity: 0.6,
                 zIndex: 10,
                 width: '100%',
+                marginTop: StatusBar.currentHeight,
                 height: '100%',
               }}>
               <ActivityIndicator size={64} color="#5784BA" />

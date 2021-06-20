@@ -1,13 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  StatusBar,
-  ScrollView,
-  Pressable,
-} from 'react-native';
+import {View, Text, StyleSheet, StatusBar, ScrollView} from 'react-native';
 import {Icon, Input, Item, Label, Form} from 'native-base';
 import CustomModal from '../../components/CustomModal';
 
@@ -26,9 +19,9 @@ function ChangePassword({...props}) {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [successModalVisible, setSuccessModalVisible] = useState(false);
-  const [isDisabled, setIsDisabled] = useState({
-    save: true,
-  });
+  // const [isDisabled, setIsDisabled] = useState({
+  //   save: true,
+  // });
 
   const errorStyle = {
     borderColor: '#EB4335',

@@ -199,8 +199,8 @@ function Facilitator({...props}) {
             {item.course_name}
           </Text>
           <View style={styles.tbStudent}>
-            <Text style={{fontSize: 16}}>{item.num_of_student}</Text>
-            <Icon style={{fontSize: 20, marginLeft: 3}} name="school-sharp" />
+            <Text style={{fontSize: 15}}>{item.num_of_student}</Text>
+            <Icon style={{fontSize: 18, marginLeft: 3}} name="school-sharp" />
           </View>
           <Icon
             name="chevron-forward"
@@ -306,22 +306,6 @@ function Facilitator({...props}) {
     }
   }, [className, categories, price, schedule, description]);
 
-  // useEffect(() => {
-  //   nameValidation();
-  // }, [className]);
-  // useEffect(() => {
-  //   categoryValidation();
-  // }, [categories]);
-  // useEffect(() => {
-  //   priceValidation();
-  // }, [price]);
-  useEffect(() => {
-    scheduleValidation();
-  }, [schedule, start, end]);
-  // useEffect(() => {
-  //   descriptionValidation();
-  // }, [description]);
-
   return (
     <>
       {indicatorVisible ? (
@@ -380,13 +364,15 @@ function Facilitator({...props}) {
               <View style={styles.inputSection}>
                 <Text
                   style={{
+                    width: 90,
                     color:
                       inputValidation.name === false
                         ? errorStyle.color
                         : '#000',
                   }}>
-                  Class Name :
+                  Class Name
                 </Text>
+                <Text>:</Text>
                 <Input
                   value={className}
                   onChangeText={text => {
@@ -396,7 +382,7 @@ function Facilitator({...props}) {
                     setInputValidation({...inputValidation, name: true})
                   }
                   onBlur={nameValidation}
-                  style={{fontSize: 14, paddingLeft: 11}}
+                  style={{fontSize: 14, paddingLeft: 16}}
                 />
               </View>
               {inputValidation.name === false ? (
@@ -407,20 +393,22 @@ function Facilitator({...props}) {
               <View style={styles.inputSection}>
                 <Text
                   style={{
+                    width: 90,
                     color:
                       inputValidation.category === false
                         ? errorStyle.color
                         : '#000',
                   }}>
-                  Categories :
+                  Categories
                 </Text>
+                <Text>:</Text>
                 <Item
                   picker
                   style={{
                     width: 300,
                     overflow: 'hidden',
                     borderBottomWidth: 0,
-                    fontSize: 14,
+                    fontSize: 12,
                   }}>
                   <Picker
                     mode="dialog"
@@ -432,42 +420,42 @@ function Facilitator({...props}) {
                     <Picker.Item
                       label=""
                       value=""
-                      style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                      style={{fontFamily: 'Roboto-Regular', fontSize: 14}}
                     />
                     <Picker.Item
                       label="Software"
                       value="1"
-                      style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                      style={{fontFamily: 'Roboto-Regular', fontSize: 14}}
                     />
                     <Picker.Item
                       label="History"
                       value="2"
-                      style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                      style={{fontFamily: 'Roboto-Regular', fontSize: 14}}
                     />
                     <Picker.Item
                       label="Psychology"
                       value="3"
-                      style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                      style={{fontFamily: 'Roboto-Regular', fontSize: 14}}
                     />
                     <Picker.Item
                       label="Finance"
                       value="4"
-                      style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                      style={{fontFamily: 'Roboto-Regular', fontSize: 14}}
                     />
                     <Picker.Item
                       label="Math"
                       value="5"
-                      style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                      style={{fontFamily: 'Roboto-Regular', fontSize: 14}}
                     />
                     <Picker.Item
                       label="Science"
                       value="6"
-                      style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                      style={{fontFamily: 'Roboto-Regular', fontSize: 14}}
                     />
                     <Picker.Item
                       label="Office Productivity"
                       value="7"
-                      style={{fontFamily: 'Roboto-Regular', fontSize: 15}}
+                      style={{fontFamily: 'Roboto-Regular', fontSize: 14}}
                     />
                   </Picker>
                 </Item>
@@ -480,13 +468,15 @@ function Facilitator({...props}) {
               <View style={styles.inputSection}>
                 <Text
                   style={{
+                    width: 90,
                     color:
                       inputValidation.price === false
                         ? errorStyle.color
                         : '#000',
                   }}>
-                  Pricing :
+                  Pricing
                 </Text>
+                <Text>:</Text>
                 <Input
                   value={price}
                   onChangeText={text => setPrice(text)}
@@ -497,7 +487,7 @@ function Facilitator({...props}) {
                     categoryValidation();
                   }}
                   onBlur={priceValidation}
-                  style={{fontSize: 14, paddingLeft: 11}}
+                  style={{fontSize: 14, paddingLeft: 15}}
                 />
               </View>
               {inputValidation.price === false ? (
@@ -508,15 +498,18 @@ function Facilitator({...props}) {
               <View style={styles.inputSection}>
                 <Text
                   style={{
+                    width: 90,
                     color:
                       inputValidation.schedule === false
                         ? errorStyle.color
                         : '#000',
                   }}>
-                  Schedule :
+                  Schedule
                 </Text>
+                <Text>:</Text>
+
                 <View
-                  style={{width: 104}}
+                  style={{width: 104, paddingLeft: 4}}
                   // onPress={() => setShowMode('date')}
                 >
                   <Text
@@ -551,19 +544,20 @@ function Facilitator({...props}) {
               <View style={styles.inputSection}>
                 <Text
                   style={{
+                    width: 90,
                     color:
                       inputValidation.schedule === false
                         ? errorStyle.color
                         : '#000',
                   }}>
-                  Time :
+                  Time
                 </Text>
-
+                <Text>:</Text>
                 <View
                   style={{
-                    marginLeft: 10,
+                    marginLeft: 14,
                     borderBottomWidth: 1,
-                    width: 50,
+                    width: 40,
                   }}
                   // onPress={() => setShowMode2('time')}
                 >
@@ -603,7 +597,7 @@ function Facilitator({...props}) {
                 <Text style={{marginLeft: 5, marginRight: 5}}>-</Text>
 
                 <View
-                  style={{borderBottomWidth: 1, width: 50}}
+                  style={{borderBottomWidth: 1, width: 40}}
                   // onPress={() => setShowMode3('time')}
                 >
                   <Text
@@ -644,12 +638,13 @@ function Facilitator({...props}) {
               <View style={styles.inputSection}>
                 <Text
                   style={{
+                    width: 90,
                     color:
                       inputValidation.description === false
                         ? errorStyle.color
                         : '#000',
                   }}>
-                  Description :
+                  Description
                 </Text>
               </View>
               <Textarea
@@ -667,7 +662,10 @@ function Facilitator({...props}) {
                 }}
                 onBlur={descriptionValidation}
                 value={description}
-                onChangeText={text => setDescription(text)}
+                onChangeText={text => {
+                  setDescription(text);
+                  scheduleValidation();
+                }}
               />
               {inputValidation.description === false ? (
                 <Text style={{...styles.inputSection, color: errorStyle.color}}>

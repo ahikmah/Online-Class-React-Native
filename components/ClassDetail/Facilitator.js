@@ -3,7 +3,7 @@
 import React, {useEffect, useState} from 'react';
 import {Image, Text, View, StyleSheet} from 'react-native';
 import axios from 'axios';
-import {Tab, Tabs, DefaultTabBar, Button, Icon} from 'native-base';
+import {Tab, Tabs, DefaultTabBar, Icon} from 'native-base';
 import ProgressModal from '../ClassDetail/ProgressModal';
 import {ProgressBar} from 'react-native-paper';
 import {DOMAIN_API, PORT_API} from '@env';
@@ -127,10 +127,10 @@ function Facilitator(props) {
             : null}
         </Text>
         <View style={styles.detail}>
-          <Text style={{fontSize: 12}}>
+          <Text style={{fontSize: 12, marginRight: 5}}>
             Level: {courseDetail && courseDetail.level}
           </Text>
-          <Text style={{fontSize: 12}}>
+          <Text style={{fontSize: 12, marginRight: 5}}>
             Category: {courseDetail && courseDetail.category}
           </Text>
           <Text style={{fontSize: 12}}>
@@ -274,10 +274,10 @@ const styles = StyleSheet.create({
   },
   detail: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    width: '70%',
-    top: -170,
-    left: 115,
+    width: '60%',
+    top: -180,
+    left: 125,
+    flexWrap: 'wrap',
   },
   tab: {
     top: -120,

@@ -7,7 +7,7 @@ import {DOMAIN_API, PORT_API} from '@env';
 import {connect} from 'react-redux';
 function AllSchedule(props) {
   const [schedules, setSchedules] = useState();
-  const [selectedDay, setSelectedDay] = useState();
+  // const [selectedDay, setSelectedDay] = useState();
   let classItems8, classItems11, classItems13, classItems15;
 
   const days = [

@@ -7,7 +7,6 @@ import {
   Text,
   StyleSheet,
   StatusBar,
-  Dimensions,
   KeyboardAvoidingView,
   ScrollView,
 } from 'react-native';
@@ -24,9 +23,9 @@ function ChatRoom({...props}) {
     sender,
     receiver,
     isGroup,
-    groupCreator,
-    groupReceiver,
-    groupMember,
+    // groupCreator,
+    // groupReceiver,
+    // groupMember,
   } = props.route.params;
   // console.log('room:', room, 'sender:', sender, 'receiver: ', receiver);eka
 
@@ -40,7 +39,7 @@ function ChatRoom({...props}) {
   const [messageList, setMessageList] = useState([]);
   const [groupMemberCount, setGroupMemberCount] = useState(0);
 
-  const screenHeight = Dimensions.get('window').height;
+  // const screenHeight = Dimensions.get('window').height;
 
   const socket = useSocket();
   const token = props.token;

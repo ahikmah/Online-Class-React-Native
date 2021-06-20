@@ -1,21 +1,20 @@
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
 import {Icon, Input, Item} from 'native-base';
 import ChatItems from '../components/Chat/ChatItems';
 import {connect} from 'react-redux';
-import {DOMAIN_API, PORT_API} from '@env';
-import axios from 'axios';
+// import {DOMAIN_API, PORT_API} from '@env';
+// import axios from 'axios';
 
 function Chat({...props}) {
   const [chatAction, setChatAction] = useState(false);
-  const [chatCount, setChatCount] = useState(1);
+  // const [chatCount, setChatCount] = useState(1);
 
-  const countHandler = data => {
-    setChatCount(data);
-    console.log('main', data);
-  };
+  // const countHandler = data => {
+  //   setChatCount(data);
+  //   console.log('main', data);
+  // };
   return (
     <>
       <StatusBar

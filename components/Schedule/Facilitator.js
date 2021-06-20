@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
-import {Button, View, StyleSheet, Text, Alert, Pressable} from 'react-native';
+import {View, StyleSheet, Text, Pressable} from 'react-native';
 import {Icon} from 'native-base';
 import axios from 'axios';
 import {DOMAIN_API, PORT_API} from '@env';
@@ -44,7 +44,7 @@ function Facilitator({...props}) {
   ];
 
   let curr = new Date();
-  let dt = curr.getDate();
+  // let dt = curr.getDate();
   const dayName = dayNames[curr.getDay()];
   let monthName = monthNames[curr.getMonth()];
   let y = curr.getFullYear();
@@ -210,7 +210,7 @@ function Facilitator({...props}) {
           <Text style={styles.title}>My Class</Text>
           <Text
             onPress={setTodayHandler}
-            style={{color: '#5784BA', right: 40n, position: 'absolute'}}>
+            style={{color: '#5784BA', right: 40, position: 'absolute'}}>
             Today
           </Text>
           <Icon name="calendar-outline" onPress={() => showMode('date')} />

@@ -10,7 +10,6 @@ import {
   Image,
   Dimensions,
   ScrollView,
-  Button,
 } from 'react-native';
 import {Icon, Input} from 'native-base';
 import {DOMAIN_API, PORT_API} from '@env';
@@ -117,7 +116,19 @@ function ProgressModal({...props}) {
             {item.score}
           </Text>
           {/* <Text>Tes</Text> */}
-          <Icon name="create-outline" style={{fontSize: 20}} />
+          <Icon
+            name="create-outline"
+            style={{fontSize: 20}}
+            onPress={() => {
+              setShowModalScore(true);
+              setScoreData({
+                chapter_id: item.chapter_id,
+                enroll_id: item.enroll_id,
+                score: item.score,
+                chapter_name: item.chapter_name,
+              });
+            }}
+          />
         </View>
       );
     });
@@ -159,7 +170,7 @@ function ProgressModal({...props}) {
                     backgroundColor: '#5784BA',
                     // height: 100,
                     paddingTop: 15,
-                    paddingBottom: 25,
+                    paddingBottom: 30,
                     width: '100%',
                     alignItems: 'center',
                     borderRadius: 10,
@@ -183,8 +194,8 @@ function ProgressModal({...props}) {
                       fontSize: 16,
                       marginBottom: 10,
                     }}>
-                    {scoreData.chapter_name.length > 25
-                      ? scoreData.chapter_name.slice(0, 25) + '...'
+                    {scoreData.chapter_name.length > 30
+                      ? scoreData.chapter_name.slice(0, 30) + '...'
                       : scoreData.chapter_name}
                   </Text>
                   <View
@@ -294,7 +305,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
   },
@@ -311,25 +322,25 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   tbTopic: {
-    width: '65%',
+    width: '60%',
     fontFamily: 'Roboto-Regular',
     fontSize: 16,
     paddingLeft: 10,
   },
   tbScore: {
-    width: '25%',
+    width: '30%',
     fontFamily: 'Roboto-Regular',
     fontSize: 16,
     textAlign: 'center',
   },
   topic: {
-    width: '65%',
+    width: '60%',
     fontFamily: 'Roboto-Regular',
     fontSize: 14,
     paddingLeft: 10,
   },
   score: {
-    width: '25%',
+    width: '30%',
     fontFamily: 'Roboto-Regular',
     fontSize: 14,
     textAlign: 'center',
@@ -339,10 +350,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Bold',
     fontSize: 20,
     textAlign: 'center',
-    width: '25%',
+    width: '30%',
   },
   unfinished: {
-    width: '25%',
+    width: '30%',
     color: 'red',
     textAlign: 'center',
   },

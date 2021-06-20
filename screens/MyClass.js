@@ -1,13 +1,7 @@
-import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  StatusBar,
-  Dimensions,
-  ScrollView,
-} from 'react-native';
-import {Icon, Input, Item} from 'native-base';
+/* eslint-disable react-native/no-inline-styles */
+import React from 'react';
+import {View, Text, StyleSheet, StatusBar} from 'react-native';
+import {Icon} from 'native-base';
 import StudentMyClass from '../components/MyClass/Student';
 import FacilitatorMyClass from '../components/MyClass/Facilitator';
 import {connect} from 'react-redux';

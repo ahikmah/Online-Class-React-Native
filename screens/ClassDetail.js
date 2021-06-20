@@ -1,13 +1,7 @@
-import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  StatusBar,
-  Dimensions,
-  ScrollView,
-} from 'react-native';
-import {Icon, Input, Item} from 'native-base';
+/* eslint-disable react-native/no-inline-styles */
+import React from 'react';
+import {View, Text, StyleSheet, StatusBar, ScrollView} from 'react-native';
+import {Icon} from 'native-base';
 import {connect} from 'react-redux';
 import StudentClassDetail from '../components/ClassDetail/Student';
 import FacilitatorClassDetail from '../components/ClassDetail/Facilitator';
@@ -27,7 +21,7 @@ function ClassDetail({...props}) {
           <View style={styles.topSection}>
             <Icon
               name="chevron-back"
-              style={{color: 'white', fontSize: 32}}
+              style={{color: 'white', fontSize: 26}}
               onPress={() => props.navigation.goBack()}
             />
             <Text
@@ -75,7 +69,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: 'Kanit-Medium',
-    fontSize: 22,
+    fontSize: 20,
     color: 'white',
   },
 });

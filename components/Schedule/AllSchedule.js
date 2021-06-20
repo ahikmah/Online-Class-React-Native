@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
-import {View, Text, StyleSheet, Dimensions} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import ProgressCircle from 'react-native-progress-circle';
 import axios from 'axios';
 import {DOMAIN_API, PORT_API} from '@env';
@@ -9,17 +9,17 @@ import {connect} from 'react-redux';
 function ForYou(props) {
   const [schedules, setSchedules] = useState();
   let scheduleItems;
-  const days = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ];
-  const d = new Date();
-  const dayName = days[d.getDay()];
+  // const days = [
+  //   'Sunday',
+  //   'Monday',
+  //   'Tuesday',
+  //   'Wednesday',
+  //   'Thursday',
+  //   'Friday',
+  //   'Saturday',
+  // ];
+  // const d = new Date();
+  // const dayName = days[d.getDay()];
 
   useEffect(() => {
     const token = props.token;

@@ -1,16 +1,8 @@
+/* eslint-disable eqeqeq */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
-import {
-  List,
-  ListItem,
-  Left,
-  Body,
-  Right,
-  Thumbnail,
-  Text,
-  Icon,
-} from 'native-base';
+import {List, ListItem, Left, Body, Right, Thumbnail, Text} from 'native-base';
 // import chatList from '../../assets/dummy/chatList';
 import {ScrollView, StyleSheet} from 'react-native';
 import CheckBox from '@react-native-community/checkbox';

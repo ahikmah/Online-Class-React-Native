@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState, useRef} from 'react';
 import {
@@ -18,16 +19,16 @@ function News() {
   const [selectedCategory, setSelectedCategory] = useState('general');
   const [articles, setArticles] = useState();
   const scrollRef = useRef();
-  let icon_name;
-  if (selectedCategory === 'general') {
-    icon_name = 'hot';
-  } else if (selectedCategory === 'technology') {
-    icon_name = 'software';
-  } else if (selectedCategory === 'science') {
-    icon_name = 'science';
-  } else if (selectedCategory === 'business') {
-    icon_name = 'business';
-  }
+  // let icon_name;
+  // if (selectedCategory === 'general') {
+  //   icon_name = 'hot';
+  // } else if (selectedCategory === 'technology') {
+  //   icon_name = 'software';
+  // } else if (selectedCategory === 'science') {
+  //   icon_name = 'science';
+  // } else if (selectedCategory === 'business') {
+  //   icon_name = 'business';
+  // }
   useEffect(() => {
     axios
       .get(
@@ -59,13 +60,13 @@ function News() {
               <Image
                 source={
                   selectedCategory === 'general'
-                    ? require(`../assets/images/news-hot.png`)
+                    ? require('../assets/images/news-hot.png')
                     : selectedCategory === 'technology'
-                    ? require(`../assets/images/news-software.png`)
+                    ? require('../assets/images/news-software.png')
                     : selectedCategory === 'science'
-                    ? require(`../assets/images/news-science.png`)
+                    ? require('../assets/images/news-science.png')
                     : selectedCategory === 'business'
-                    ? require(`../assets/images/news-finance.png`)
+                    ? require('../assets/images/news-finance.png')
                     : null
                 }
                 style={styles.subCategoryIcon}

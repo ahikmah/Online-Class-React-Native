@@ -1,16 +1,14 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useState} from 'react';
+/* eslint-disable react-native/no-inline-styles */
+import React, {useState} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   StatusBar,
-  Dimensions,
-  Image,
   ScrollView,
   Pressable,
 } from 'react-native';
-import {Icon, Input, Item, Label, Thumbnail} from 'native-base';
+import {Icon, Input, Thumbnail} from 'native-base';
 import {connect} from 'react-redux';
 import {useSocket} from '../contexts/socketProvider';
 import {DOMAIN_API, PORT_API} from '@env';
